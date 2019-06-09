@@ -15,7 +15,7 @@ class GreetingController {
 
     @MessageMapping("/hello")
     @SendTo("/topic/greetings")
-    fun message(message: HelloMessage): Greeting {
-        return Greeting("Hello " + HtmlUtils.htmlEscape(message.name) + "!")
+    fun message(message: ChatMessage): ChatResponse {
+        return ChatResponse(HtmlUtils.htmlEscape(message.name) + ": " +HtmlUtils.htmlEscape(message.message))
     }
 }

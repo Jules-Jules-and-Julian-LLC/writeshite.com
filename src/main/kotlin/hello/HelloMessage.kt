@@ -1,3 +1,3 @@
 package hello
 
-data class HelloMessage(val name: String)
+data class ChatMessage(val name: String, val message: String)

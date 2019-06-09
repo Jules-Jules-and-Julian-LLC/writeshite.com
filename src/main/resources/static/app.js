@@ -33,11 +33,12 @@ function disconnect() {
 }
 
 function sendName() {
-    stompClient.send("/app/hello", {}, JSON.stringify({'name': $("#name").val()}));
+    stompClient.send("/app/hello", {},
+    JSON.stringify({'name': $("#name").val(), 'message': $("#message").val()}));
 }
 
 function showGreeting(message) {
-    $("#greetings").append("<tr><td>" + message + "</td></tr>");
+    $("#chat-room").append("<tr><td>" + message + "</td></tr>");
 }
 
 $(function () {
