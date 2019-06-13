@@ -1,8 +1,16 @@
 var stompClient = null;
+var app;
+
+window.addEventListener('load', function() {
+    app = new Vue({
+        el: '#app',
+        data: {
+            message: 'Hello Vue.js!'
+        }
+    });
+});
 
 function setConnected(connected) {
-    $("#connect").prop("disabled", connected);
-    $("#disconnect").prop("disabled", !connected);
     if (connected) {
         $("#conversation").show();
     }
@@ -24,6 +32,7 @@ function connect() {
     });
 }
 
+
 function disconnect() {
     if (stompClient !== null) {
         stompClient.disconnect();
@@ -32,20 +41,18 @@ function disconnect() {
     console.log("Disconnected");
 }
 
-function sendName() {
-    stompClient.send("/app/hello", {},
-    JSON.stringify({'name': $("#name").val(), 'message': $("#message").val()}));
-}
-
 function showGreeting(message) {
     $("#chat-room").append("<tr><td>" + message + "</td></tr>");
 }
 
+function createGame() {
+    stompClient.send("/app/create", {}, JSON.stringify({'name': $("#name").val()}));
+}
+
 $(function () {
+    connect();
     $("form").on('submit', function (e) {
         e.preventDefault();
     });
-    $( "#connect" ).click(function() { connect(); });
-    $( "#disconnect" ).click(function() { disconnect(); });
-    $( "#send" ).click(function() { sendName(); });
+    $("createGame").on("click", function() { createGame(); });
 });

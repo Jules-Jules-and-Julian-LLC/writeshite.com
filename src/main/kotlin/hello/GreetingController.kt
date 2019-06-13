@@ -9,9 +9,7 @@ import org.springframework.web.util.HtmlUtils
 
 @Controller
 class GreetingController {
-    companion object {
-        val LOGGER: Logger = LoggerFactory.getLogger(GreetingController::class.java)
-    }
+    private val LOGGER: Logger = LoggerFactory.getLogger(javaClass)
 
     @MessageMapping("/hello")
     @SendTo("/topic/greetings")

@@ -1,0 +1,21 @@
+html {
+    height: 100%;
+}
+
+/*
+body {
+    height: 100%;
+    margin: 0;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+    background: rgb(34,43,195);
+    background: linear-gradient(rgba(34,43,195,1) 45%, rgba(253,45,248,1) 100%);
+}
+
+.player-info {
+    background: white;
+    width: 300px;
+    height: 300px;
+    margin: auto;
+}
+*/
