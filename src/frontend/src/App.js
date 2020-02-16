@@ -56,7 +56,7 @@ function App() {
                     <div className="form-group">
                         <label htmlFor="connect">WebSocket connection:</label>
                         <button id="connect" className="btn btn-default" type="submit" onClick={connect}>Connect</button>
-                        <button id="disconnect" className="btn btn-default" type="submit" disabled="disabled">Disconnect </button>
+                        <button id="disconnect" className="btn btn-default" type="submit" disabled="true">Disconnect </button>
                     </div>
                 </form>
             </div>
