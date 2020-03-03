@@ -1,4 +1,5 @@
-import React from 'react';
+import React, {useContext} from 'react';
+import { store } from './store.js';
 
 export default class Homepage extends React.Component {
     constructor(props) {
