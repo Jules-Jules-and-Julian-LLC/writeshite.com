@@ -20,7 +20,7 @@ function setConnected(connected) {
 
 function connect() {
 //TODO JJ error when connect fails, retry connection
-    var socket = new SockJS('/gs-guide-websocket');
+    var socket = new SockJS('/websocket');
     stompClient = Stomp.over(socket);
     stompClient.connect({}, function (frame) {
         setConnected(true);
@@ -28,6 +28,11 @@ function connect() {
         stompClient.subscribe('/topic/greetings', function (greeting) {
             showGreeting(JSON.parse(greeting.body).content);
         });
+        stompClient.subscribe('/topic/clientId', function (response) {
+            console.log(response.clientId);
+            //TODO JJ set clientId to JSON.parse(response.body).clientId
+        });
+        stompClient.send('/app/clientId', {}, {});
     });
 }
 
