@@ -1,4 +1,4 @@
-import React, {useContext} from "react";
+import React from "react";
 
 export default class Homepage extends React.Component {
     constructor(props) {
@@ -23,8 +23,10 @@ export default class Homepage extends React.Component {
     createGame(event) {
         event.preventDefault();
         const body = JSON.stringify({clientId: this.state.clientId, username: this.state.username});
-        console.log("Body: " + body);
-        this.state.stompClient.send("/app/createGame", {}, body);
+        this.state.stompClient.subscribe("/topic/createGameLobby", function(response) {
+            console.log(response);
+        });
+        this.state.stompClient.send("/app/createGameLobby", {}, body);
     }
 
     handleUsernameChange(event) {

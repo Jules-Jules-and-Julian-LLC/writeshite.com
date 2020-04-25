@@ -1,8 +1,16 @@
 import React from "react";
 import "./App.css";
 import Homepage from "./Homepage";
+import Lobby from "./Lobby";
+import Game from "./Game";
 import SockJS from "sockjs-client";
 import Stomp from "stompjs";
+import {
+  BrowserRouter as Router,
+  Switch,
+  Route,
+  Link
+} from "react-router-dom";
 
 export default class App extends React.Component {
     constructor(props) {
@@ -24,13 +32,11 @@ export default class App extends React.Component {
         let me = this;
         stompClient.connect({}, function(frame) {
             console.log("Connected: " + frame);
-            me.state.stompClient = stompClient;
             stompClient.subscribe("/topic/getClientId", function(response) {
                 me.setState({
                     clientId: JSON.parse(response.body).clientId,
                     stompClient: stompClient
                 });
-                console.log(me.state);
             });
             stompClient.send("/app/getClientId", {}, {});
         });
@@ -54,7 +60,20 @@ export default class App extends React.Component {
         }
 
         return (
-            <Homepage clientId={this.state.clientId} stompClient={this.state.stompClient}/>
+             <Router>
+                 <Switch>
+                    //TODO create a common object for "game info" or whatever
+                    <Route path="/lobby/:lobbyId">
+                        <Lobby clientId={this.state.clientId} stompClient={this.state.stompClient} />
+                    </Route>
+                    <Route path="/game/:gameId">
+                        <Game clientId={this.state.clientId} stompClient={this.state.stompClient} />
+                    </Route>
+                    <Route path="/">
+                        <Homepage clientId={this.state.clientId} stompClient={this.state.stompClient}/>
+                    </Route>
+                 </Switch>
+            </Router>
         );
     }
 }
