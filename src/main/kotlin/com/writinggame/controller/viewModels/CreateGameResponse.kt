@@ -1,4 +1,4 @@
-package com.writinggame.controller
+package com.writinggame.controller.viewModels
 
 import com.writinggame.model.GameLobby
 

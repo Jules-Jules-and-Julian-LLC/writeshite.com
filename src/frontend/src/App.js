@@ -3,6 +3,7 @@ import "./App.css";
 import Homepage from "./Homepage";
 import Lobby from "./Lobby";
 import Game from "./Game";
+import JoinGame from "./JoinGame";
 import SockJS from "sockjs-client";
 import Stomp from "stompjs";
 import {
@@ -59,12 +60,16 @@ export default class App extends React.Component {
             );
         }
 
+        //TODO create a common object for "game info" or whatever
+        //TODO join doesn't have username. Really should figure out state provider :/
         return (
              <Router>
                  <Switch>
-                    //TODO create a common object for "game info" or whatever
                     <Route path="/lobby/:lobbyId">
                         <Lobby clientId={this.state.clientId} stompClient={this.state.stompClient} />
+                    </Route>
+                    <Route path="/joinGame">
+                        <JoinGame clientId={this.state.clientId} stompClient={this.state.stompClient} />
                     </Route>
                     <Route path="/game/:gameId">
                         <Game clientId={this.state.clientId} stompClient={this.state.stompClient} />

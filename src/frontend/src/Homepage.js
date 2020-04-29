@@ -1,6 +1,7 @@
 import React from "react";
+import { withRouter } from 'react-router';
 
-export default class Homepage extends React.Component {
+class Homepage extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
@@ -8,7 +9,6 @@ export default class Homepage extends React.Component {
             stompClient: props.stompClient,
             username: ""
         };
-        console.log("props" + JSON.stringify(this.props));
 
         this.joinGame = this.joinGame.bind(this);
         this.createGame = this.createGame.bind(this);
@@ -16,17 +16,19 @@ export default class Homepage extends React.Component {
     }
 
     joinGame(event) {
-        alert("Joining game: " + event);
         event.preventDefault();
+        this.props.history.push('/joinGame');
     }
 
     createGame(event) {
         event.preventDefault();
-        const body = JSON.stringify({clientId: this.state.clientId, username: this.state.username});
-        this.state.stompClient.subscribe("/topic/createGameLobby", function(response) {
-            console.log(response);
+        var me = this
+        this.state.stompClient.subscribe("/topic/createLobby", function(response) {
+            var responseObj = JSON.parse(response.body);
+            me.props.history.push('/lobby/' + responseObj.lobby.lobbyId);
         });
-        this.state.stompClient.send("/app/createGameLobby", {}, body);
+        const body = JSON.stringify({clientId: this.state.clientId, username: this.state.username});
+        this.state.stompClient.send("/app/createLobby", {}, body);
     }
 
     handleUsernameChange(event) {
@@ -53,3 +55,5 @@ export default class Homepage extends React.Component {
         );
     }
 }
+
+export default withRouter(Homepage)

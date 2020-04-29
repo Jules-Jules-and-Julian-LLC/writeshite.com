@@ -1,5 +1,11 @@
 package com.writinggame.controller
 
+import com.writinggame.controller.viewModels.CreateGameResponse
+import com.writinggame.controller.viewModels.GetClientIdResponse
+import com.writinggame.controller.viewModels.JoinGameResponse
+import com.writinggame.controller.viewModels.StartGameResponse
+import com.writinggame.domain.GameStateType
+import com.writinggame.model.GameLobbyManager
 import com.writinggame.model.Player
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
@@ -13,14 +19,30 @@ class GameController {
 
     @MessageMapping("getClientId")
     fun getClientId(): GetClientIdResponse {
-        return GetClientIdResponse(UUID.randomUUID().toString())
+        return GetClientIdResponse(
+            UUID.randomUUID().toString()
+        )
     }
 
-    @MessageMapping("createGameLobby")
-    fun createGameLobby(creator: Player): CreateGameResponse {
+    @MessageMapping("createLobby")
+    fun createLobby(creator: Player): CreateGameResponse {
         val newLobby = GameLobbyManager.createLobby(creator)
         println("Created game lobby ${creator.clientId}, ${creator.username}, lobby ID: ${newLobby.lobbyId}")
 
         return CreateGameResponse(newLobby)
+    }
+
+    @MessageMapping("joinLobby")
+    fun joinLobby(joiner: Player, lobbyId: String): JoinGameResponse {
+        val newLobby = GameLobbyManager.joinLobby(joiner, lobbyId)
+
+        return JoinGameResponse(newLobby)
+    }
+
+    @MessageMapping("startGame")
+    fun startGame(clientId: String, lobbyId: String): StartGameResponse {
+        GameLobbyManager.startGame(lobbyId)
+
+        return StartGameResponse(GameStateType.PLAYING)
     }
 }

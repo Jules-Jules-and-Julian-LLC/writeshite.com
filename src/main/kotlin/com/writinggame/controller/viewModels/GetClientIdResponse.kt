@@ -1,3 +1,3 @@
-package com.writinggame.controller
+package com.writinggame.controller.viewModels
 
 data class GetClientIdResponse(val clientId: String)

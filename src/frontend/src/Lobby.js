@@ -7,9 +7,24 @@ export default class Lobby extends React.Component {
             clientId: props.clientId,
             stompClient: props.stompClient,
             username: props.username,
-            lobbyId: props.lobbyId
+            lobbyId: props.lobbyId,
+            gameState: "lobby"
         };
-        console.log("props" + JSON.stringify(this.props));
+
+        this.startGame = this.startGame.bind(this);
+    }
+
+    componentDidMount() {
+        this.state.stompClient.subscribe("/topic/lobby/" + this.state.lobbyId, function(response) {
+            //break out the different responses we get from the lobby
+            console.log(response);
+            var responseObj = JSON.parse(response.body);
+        });
+    }
+
+    startGame(event) {
+        event.preventDefault();
+        this.state.stompClient.send("/app/lobby/" + this.state.lobbyId + "/startGame", {}, {})
     }
 
     render() {
@@ -18,7 +33,10 @@ export default class Lobby extends React.Component {
                 <div id="logo">
                     <img src="logo.svg" alt="logo" />
                 </div>
-                This is the lobby
+                This is the lobby, it will have a player list some day.
+                <form onSubmit={this.startGame}>
+                    <input type="submit" value="Start game" />
+                </form>
             </div>
         );
     }

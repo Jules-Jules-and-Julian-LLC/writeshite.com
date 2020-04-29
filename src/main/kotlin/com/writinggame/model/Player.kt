@@ -1,3 +1,6 @@
 package com.writinggame.model
 
-data class Player(val clientId: String, val username: String)
+import com.fasterxml.jackson.annotation.JsonIgnore
+
+//TODO player text color, error if username empty
+data class Player(@JsonIgnore val clientId: String, var username: String)
