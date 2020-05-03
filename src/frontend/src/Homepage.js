@@ -7,12 +7,13 @@ class Homepage extends React.Component {
         this.state = {
             clientId: props.clientId,
             stompClient: props.stompClient,
-            username: ""
+            username: props.username
         };
 
         this.joinGame = this.joinGame.bind(this);
         this.createGame = this.createGame.bind(this);
-        this.handleUsernameChange = this.handleUsernameChange.bind(this);
+        this.handleUsernameChange = props.handleUsernameChange;
+        this.getUsername = props.getUsername;
     }
 
     joinGame(event) {
@@ -27,13 +28,8 @@ class Homepage extends React.Component {
             var responseObj = JSON.parse(response.body);
             me.props.history.push('/lobby/' + responseObj.lobby.lobbyId);
         });
-        const body = JSON.stringify({clientId: this.state.clientId, username: this.state.username});
+        const body = JSON.stringify({clientId: this.state.clientId, username: this.getUsername()});
         this.state.stompClient.send("/app/createLobby", {}, body);
-    }
-
-    handleUsernameChange(event) {
-        event.preventDefault();
-        this.setState({username: event.target.value})
     }
 
     render() {

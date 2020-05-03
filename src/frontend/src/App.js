@@ -17,9 +17,13 @@ export default class App extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            clientId: "",
-            stompClient: null
+            clientId: null,
+            stompClient: null,
+            username: null
         }
+
+        this.handleUsernameChange = this.handleUsernameChange.bind(this);
+        this.getUsername = this.getUsername.bind(this);
     }
 
     componentDidMount() {
@@ -41,6 +45,15 @@ export default class App extends React.Component {
             });
             stompClient.send("/app/getClientId", {}, {});
         });
+    }
+
+    handleUsernameChange(event) {
+        event.preventDefault();
+        this.setState({username: event.target.value})
+    }
+
+    getUsername() {
+        return this.state.username;
     }
 
     render() {
@@ -66,16 +79,18 @@ export default class App extends React.Component {
              <Router>
                  <Switch>
                     <Route path="/lobby/:lobbyId">
-                        <Lobby clientId={this.state.clientId} stompClient={this.state.stompClient} />
+                        <Lobby clientId={this.state.clientId} stompClient={this.state.stompClient}
+                            username={this.state.username} />
                     </Route>
                     <Route path="/joinGame">
-                        <JoinGame clientId={this.state.clientId} stompClient={this.state.stompClient} />
+                        <JoinGame clientId={this.state.clientId} stompClient={this.state.stompClient} username={this.state.username}/>
                     </Route>
                     <Route path="/game/:gameId">
-                        <Game clientId={this.state.clientId} stompClient={this.state.stompClient} />
+                        <Game clientId={this.state.clientId} stompClient={this.state.stompClient} username={this.state.username}/>
                     </Route>
                     <Route path="/">
-                        <Homepage clientId={this.state.clientId} stompClient={this.state.stompClient}/>
+                        <Homepage clientId={this.state.clientId} stompClient={this.state.stompClient}
+                             handleUsernameChange={this.handleUsernameChange} getUsername={this.getUsername}/>
                     </Route>
                  </Switch>
             </Router>
