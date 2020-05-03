@@ -4,8 +4,8 @@ import com.writinggame.domain.GameStateType
 import java.time.LocalDateTime
 
 //TODO viewmodel layer, we're leaking all sorts of crap to the user by using this directly
-class GameLobby(val creator: Player, val lobbyId: String) {
-    val players: MutableList<Player> = mutableListOf(creator)
+class GameLobby(val lobbyId: String) {
+    val players: MutableList<Player> = mutableListOf()
     val createDatetime: LocalDateTime = LocalDateTime.now()
     var gameState: GameStateType = GameStateType.GATHERING_PLAYERS
 

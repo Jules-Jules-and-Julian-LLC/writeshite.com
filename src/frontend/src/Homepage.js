@@ -14,6 +14,7 @@ class Homepage extends React.Component {
         this.createGame = this.createGame.bind(this);
         this.handleUsernameChange = props.handleUsernameChange;
         this.getUsername = props.getUsername;
+        this.getStompClient = props.getStompClient
     }
 
     joinGame(event) {
@@ -21,15 +22,17 @@ class Homepage extends React.Component {
         this.props.history.push('/joinGame');
     }
 
-    createGame(event) {
+    async createGame(event) {
         event.preventDefault();
-        var me = this
-        this.state.stompClient.subscribe("/topic/createLobby", function(response) {
+        //TODO setup stomp connection, create lobby, set stomp client for parent as well so we can pass it down to lobby
+        //TODO probably better if we instead pass a "create stomp client" method from parent, or a "get stomp client" that creates if need be?
+        //TODO can I make the connect give a client ID?
+        let me = this;
+        (await this.getStompClient()).subscribe("/topic/createLobby", function(response) {
             var responseObj = JSON.parse(response.body);
             me.props.history.push('/lobby/' + responseObj.lobby.lobbyId);
         });
-        const body = JSON.stringify({clientId: this.state.clientId, username: this.getUsername()});
-        this.state.stompClient.send("/app/createLobby", {}, body);
+        (await this.getStompClient()).send("/app/createLobby", {}, {});
     }
 
     render() {
@@ -38,12 +41,6 @@ class Homepage extends React.Component {
                 <div id="logo">
                     <img src="logo.svg" alt="logo" />
                 </div>
-                <div>
-                    <input type="text" name="username" placeholder="Name" onChange={this.handleUsernameChange} />
-                </div>
-                <form onSubmit={this.joinGame}>
-                    <input type="submit" value="Join game" />
-                </form>
                 <form onSubmit={this.createGame}>
                     <input type="submit" value="Create game" />
                 </form>

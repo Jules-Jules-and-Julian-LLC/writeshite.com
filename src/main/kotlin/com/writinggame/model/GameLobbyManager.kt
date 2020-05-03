@@ -25,9 +25,9 @@ object GameLobbyManager {
         return idList.shuffled()
     }
 
-    fun createLobby(creator: Player): GameLobby {
-        val id = idList[++idIndex]
-        val newLobby = GameLobby(creator, id)
+    fun createLobby(givenId: String? = null): GameLobby {
+        val id = givenId ?: idList[++idIndex]
+        val newLobby = GameLobby(id)
         lobbies[id] = newLobby
 
         return newLobby
@@ -41,12 +41,20 @@ object GameLobbyManager {
         throw NotImplementedError()
     }
 
-    fun joinLobby(joiner: Player, lobbyId: String): GameLobby {
+    fun joinLobby(username: String, lobbyId: String): GameLobby {
         //TODO technical exception
+        //TODO this lets people create arbitrary lobbies, which is good and bad
+        if(!lobbyExists(lobbyId)) {
+            createLobby(lobbyId)
+        }
         val lobby = getLobby(lobbyId)
-        lobby.addPlayer(joiner)
+        lobby.addPlayer(Player("asdfasdf", username))
 
         return lobby
+    }
+
+    private fun lobbyExists(lobbyId: String): Boolean {
+        return lobbies[lobbyId] != null
     }
 
     fun getLobby(lobbyId: String): GameLobby {
