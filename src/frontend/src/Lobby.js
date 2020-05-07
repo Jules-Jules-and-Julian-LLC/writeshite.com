@@ -14,11 +14,11 @@ export default class Lobby extends React.Component {
         };
 
         this.startGame = this.startGame.bind(this);
-        this.joinGame = this.joinGame.bind(this);
+        this.setUsername = this.setUsername.bind(this);
+        this.handleUsernameChange = this.handleUsernameChange.bind(this);
     }
 
     componentDidMount() {
-        let me = this;
         this.connect();
     }
 
@@ -56,13 +56,13 @@ export default class Lobby extends React.Component {
             JSON.stringify({username: localStorage.getItem("username")}));
     }
 
-    joinGame(event) {
+    setUsername(event) {
         event.preventDefault()
         this.state.stompClient.send("/app/lobby." + this.state.lobbyId + ".joinGame", {}, localStorage.getItem("username"));
     }
 
     handleUsernameChange(event) {
-        event.preventDefault();
+        this.setState({username: event.target.value});
         localStorage.setItem("username", event.target.value);
     }
 
@@ -80,13 +80,13 @@ export default class Lobby extends React.Component {
             return (
                 <div id="set-user-info-content">
                     <div id="logo">
-                        <img src="logo.svg" alt="logo" />
+                        <img src="../../logo.svg" alt="logo" />
                     </div>
                     <div>
                         <input type="text" name="username" placeholder="Name" onChange={this.handleUsernameChange} value={this.state.username} />
                     </div>
-                    <form onSubmit={this.joinGame}>
-                        <input type="submit" value="Join game" />
+                    <form onSubmit={this.setUsername}>
+                        <input type="submit" value="Set username" />
                     </form>
                 </div>
             );
@@ -95,9 +95,9 @@ export default class Lobby extends React.Component {
         return (
             <div id="lobby-content">
                 <div id="logo">
-                    <img src="logo.svg" alt="logo" />
+                    <img src="../../logo.svg" alt="logo" />
                 </div>
-                This is the lobby, it will have a player list some day.
+                Players:
                 <div>
                     <ul>
                         {playersList}
