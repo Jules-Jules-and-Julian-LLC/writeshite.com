@@ -1,5 +1,8 @@
 package com.writinggame.controller.viewModels
 
 import com.writinggame.domain.GameStateType
+import com.writinggame.domain.ResponseType
 
-data class StartGameResponse(val gameStateType: GameStateType)
+class StartGameResponse(val gameState: GameStateType) {
+    val responseType: ResponseType = ResponseType.START_GAME
+}

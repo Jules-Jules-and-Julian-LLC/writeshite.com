@@ -10,7 +10,6 @@ export default class Lobby extends React.Component {
         this.state = {
             username: localStorage.getItem("username"),
             lobbyId: pathname[pathname.length - 1],
-            joined: false,
         };
 
         this.startGame = this.startGame.bind(this);
@@ -36,14 +35,17 @@ export default class Lobby extends React.Component {
             stompClient.subscribe("/topic/lobby." + me.state.lobbyId, function(response) {
                 //break out the different responses we get from the lobby
                 console.log(response);
-                var responseObj = JSON.parse(response.body);
-                me.setState({ joined: true,
-                              gameState: responseObj.gameState,
-                              lobby: responseObj.lobby
-                            });
-
-                //TODO join lobby, add to list of players
-                //TODO joined = true when join lobby
+                let responseObj = JSON.parse(response.body);
+                const responseType = responseObj.responseType;
+                if(responseType === "START_GAME") {
+                    me.setState({ gameState: responseObj.gameState });
+                } else if(responseType === "JOIN_GAME") {
+                    me.setState({ joined: true,
+                                  gameState: responseObj.gameState,
+                                  lobby: responseObj.lobby,
+                                  creator: responseObj.creator
+                                });
+                }
             });
         }, function(frame) {
             console.log("error connecting! " + JSON.stringify(frame))
@@ -52,13 +54,13 @@ export default class Lobby extends React.Component {
 
     startGame(event) {
         event.preventDefault();
-        this.state.stompClient.send("/app/lobby/" + this.state.lobbyId + "/startGame", {},
+        this.state.stompClient.send("/app/lobby." + this.state.lobbyId + ".startGame", {},
             JSON.stringify({username: localStorage.getItem("username")}));
     }
 
     setUsername(event) {
         event.preventDefault()
-        this.state.stompClient.send("/app/lobby." + this.state.lobbyId + ".joinGame", {}, localStorage.getItem("username"));
+        this.state.stompClient.send("/app/lobby." + this.state.lobbyId + ".joinGame", {}, this.state.username);
     }
 
     handleUsernameChange(event) {
@@ -91,22 +93,35 @@ export default class Lobby extends React.Component {
                 </div>
             );
         }
-        const playersList = this.state.lobby.players.map((p) => <li>{p.username}</li>);
-        return (
-            <div id="lobby-content">
-                <div id="logo">
-                    <img src="../../logo.svg" alt="logo" />
+        if(this.state.lobby.gameState === "PLAYING") {
+            return (
+                <div id="lobby-content">
+                    You are playing a game with:
+                    <div>
+                        <ul>
+                            {this.state.lobby.players}
+                        </ul>
+                    </div>
                 </div>
-                Players:
-                <div>
-                    <ul>
-                        {playersList}
-                    </ul>
+            );
+        }
+        if(this.state.lobby.gameState === "GATHERING_PLAYERS") {
+            return (
+                <div id="lobby-content">
+                    <div id="logo">
+                        <img src="../../logo.svg" alt="logo" />
+                    </div>
+                    Players:
+                    <div>
+                        <ul>
+                            {this.state.lobby.players}
+                        </ul>
+                    </div>
+                    <form onSubmit={this.startGame}>
+                        <input type="submit" value="Start game" />
+                    </form>
                 </div>
-                <form onSubmit={this.startGame}>
-                    <input type="submit" value="Start game" />
-                </form>
-            </div>
-        );
+            );
+        }
     }
 }
