@@ -10,6 +10,7 @@ export default class Lobby extends React.Component {
         this.state = {
             username: localStorage.getItem("username"),
             lobbyId: pathname[pathname.length - 1],
+            joined: false
         };
 
         this.startGame = this.startGame.bind(this);
@@ -22,7 +23,6 @@ export default class Lobby extends React.Component {
     }
 
     connect() {
-        //TODO JJ error when connect fails, retry connection
         let socket = new SockJS("/websocket");
         let stompClient = Stomp.over(socket);
         let me = this;
@@ -33,17 +33,17 @@ export default class Lobby extends React.Component {
             window.addEventListener("beforeunload", disconnect.bind(me));
 
             stompClient.subscribe("/topic/lobby." + me.state.lobbyId, function(response) {
-                //break out the different responses we get from the lobby
-                console.log(response);
                 let responseObj = JSON.parse(response.body);
                 const responseType = responseObj.responseType;
                 if(responseType === "START_GAME") {
-                    me.setState({ gameState: responseObj.gameState });
+                    me.setState({
+                        gameState: responseObj.gameState,
+                        game: responseObj.game
+                    });
                 } else if(responseType === "JOIN_GAME") {
-                    me.setState({ joined: true,
-                                  gameState: responseObj.gameState,
-                                  lobby: responseObj.lobby,
-                                  creator: responseObj.creator
+                    me.setState({ joined: me.state.clickedSetUsername,
+                                  gameState: responseObj.lobby.gameState,
+                                  lobby: responseObj.lobby
                                 });
                 }
             });
@@ -60,6 +60,7 @@ export default class Lobby extends React.Component {
 
     setUsername(event) {
         event.preventDefault()
+        this.setState({ clickedSetUsername: true });
         this.state.stompClient.send("/app/lobby." + this.state.lobbyId + ".joinGame", {}, this.state.username);
     }
 
@@ -69,16 +70,13 @@ export default class Lobby extends React.Component {
     }
 
     render() {
-        //TODO if username not set, require them to set then re-render view (and reconnect?)
-        //TODO on join, connect to lobby and get initial info
         if(!this.state.stompClient) {
             return (
                 <div>
                     Connecting to lobby, please wait...
                 </div>
             );
-        }
-        if(!this.state.joined) {
+        }else if(!this.state.joined) {
             return (
                 <div id="set-user-info-content">
                     <div id="logo">
@@ -92,34 +90,36 @@ export default class Lobby extends React.Component {
                     </form>
                 </div>
             );
-        }
-        if(this.state.lobby.gameState === "PLAYING") {
+        } else if(this.state.lobby && this.state.gameState === "GATHERING_PLAYERS") {
+            let players = this.state.lobby.players.map(player => <li>{player}</li>);
+             return (
+                 <div id="lobby-content">
+                     <div id="logo">
+                         <img src="../../logo.svg" alt="logo" />
+                     </div>
+                     Players:
+                     <div>
+                         <ul>
+                             {players}
+                         </ul>
+                     </div>
+                    { this.state.lobby.creator === this.state.username &&
+                         <form onSubmit={this.startGame}>
+                             <input type="submit" value="Start game" />
+                         </form>
+                    }
+                 </div>
+             );
+         } else if(this.state.gameState === "PLAYING") {
+            let players = this.state.lobby.players.map(player => <li>{player}</li>);
             return (
                 <div id="lobby-content">
                     You are playing a game with:
                     <div>
                         <ul>
-                            {this.state.lobby.players}
+                            {players}
                         </ul>
                     </div>
-                </div>
-            );
-        }
-        if(this.state.lobby.gameState === "GATHERING_PLAYERS") {
-            return (
-                <div id="lobby-content">
-                    <div id="logo">
-                        <img src="../../logo.svg" alt="logo" />
-                    </div>
-                    Players:
-                    <div>
-                        <ul>
-                            {this.state.lobby.players}
-                        </ul>
-                    </div>
-                    <form onSubmit={this.startGame}>
-                        <input type="submit" value="Start game" />
-                    </form>
                 </div>
             );
         }

@@ -2,7 +2,6 @@ package com.writinggame.controller
 
 import com.writinggame.controller.viewModels.JoinGameResponse
 import com.writinggame.controller.viewModels.StartGameResponse
-import com.writinggame.domain.GameStateType
 import com.writinggame.model.LobbyManager
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
@@ -32,7 +31,8 @@ class LobbyController {
                   @Header("simpSessionId") sessionId: String): StartGameResponse {
         val lobby = LobbyManager.getLobby(lobbyId)
         lobby.startGame(sessionId)
+        println("Starting game for lobby $lobbyId player $sessionId can start: ${lobby.playerCanStartGame(sessionId)}")
 
-        return StartGameResponse(lobby.gameState)
+        return StartGameResponse(lobby)
     }
 }

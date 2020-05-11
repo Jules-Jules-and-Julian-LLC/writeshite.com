@@ -5,15 +5,10 @@ import Lobby from "./Lobby";
 import {
   BrowserRouter as Router,
   Switch,
-  Route,
-  Link
+  Route
 } from "react-router-dom";
 
 export default class App extends React.Component {
-    constructor(props) {
-        super(props);
-    }
-
     render() {
         return (
              <Router>
