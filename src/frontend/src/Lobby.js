@@ -111,7 +111,11 @@ export default class Lobby extends React.Component {
                  </div>
              );
          } else if(this.state.gameState === "PLAYING") {
-            let players = this.state.lobby.players.map(player => <li>{player}</li>);
+             let lobby = this.state.lobby;
+            let players = lobby.players.map(player => <li>{player}</li>);
+            let stories = lobby.game.liveStories[this.state.username];
+            let currentStory = stories[0].messages.join(" ");
+
             return (
                 <div id="lobby-content">
                     You are playing a game with:
@@ -120,6 +124,13 @@ export default class Lobby extends React.Component {
                             {players}
                         </ul>
                     </div>
+                    <div>
+                        You have {stories.size} stories in queue.
+                    </div>
+                    <div>
+
+                    </div>
+
                 </div>
             );
         }
