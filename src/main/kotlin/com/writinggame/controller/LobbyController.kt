@@ -1,6 +1,8 @@
 package com.writinggame.controller
 
 import com.writinggame.controller.viewModels.JoinGameResponse
+import com.writinggame.controller.viewModels.NewMessageResponse
+import com.writinggame.controller.viewModels.ReceivedMessage
 import com.writinggame.controller.viewModels.StartGameResponse
 import com.writinggame.model.LobbyManager
 import org.slf4j.Logger
@@ -34,5 +36,20 @@ class LobbyController {
         println("Starting game for lobby $lobbyId player $sessionId can start: ${lobby.playerCanStartGame(sessionId)}")
 
         return StartGameResponse(lobby)
+    }
+
+    @MessageMapping("/lobby.{lobbyId}.newMessage")
+    @SendTo("/topic/lobby.{lobbyId}")
+    fun newMessage(@DestinationVariable("lobbyId") lobbyId: String,
+                   @Header("simpSessionId") sessionId: String,
+                   receivedMessage: ReceivedMessage): NewMessageResponse {
+        val message = receivedMessage.message
+        val storyId = receivedMessage.storyId
+        val lobby = LobbyManager.getLobby(lobbyId)
+        val username = lobby.getPlayerName(sessionId)
+        println("Adding message for lobby $lobbyId player $sessionId message $message storyId $storyId")
+        lobby.addMessageToStory(message, storyId, sessionId)
+
+        return NewMessageResponse(message, storyId, username)
     }
 }

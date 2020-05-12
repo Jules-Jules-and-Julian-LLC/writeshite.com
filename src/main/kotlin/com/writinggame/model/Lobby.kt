@@ -17,6 +17,8 @@ class Lobby(val lobbyId: String, var creator: Player) {
 
         players[player.clientId] = player
 
+        activeGame?.addPlayer(player)
+
         if(players.size == 1) {
             creator = player
         }
@@ -45,5 +47,14 @@ class Lobby(val lobbyId: String, var creator: Player) {
 
     fun playerCanStartGame(sessionId: String): Boolean {
         return isCreator(sessionId)
+    }
+
+    fun addMessageToStory(message: String, storyId: String, creatorSessionId: String) {
+        val story = activeGame!!.liveStories.values.flatten().find { it.storyId == storyId }
+        story!!.addMessage(message, creatorSessionId)
+    }
+
+    fun getPlayerName(sessionId: String): String {
+        return players[sessionId]!!.username
     }
 }

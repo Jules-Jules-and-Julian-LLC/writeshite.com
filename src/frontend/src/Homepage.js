@@ -1,5 +1,5 @@
 import React from "react";
-import { withRouter } from 'react-router';
+import {withRouter} from "react-router";
 
 class Homepage extends React.Component {
     constructor(props) {
@@ -14,12 +14,12 @@ class Homepage extends React.Component {
 
     joinGame(event) {
         event.preventDefault();
-        this.props.history.push('/lobby/' + this.state.lobbyId);
+        this.props.history.push("/lobby/" + this.state.lobbyId);
     }
 
     handleLobbyIdChange(event) {
         event.preventDefault();
-        this.setState({lobbyId: event.target.value})
+        this.setState({lobbyId: event.target.value});
     }
 
     render() {
@@ -29,7 +29,12 @@ class Homepage extends React.Component {
                     <img src="logo.svg" alt="logo" />
                 </div>
                 <div>
-                    <input type="text" name="lobbyId" placeholder="Lobby ID" onChange={this.handleLobbyIdChange} />
+                    <input
+                        type="text"
+                        name="lobbyId"
+                        placeholder="Lobby ID"
+                        onChange={this.handleLobbyIdChange}
+                    />
                 </div>
                 <form onSubmit={this.joinGame}>
                     <input type="submit" value="Join game" />
@@ -39,4 +44,4 @@ class Homepage extends React.Component {
     }
 }
 
-export default withRouter(Homepage)
+export default withRouter(Homepage);
