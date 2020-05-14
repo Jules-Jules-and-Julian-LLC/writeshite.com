@@ -16,7 +16,6 @@ export default class Lobby extends React.Component {
         this.startGame = this.startGame.bind(this);
         this.sendMessage = this.sendMessage.bind(this);
         this.setUsername = this.setUsername.bind(this);
-        this.addMessage = this.addMessage.bind(this);
         this.handleUsernameChange = this.handleUsernameChange.bind(this);
         this.handleMessageChange = this.handleMessageChange.bind(this);
     }
@@ -45,8 +44,7 @@ export default class Lobby extends React.Component {
                         if (responseType === "START_GAME") {
                             me.setState({
                                 gameState: responseObj.gameState,
-                                liveStories: responseObj.game.liveStories,
-                                currentStory: responseObj.game.liveStories[me.state.username][0]
+                                liveStories: responseObj.game.liveStories
                             });
                         } else if (responseType === "JOIN_GAME") {
                             let liveStories = responseObj.lobby.game && responseObj.lobby.game.liveStories;
@@ -54,11 +52,10 @@ export default class Lobby extends React.Component {
                                 joined: me.state.clickedSetUsername,
                                 gameState: responseObj.lobby.gameState,
                                 lobby: responseObj.lobby,
-                                liveStories: liveStories,
-                                currentStory: liveStories && liveStories[me.state.username] && liveStories[me.state.username][0]
+                                liveStories: liveStories
                             });
                         } else if(responseType === "NEW_MESSAGE") {
-                            me.addMessage(responseObj.message, responseObj.storyId, responseObj.username);
+                            me.setState({liveStories: responseObj.liveStories});
                         }
                     }
                 );
@@ -67,14 +64,6 @@ export default class Lobby extends React.Component {
                 console.log("error connecting! " + JSON.stringify(frame));
             }
         );
-    }
-
-    addMessage(message, storyId, username) {
-        let storyQueue = this.state.liveStories[username];
-        let toAddStory = storyQueue.find(element => element.storyId === storyId);
-
-        toAddStory.messages.push({text: message});
-        this.setState({liveStories: this.state.liveStories});
     }
 
     startGame(event) {
@@ -88,11 +77,18 @@ export default class Lobby extends React.Component {
 
     sendMessage(event) {
         event.preventDefault();
-        this.state.stompClient.send(
-            "/app/lobby." + this.state.lobbyId + ".newMessage",
-            {},
-            JSON.stringify({message: this.state.message, storyId: this.state.currentStory.storyId})
-        );
+        let stories = this.state.liveStories;
+        let myStories = stories && stories[this.state.username];
+        let currentStory = myStories && myStories[0];
+        
+        if(currentStory && this.state.message && this.state.message !== "") {
+            this.state.stompClient.send(
+                "/app/lobby." + this.state.lobbyId + ".newMessage",
+                {},
+                JSON.stringify({message: this.state.message, storyId: currentStory.storyId})
+            );
+            this.setState({message:""});
+        }
     }
 
     setUsername(event) {
@@ -164,7 +160,7 @@ export default class Lobby extends React.Component {
             let lobby = this.state.lobby;
             let players = lobby.players.map(player => <li>{player}</li>);
             let stories = this.state.liveStories[this.state.username];
-            let currentStory = this.state.currentStory.messages.map(m => m.text).join(" ");
+            let currentStory = stories && stories[0] && stories[0].messages.map(m => m.text).join(" ");
 
             return (
                 <div id="lobby-content">

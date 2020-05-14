@@ -49,7 +49,8 @@ class LobbyController {
         val username = lobby.getPlayerName(sessionId)
         println("Adding message for lobby $lobbyId player $sessionId message $message storyId $storyId")
         lobby.addMessageToStory(message, storyId, sessionId)
+        lobby.activeGame!!.passStory(storyId, username)
 
-        return NewMessageResponse(message, storyId, username)
+        return NewMessageResponse(lobby.activeGame!!.liveStories)
     }
 }
