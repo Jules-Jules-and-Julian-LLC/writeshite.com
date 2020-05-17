@@ -1,11 +1,14 @@
 package com.writinggame.model
 
 import com.fasterxml.jackson.annotation.JsonIgnore
+import com.writinggame.domain.StoryStateType
 import java.util.*
 
-class Story(@JsonIgnore val creatorSessionId: String) {
+class Story(val creatingPlayer: String) {
+    var editingPlayer: String = creatingPlayer
     val messages: MutableList<Message> = mutableListOf()
-    val storyId: String = UUID.randomUUID().toString()
+    val id: String = UUID.randomUUID().toString()
+    val state: StoryStateType = StoryStateType.LIVE
 
     fun addMessage(message: String, creatorSessionId: String) {
         messages.add(Message(message, creatorSessionId))

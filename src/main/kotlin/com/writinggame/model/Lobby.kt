@@ -4,20 +4,18 @@ import com.writinggame.domain.GameStateType
 import java.time.LocalDateTime
 
 class Lobby(val lobbyId: String, var creator: Player) {
-    val players: HashMap<String, Player> = hashMapOf(Pair(creator.clientId, creator))
+    val players: MutableList<Player> = mutableListOf(creator)
     val createDatetime: LocalDateTime = LocalDateTime.now()
     var gameState: GameStateType = GameStateType.GATHERING_PLAYERS
-    var activeGame: Game? = null
-    val finishedGames: MutableList<Game> = mutableListOf()
+    var game: Game = Game(this)
 
     fun addPlayer(player: Player): Lobby {
-        while(players.values.any { it.username == player.username }) {
+        while(players.any { it.username == player.username }) {
             player.username = player.username + "IsntImaginitive"
         }
 
-        players[player.clientId] = player
-
-        activeGame?.addPlayer(player)
+        players.add(player)
+        game.addPlayer(player)
 
         if(players.size == 1) {
             creator = player
@@ -29,19 +27,19 @@ class Lobby(val lobbyId: String, var creator: Player) {
     fun startGame(sessionId: String) {
         if(isCreator(sessionId)) {
             gameState = GameStateType.PLAYING
-            activeGame = Game(this)
+            game = Game(this)
         }
     }
 
     fun isCreator(sessionId: String): Boolean {
-        println("Is creator: Session ID: $sessionId, creator: ${creator.clientId}")
         return sessionId == creator.clientId
     }
 
     fun leave(sessionId: String) {
-        players.remove(sessionId)
+        players.removeIf{ it.clientId == sessionId }
+        game.removePlayer(sessionId)
         if(isCreator(sessionId) && players.isNotEmpty()) {
-            creator = players.values.elementAt(0)
+            creator = players[0]
         }
     }
 
@@ -50,11 +48,7 @@ class Lobby(val lobbyId: String, var creator: Player) {
     }
 
     fun addMessageToStory(message: String, storyId: String, creatorSessionId: String) {
-        val story = activeGame!!.liveStories.values.flatten().find { it.storyId == storyId }
-        story!!.addMessage(message, creatorSessionId)
-    }
-
-    fun getPlayerName(sessionId: String): String {
-        return players[sessionId]!!.username
+        val story = game.getStory(storyId)
+        story.addMessage(message, creatorSessionId)
     }
 }

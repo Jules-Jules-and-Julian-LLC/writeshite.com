@@ -1,9 +1,6 @@
 package com.writinggame.controller
 
-import com.writinggame.controller.viewModels.JoinGameResponse
-import com.writinggame.controller.viewModels.NewMessageResponse
-import com.writinggame.controller.viewModels.ReceivedMessage
-import com.writinggame.controller.viewModels.StartGameResponse
+import com.writinggame.controller.viewModels.*
 import com.writinggame.model.LobbyManager
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
@@ -46,11 +43,11 @@ class LobbyController {
         val message = receivedMessage.message
         val storyId = receivedMessage.storyId
         val lobby = LobbyManager.getLobby(lobbyId)
-        val username = lobby.getPlayerName(sessionId)
         println("Adding message for lobby $lobbyId player $sessionId message $message storyId $storyId")
-        lobby.addMessageToStory(message, storyId, sessionId)
-        lobby.activeGame!!.passStory(storyId, username)
 
-        return NewMessageResponse(lobby.activeGame!!.liveStories)
+        lobby.addMessageToStory(message, storyId, sessionId)
+        lobby.game.passStory(storyId)
+
+        return NewMessageResponse(GameViewModel(lobby.game))
     }
 }
