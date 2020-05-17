@@ -16,6 +16,7 @@ export default class Lobby extends React.Component {
         this.startGame = this.startGame.bind(this);
         this.sendMessage = this.sendMessage.bind(this);
         this.setUsername = this.setUsername.bind(this);
+        this.groupStories = this.groupStories.bind(this);
         this.handleUsernameChange = this.handleUsernameChange.bind(this);
         this.handleMessageChange = this.handleMessageChange.bind(this);
     }
@@ -44,7 +45,7 @@ export default class Lobby extends React.Component {
                         if (responseType === "START_GAME") {
                             me.setState({
                                 gameState: responseObj.gameState,
-                                stories: responseObj.game.stories
+                                stories: me.groupStories(responseObj.game.stories, me.state.lobby.players)
                             });
                         } else if (responseType === "JOIN_GAME") {
                             let stories = responseObj.lobby.game.stories;
@@ -52,10 +53,10 @@ export default class Lobby extends React.Component {
                                 joined: me.state.clickedSetUsername,
                                 gameState: responseObj.lobby.gameState,
                                 lobby: responseObj.lobby,
-                                stories: stories
+                                stories: me.groupStories(stories, responseObj.lobby.players)
                             });
                         } else if(responseType === "NEW_MESSAGE") {
-                            me.setState({stories: responseObj.stories});
+                            me.setState({stories: me.groupStories(responseObj.stories, me.state.lobby.players)});
                         }
                     }
                 );
@@ -64,6 +65,18 @@ export default class Lobby extends React.Component {
                 console.log("error connecting! " + JSON.stringify(frame));
             }
         );
+    }
+
+    groupStories(stories, players) {
+        let grouped = {};
+        players.forEach(player => {
+            grouped[player.username] = [];
+        });
+        stories.forEach(story => {
+            grouped[story.editingPlayer.username].push(story);
+        });
+
+        return grouped;
     }
 
     startGame(event) {
@@ -93,12 +106,14 @@ export default class Lobby extends React.Component {
 
     setUsername(event) {
         event.preventDefault();
-        this.setState({clickedSetUsername: true});
-        this.state.stompClient.send(
-            "/app/lobby." + this.state.lobbyId + ".joinGame",
-            {},
-            this.state.username
-        );
+        if(this.state.username !== "") {
+            this.setState({clickedSetUsername: true});
+            this.state.stompClient.send(
+                "/app/lobby." + this.state.lobbyId + ".joinGame",
+                {},
+                this.state.username
+            );
+        }
     }
 
     handleUsernameChange(event) {
@@ -133,12 +148,9 @@ export default class Lobby extends React.Component {
                     </form>
                 </div>
             );
-        } else if (
-            this.state.lobby &&
-            this.state.gameState === "GATHERING_PLAYERS"
-        ) {
+        } else if ( this.state.lobby && this.state.gameState === "GATHERING_PLAYERS" ) {
             let players = this.state.lobby.players.map(player => (
-                <li>{player}</li>
+                <li key={player.username}>{player.username}</li>
             ));
             return (
                 <div id="lobby-content">
@@ -149,7 +161,7 @@ export default class Lobby extends React.Component {
                     <div>
                         <ul>{players}</ul>
                     </div>
-                    {this.state.lobby.creator === this.state.username && (
+                    {this.state.lobby.creator.username === this.state.username && (
                         <form onSubmit={this.startGame}>
                             <input type="submit" value="Start game" />
                         </form>
@@ -158,12 +170,12 @@ export default class Lobby extends React.Component {
             );
         } else if (this.state.gameState === "PLAYING") {
             let lobby = this.state.lobby;
-            let players = lobby.players.map(player => <li>{player}</li>);
+            let players = lobby.players.map(player => <li key={player.username}>{player.username}</li>);
             let stories = this.state.stories[this.state.username];
             let currentStory = stories && stories[0] && stories[0].messages.map(m => m.text).join(" ");
 
             return (
-                <div id="lobby-content">
+                <div id="game-content">
                     You are playing a game with:
                     <div>
                         <ul>{players}</ul>

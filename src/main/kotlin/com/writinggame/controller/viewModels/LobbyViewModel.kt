@@ -9,6 +9,6 @@ class LobbyViewModel(lobby: Lobby) {
     val players: List<String> = lobby.players.map { it.username }
     val createDatetime: LocalDateTime = lobby.createDatetime
     var gameState: GameStateType = lobby.gameState
-    val game: GameViewModel = GameViewModel(lobby.game)
+    val game: Game = lobby.game
     val creator: String = lobby.creator.username
 }

@@ -10,6 +10,11 @@ class Lobby(val lobbyId: String, var creator: Player) {
     var game: Game = Game(this)
 
     fun addPlayer(player: Player): Lobby {
+        //TODO this allows impersonation
+        if(players.any { it.username == player.username }) {
+            return this
+        }
+
         while(players.any { it.username == player.username }) {
             player.username = player.username + "IsntImaginitive"
         }
@@ -37,7 +42,6 @@ class Lobby(val lobbyId: String, var creator: Player) {
 
     fun leave(sessionId: String) {
         players.removeIf{ it.clientId == sessionId }
-        game.removePlayer(sessionId)
         if(isCreator(sessionId) && players.isNotEmpty()) {
             creator = players[0]
         }

@@ -48,6 +48,6 @@ class LobbyController {
         lobby.addMessageToStory(message, storyId, sessionId)
         lobby.game.passStory(storyId)
 
-        return NewMessageResponse(GameViewModel(lobby.game))
+        return NewMessageResponse(lobby.game)
     }
 }

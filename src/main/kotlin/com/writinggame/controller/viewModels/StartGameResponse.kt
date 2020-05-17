@@ -8,5 +8,5 @@ import com.writinggame.model.Lobby
 class StartGameResponse(lobby: Lobby) {
     val responseType: ResponseType = ResponseType.START_GAME
     val gameState: GameStateType = lobby.gameState
-    val game: GameViewModel = GameViewModel(lobby.game)
+    val game: Game = lobby.game
 }

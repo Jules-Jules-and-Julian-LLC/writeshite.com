@@ -14,7 +14,9 @@ class Homepage extends React.Component {
 
     joinGame(event) {
         event.preventDefault();
-        this.props.history.push("/lobby/" + this.state.lobbyId);
+        if(this.state.lobbyId !== "") {
+            this.props.history.push("/lobby/" + this.state.lobbyId);
+        }
     }
 
     handleLobbyIdChange(event) {
