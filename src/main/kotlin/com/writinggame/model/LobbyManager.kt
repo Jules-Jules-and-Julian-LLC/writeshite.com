@@ -21,6 +21,12 @@ object LobbyManager {
 
     fun leaveLobby(sessionId: String) {
         lobbies.values.forEach { it.leave(sessionId) }
+        cleanupEmptyLobbies()
+    }
+
+    private fun cleanupEmptyLobbies() {
+        val emptyLobbies = lobbies.keys.filter { lobbyId -> getLobby(lobbyId).players.isEmpty() }
+        emptyLobbies.forEach{ lobbies.remove(it) }
     }
 
     private fun lobbyExists(lobbyId: String): Boolean {

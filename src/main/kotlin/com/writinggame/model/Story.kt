@@ -5,7 +5,6 @@ import com.writinggame.domain.StoryStateType
 import java.util.*
 
 class Story(val creatingPlayer: Player) {
-    var editingPlayer: Player = creatingPlayer
     val messages: MutableList<Message> = mutableListOf()
     val id: String = UUID.randomUUID().toString()
     val state: StoryStateType = StoryStateType.LIVE

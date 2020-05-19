@@ -46,7 +46,7 @@ class LobbyController {
         println("Adding message for lobby $lobbyId player $sessionId message $message storyId $storyId")
 
         lobby.addMessageToStory(message, storyId, sessionId)
-        lobby.game.passStory(storyId)
+        lobby.game.passStory(sessionId, storyId)
 
         return NewMessageResponse(lobby.game)
     }

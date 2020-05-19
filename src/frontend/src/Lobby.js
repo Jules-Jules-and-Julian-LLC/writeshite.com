@@ -16,7 +16,6 @@ export default class Lobby extends React.Component {
         this.startGame = this.startGame.bind(this);
         this.sendMessage = this.sendMessage.bind(this);
         this.setUsername = this.setUsername.bind(this);
-        this.groupStories = this.groupStories.bind(this);
         this.handleUsernameChange = this.handleUsernameChange.bind(this);
         this.handleMessageChange = this.handleMessageChange.bind(this);
     }
@@ -45,7 +44,7 @@ export default class Lobby extends React.Component {
                         if (responseType === "START_GAME") {
                             me.setState({
                                 gameState: responseObj.gameState,
-                                stories: me.groupStories(responseObj.game.stories, me.state.lobby.players)
+                                stories: responseObj.game.stories
                             });
                         } else if (responseType === "JOIN_GAME") {
                             let stories = responseObj.lobby.game.stories;
@@ -53,10 +52,10 @@ export default class Lobby extends React.Component {
                                 joined: me.state.clickedSetUsername,
                                 gameState: responseObj.lobby.gameState,
                                 lobby: responseObj.lobby,
-                                stories: me.groupStories(stories, responseObj.lobby.players)
+                                stories: stories
                             });
                         } else if(responseType === "NEW_MESSAGE") {
-                            me.setState({stories: me.groupStories(responseObj.stories, me.state.lobby.players)});
+                            me.setState({stories: responseObj.stories});
                         }
                     }
                 );
@@ -65,18 +64,6 @@ export default class Lobby extends React.Component {
                 console.log("error connecting! " + JSON.stringify(frame));
             }
         );
-    }
-
-    groupStories(stories, players) {
-        let grouped = {};
-        players.forEach(player => {
-            grouped[player.username] = [];
-        });
-        stories.forEach(story => {
-            grouped[story.editingPlayer.username].push(story);
-        });
-
-        return grouped;
     }
 
     startGame(event) {
@@ -170,7 +157,7 @@ export default class Lobby extends React.Component {
             );
         } else if (this.state.gameState === "PLAYING") {
             let lobby = this.state.lobby;
-            let players = lobby.players.map(player => <li key={player.username}>{player.username}</li>);
+            let players = lobby.players.map(player => <li key={player.username}>{player.username} ({this.state.stories[player.username].length} in queue)</li>);
             let stories = this.state.stories[this.state.username];
             let currentStory = stories && stories[0] && stories[0].messages.map(m => m.text).join(" ");
 

@@ -1,37 +1,63 @@
 package com.writinggame.model
 
+import com.writinggame.domain.GameStateType
+import kotlin.collections.HashMap
+
 class Game(lobby: Lobby) {
-    val stories: MutableList<Story> = initializeStories(lobby)
+    //Key is username
+    val stories: HashMap<String, MutableList<Story>> = initializeStories(lobby)
     private val players = lobby.players
 
-    private fun initializeStories(lobby: Lobby): MutableList<Story> {
-        return lobby.players.map(::Story).toMutableList()
+    private fun initializeStories(lobby: Lobby): HashMap<String, MutableList<Story>> {
+        val stories = HashMap<String, MutableList<Story>>()
+        lobby.players.forEach { stories[it.username] = mutableListOf(Story(it)) }
+
+        return stories
     }
 
-    fun addPlayer(player: Player) {
-        if(!stories.any { story -> story.creatingPlayer == player}) {
-            stories.add(Story(player))
+    fun addPlayer(player: Player, gameState: GameStateType) {
+        //TODO this allows impersonation but MVP
+        if(!stories.containsKey(player.username)) {
+            val playerStories = stories.getOrPut(player.username, { mutableListOf() })
+
+            if(gameState == GameStateType.GATHERING_PLAYERS) {
+                playerStories.add(Story(player))
+            }
         }
     }
 
-    fun passStory(storyId: String) {
+    fun passStory(sessionId: String, storyId: String) {
+        val player = getPlayer(sessionId)
+        val playerQueue = stories[player.username]
+        val nextPlayerQueue = getNextPlayerQueue(player)
+
         val story = getStory(storyId)
-
-        story.editingPlayer = getNextPlayer(story.editingPlayer)
-
-        //Move to end of the list, so it appears in players queues correctly
-        stories.remove(story)
-        stories.add(story)
+        playerQueue!!.remove(story)
+        nextPlayerQueue.add(story)
     }
 
-    private fun getNextPlayer(editingPlayer: Player): Player {
-        val playersIndex = players.indexOf(editingPlayer)
+    private fun getPlayer(sessionId: String): Player {
+        return players.find { it.clientId == sessionId }!!
+    }
 
-        return players[(playersIndex + 1) % players.size]
+    private fun getNextPlayerQueue(player: Player): MutableList<Story> {
+        val playersIndex = players.indexOf(player)
+        val nextPlayer = players[(playersIndex + 1) % players.size]
+
+        return stories[nextPlayer.username]!!
     }
 
     fun getStory(storyId: String) : Story {
         //TODO better error message
-        return stories.find { it.id == storyId }!!
+        return stories.values.flatten().find { it.id == storyId }!!
+    }
+
+    fun removePlayer(sessionId: String) {
+        val player = getPlayer(sessionId)
+        val nextPlayerQueue = getNextPlayerQueue(player)
+
+        while(stories[player.username]!!.isNotEmpty()) {
+            nextPlayerQueue.add(stories[player.username]!!.removeAt(0))
+        }
     }
 }
