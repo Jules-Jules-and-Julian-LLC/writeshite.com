@@ -6,6 +6,7 @@ import kotlin.collections.HashMap
 class Game(lobby: Lobby) {
     //Key is username
     val stories: HashMap<String, MutableList<Story>> = initializeStories(lobby)
+    val completedStories: MutableList<Story> = mutableListOf()
     private val players = lobby.players
 
     private fun initializeStories(lobby: Lobby): HashMap<String, MutableList<Story>> {
@@ -34,6 +35,17 @@ class Game(lobby: Lobby) {
         val story = getStory(storyId)
         playerQueue!!.remove(story)
         nextPlayerQueue.add(story)
+    }
+
+    fun completeStory(storyId: String): GameStateType {
+        val story = getStory(storyId)
+        completedStories.add(story)
+
+        stories.keys.forEach {username ->
+            stories[username]?.removeIf { it.id == storyId }
+        }
+
+        return if (stories.values.flatten().isEmpty()) GameStateType.READING else GameStateType.PLAYING
     }
 
     private fun getPlayer(sessionId: String): Player {

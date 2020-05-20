@@ -15,7 +15,9 @@ export default class Lobby extends React.Component {
 
         this.startGame = this.startGame.bind(this);
         this.sendMessage = this.sendMessage.bind(this);
+        this.completeStory = this.completeStory.bind(this);
         this.setUsername = this.setUsername.bind(this);
+        this.getCurrentStory = this.getCurrentStory.bind(this);
         this.handleUsernameChange = this.handleUsernameChange.bind(this);
         this.handleMessageChange = this.handleMessageChange.bind(this);
     }
@@ -56,6 +58,12 @@ export default class Lobby extends React.Component {
                             });
                         } else if(responseType === "NEW_MESSAGE") {
                             me.setState({stories: responseObj.stories});
+                        } else if(responseType === "COMPLETED_STORY") {
+                            me.setState({
+                                stories: responseObj.stories,
+                                completedStories: responseObj.completedStories,
+                                gameState: responseObj.gameState
+                            });
                         }
                     }
                 );
@@ -77,9 +85,7 @@ export default class Lobby extends React.Component {
 
     sendMessage(event) {
         event.preventDefault();
-        let stories = this.state.stories;
-        let myStories = stories && stories[this.state.username];
-        let currentStory = myStories && myStories[0];
+        let currentStory = this.getCurrentStory();
         
         if(currentStory && this.state.message && this.state.message !== "") {
             this.state.stompClient.send(
@@ -89,6 +95,24 @@ export default class Lobby extends React.Component {
             );
             this.setState({message:""});
         }
+    }
+
+    completeStory() {
+        let currentStory = this.getCurrentStory();
+
+        if(currentStory) {
+            this.state.stompClient.send(
+                "/app/lobby." + this.state.lobbyId + ".completeStory",
+                {},
+                currentStory.id
+            );
+        }
+    }
+
+    getCurrentStory() {
+        let stories = this.state.stories;
+        let myStories = stories && stories[this.state.username];
+        return myStories && myStories[0];
     }
 
     setUsername(event) {
@@ -181,8 +205,21 @@ export default class Lobby extends React.Component {
                         <form onSubmit={this.sendMessage}>
                             <input type="submit" value="Send" />
                         </form>
+                        <button type="button" onClick={this.completeStory}>This story is done</button>
                     </div>
                 </div>
+            );
+        } else if (this.state.gameState === "READING") {
+            let myCreatedStory = this.state.completedStories.find(el => el.creatingPlayer.username === this.state.username);
+            let myReadableStory = myCreatedStory && myCreatedStory.messages.map(m => m.text).join(" ");
+            return (
+                <div>
+                    You are now reading:
+                    <div>
+                        {myReadableStory}
+                    </div>
+                </div>
+
             );
         }
     }

@@ -57,4 +57,18 @@ class Lobby(val lobbyId: String, var creator: Player) {
         val story = game.getStory(storyId)
         story.addMessage(message, creatorSessionId)
     }
+
+    fun completeStory(storyId: String, sessionId: String) {
+        val player = getPlayer(sessionId)
+        if(player == null || storyNotInPlayerQueue(storyId, player)) {
+            return
+        }
+
+        gameState = game.completeStory(storyId)
+    }
+
+    private fun storyNotInPlayerQueue(storyId: String, player: Player): Boolean {
+        val playerStories = game.stories[player.username]
+        return playerStories == null || playerStories.none { it.id == storyId }
+    }
 }

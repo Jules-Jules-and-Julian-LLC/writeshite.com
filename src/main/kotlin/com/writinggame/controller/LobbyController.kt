@@ -50,4 +50,17 @@ class LobbyController {
 
         return NewMessageResponse(lobby.game)
     }
+
+    @MessageMapping("/lobby.{lobbyId}.completeStory")
+    @SendTo("/topic/lobby.{lobbyId}")
+    fun completeStory(@DestinationVariable("lobbyId") lobbyId: String,
+                      @Header("simpSessionId") sessionId: String,
+                      storyId: String): CompletedStoryResponse {
+        val lobby = LobbyManager.getLobby(lobbyId)
+        println("Completing story: $storyId for lobby: $lobbyId by user: $sessionId")
+
+        lobby.completeStory(storyId, sessionId)
+
+        return CompletedStoryResponse(lobby)
+    }
 }
