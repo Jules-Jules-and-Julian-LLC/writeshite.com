@@ -7,6 +7,6 @@ class Story(val creatingPlayer: Player) {
     val id: String = UUID.randomUUID().toString()
 
     fun addMessage(message: String, creatorSessionId: String) {
-        messages.add(Message(message, creatorSessionId))
+        messages.add(Message(message.trim(), creatorSessionId))
     }
 }

@@ -8,6 +8,7 @@ class Lobby(val lobbyId: String, var creator: Player) {
     val createDatetime: LocalDateTime = LocalDateTime.now()
     var gameState: GameStateType = GameStateType.GATHERING_PLAYERS
     var game: Game = Game(this)
+    val completedStories: MutableList<Story> = mutableListOf()
 
     fun addPlayer(player: Player): Lobby {
         while(players.any { it.username == player.username }) {
@@ -26,12 +27,17 @@ class Lobby(val lobbyId: String, var creator: Player) {
 
     fun startGame(sessionId: String) {
         if(isCreator(sessionId)) {
-            gameState = GameStateType.PLAYING
+            if(gameState == GameStateType.READING) {
+                completedStories.addAll(game.completedStories)
+                gameState = GameStateType.GATHERING_PLAYERS
+            } else {
+                gameState = GameStateType.PLAYING
+            }
             game = Game(this)
         }
     }
 
-    fun isCreator(sessionId: String): Boolean {
+    private fun isCreator(sessionId: String): Boolean {
         return sessionId == creator.clientId
     }
 

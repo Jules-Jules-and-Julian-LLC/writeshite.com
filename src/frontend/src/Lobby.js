@@ -54,7 +54,8 @@ export default class Lobby extends React.Component {
                                 joined: me.state.clickedSetUsername,
                                 gameState: responseObj.lobby.gameState,
                                 lobby: responseObj.lobby,
-                                stories: stories
+                                stories: stories,
+                                completedStories: responseObj.lobby.game.completedStories
                             });
                         } else if(responseType === "NEW_MESSAGE") {
                             me.setState({stories: responseObj.stories});
@@ -76,11 +77,7 @@ export default class Lobby extends React.Component {
 
     startGame(event) {
         event.preventDefault();
-        this.state.stompClient.send(
-            "/app/lobby." + this.state.lobbyId + ".startGame",
-            {},
-            JSON.stringify({username: localStorage.getItem("username")})
-        );
+        this.state.stompClient.send("/app/lobby." + this.state.lobbyId + ".startGame", {}, {});
     }
 
     sendMessage(event) {
@@ -186,14 +183,17 @@ export default class Lobby extends React.Component {
             let currentStory = stories && stories[0] && stories[0].messages.map(m => m.text).join(" ");
 
             return (
-                <div id="game-content">
+                <div id="game-content" style={{"width": "700px"}}>
                     You are playing a game with:
                     <div>
                         <ul>{players}</ul>
                     </div>
                     <div>You have {stories.length} stories in queue.</div>
                     <div>
-                        Current story: {currentStory}
+                        Current story:
+                            <div>
+                                {currentStory}
+                            </div>
                     </div>
                     <div>
                         <input
@@ -213,11 +213,14 @@ export default class Lobby extends React.Component {
             let myCreatedStory = this.state.completedStories.find(el => el.creatingPlayer.username === this.state.username);
             let myReadableStory = myCreatedStory && myCreatedStory.messages.map(m => m.text).join(" ");
             return (
-                <div>
+                <div id="reading-content" style={{"width": "700px"}}>
                     You are now reading:
                     <div>
                         {myReadableStory}
                     </div>
+                    {this.state.lobby.creator.username === this.state.username && (
+                        <button type="button" onClick={this.startGame}>Start New Game</button>
+                    )}
                 </div>
 
             );
