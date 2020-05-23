@@ -1,6 +1,7 @@
 package com.writinggame.controller
 
 import com.writinggame.controller.viewModels.*
+import com.writinggame.model.GameSettings
 import com.writinggame.model.LobbyManager
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
@@ -27,10 +28,11 @@ class LobbyController {
     @MessageMapping("/lobby.{lobbyId}.startGame")
     @SendTo("/topic/lobby.{lobbyId}")
     fun startGame(@DestinationVariable("lobbyId") lobbyId: String,
-                  @Header("simpSessionId") sessionId: String): StartGameResponse {
+                  @Header("simpSessionId") sessionId: String,
+                  settings: GameSettings): StartGameResponse {
         val lobby = LobbyManager.getLobby(lobbyId)
-        lobby.startGame(sessionId)
-        println("Starting game for lobby $lobbyId player $sessionId can start: ${lobby.playerCanStartGame(sessionId)}")
+        lobby.startGame(sessionId, settings)
+        println("Starting game for lobby $lobbyId player $sessionId can start: ${lobby.playerCanStartGame(sessionId)} round time: ${settings.roundTimeMinutes}")
 
         return StartGameResponse(lobby)
     }
@@ -39,7 +41,7 @@ class LobbyController {
     @SendTo("/topic/lobby.{lobbyId}")
     fun newMessage(@DestinationVariable("lobbyId") lobbyId: String,
                    @Header("simpSessionId") sessionId: String,
-                   receivedMessage: ReceivedMessage): NewMessageResponse {
+                   receivedMessage: ReceivedMessage): StoryChangeResponse {
         val message = receivedMessage.message
         val storyId = receivedMessage.storyId
         val lobby = LobbyManager.getLobby(lobbyId)
@@ -48,19 +50,19 @@ class LobbyController {
         lobby.addMessageToStory(message, storyId, sessionId)
         lobby.game.passStory(sessionId, storyId)
 
-        return NewMessageResponse(lobby.game)
+        return StoryChangeResponse(lobby)
     }
 
     @MessageMapping("/lobby.{lobbyId}.completeStory")
     @SendTo("/topic/lobby.{lobbyId}")
     fun completeStory(@DestinationVariable("lobbyId") lobbyId: String,
                       @Header("simpSessionId") sessionId: String,
-                      storyId: String): CompletedStoryResponse {
+                      storyId: String): StoryChangeResponse {
         val lobby = LobbyManager.getLobby(lobbyId)
         println("Completing story: $storyId for lobby: $lobbyId by user: $sessionId")
 
         lobby.completeStory(storyId, sessionId)
 
-        return CompletedStoryResponse(lobby)
+        return StoryChangeResponse(lobby)
     }
 }

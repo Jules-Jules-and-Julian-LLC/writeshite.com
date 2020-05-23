@@ -14,7 +14,7 @@ class Homepage extends React.Component {
 
     joinGame(event) {
         event.preventDefault();
-        if(this.state.lobbyId && this.state.lobbyId !== "") {
+        if (this.state.lobbyId && this.state.lobbyId !== "") {
             this.props.history.push("/lobby/" + this.state.lobbyId);
         }
     }
@@ -30,15 +30,10 @@ class Homepage extends React.Component {
                 <div id="logo">
                     <img src="logo.svg" alt="logo" />
                 </div>
-                <div>
-                    <input
-                        type="text"
-                        name="lobbyId"
-                        placeholder="Lobby ID"
-                        onChange={this.handleLobbyIdChange}
-                    />
+                <div class="centered">
+                    <input type="text" name="lobbyId" placeholder="Lobby ID" onChange={this.handleLobbyIdChange} />
                 </div>
-                <form onSubmit={this.joinGame}>
+                <form class="centered" onSubmit={this.joinGame}>
                     <input type="submit" value="Join game" />
                 </form>
             </div>

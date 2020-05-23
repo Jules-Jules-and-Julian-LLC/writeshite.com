@@ -1,3 +1,18 @@
+ul {
+    list-style: none;
+    padding-left: 0px;
+}
+
+#content {
+    margin: auto;
+    width: 50%;
+}
+
+.centered {
+    margin: auto;
+    width: 50%;
+}
+
 .App {
     text-align: center;
 }

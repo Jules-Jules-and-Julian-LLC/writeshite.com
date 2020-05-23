@@ -1,13 +1,16 @@
 package com.writinggame.model
 
 import com.writinggame.domain.GameStateType
+import java.time.Instant
+import java.time.ZonedDateTime
 import kotlin.collections.HashMap
 
-class Game(lobby: Lobby) {
+class Game(lobby: Lobby, val settings: GameSettings) {
     //Key is username
     val stories: HashMap<String, MutableList<Story>> = initializeStories(lobby)
     val completedStories: MutableList<Story> = mutableListOf()
     private val players = lobby.players
+    val endTime: Instant = Instant.now().plusSeconds(60 * settings.roundTimeMinutes)
 
     private fun initializeStories(lobby: Lobby): HashMap<String, MutableList<Story>> {
         val stories = HashMap<String, MutableList<Story>>()
@@ -17,7 +20,6 @@ class Game(lobby: Lobby) {
     }
 
     fun addPlayer(player: Player, gameState: GameStateType) {
-        //TODO this allows impersonation but MVP
         if(!stories.containsKey(player.username)) {
             val playerStories = stories.getOrPut(player.username, { mutableListOf() })
 
@@ -28,21 +30,26 @@ class Game(lobby: Lobby) {
     }
 
     fun passStory(sessionId: String, storyId: String) {
-        val player = getPlayer(sessionId)
-        val playerQueue = stories[player.username]
-        val nextPlayerQueue = getNextPlayerQueue(player)
 
         val story = getStory(storyId)
-        playerQueue!!.remove(story)
-        nextPlayerQueue.add(story)
+        if(story != null) {
+            val player = getPlayer(sessionId)
+            val playerQueue = stories[player.username]
+            val nextPlayerQueue = getNextPlayerQueue(player)
+
+            playerQueue!!.remove(story)
+            nextPlayerQueue.add(story)
+        }
     }
 
     fun completeStory(storyId: String): GameStateType {
         val story = getStory(storyId)
-        completedStories.add(story)
+        if(story != null) {
+            completedStories.add(story)
 
-        stories.keys.forEach {username ->
-            stories[username]?.removeIf { it.id == storyId }
+            stories.keys.forEach {username ->
+                stories[username]?.removeIf { it.id == storyId }
+            }
         }
 
         return if (stories.values.flatten().isEmpty()) GameStateType.READING else GameStateType.PLAYING
@@ -59,9 +66,8 @@ class Game(lobby: Lobby) {
         return stories[nextPlayer.username]!!
     }
 
-    fun getStory(storyId: String) : Story {
-        //TODO better error message
-        return stories.values.flatten().find { it.id == storyId }!!
+    fun getStory(storyId: String) : Story? {
+        return stories.values.flatten().find { it.id == storyId }
     }
 
     fun removePlayer(sessionId: String) {

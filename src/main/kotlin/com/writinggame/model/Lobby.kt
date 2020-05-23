@@ -1,13 +1,16 @@
 package com.writinggame.model
 
 import com.writinggame.domain.GameStateType
+import java.time.Duration
+import java.time.Instant
 import java.time.LocalDateTime
 
-class Lobby(val lobbyId: String, var creator: Player) {
+class Lobby(val lobbyId: String, var creator: Player, settings: GameSettings) {
     val players: MutableList<Player> = mutableListOf(creator)
     val createDatetime: LocalDateTime = LocalDateTime.now()
     var gameState: GameStateType = GameStateType.GATHERING_PLAYERS
-    var game: Game = Game(this)
+    //TODO initializing this up front is convenient for Kotlin but bad practice, I never use the initialized value
+    var game: Game = Game(this, settings)
     val completedStories: MutableList<Story> = mutableListOf()
 
     fun addPlayer(player: Player): Lobby {
@@ -25,7 +28,7 @@ class Lobby(val lobbyId: String, var creator: Player) {
         return this
     }
 
-    fun startGame(sessionId: String) {
+    fun startGame(sessionId: String, settings: GameSettings) {
         if(isCreator(sessionId)) {
             if(gameState == GameStateType.READING) {
                 completedStories.addAll(game.completedStories)
@@ -33,7 +36,7 @@ class Lobby(val lobbyId: String, var creator: Player) {
             } else {
                 gameState = GameStateType.PLAYING
             }
-            game = Game(this)
+            game = Game(this, settings)
         }
     }
 
@@ -59,9 +62,15 @@ class Lobby(val lobbyId: String, var creator: Player) {
         return isCreator(sessionId)
     }
 
-    fun addMessageToStory(message: String, storyId: String, creatorSessionId: String) {
+    fun addMessageToStory(message: String, storyId: String, sessionId: String) {
         val story = game.getStory(storyId)
-        story.addMessage(message, creatorSessionId)
+        story?.addMessage(message, sessionId)
+
+        val elapsedTime = Duration.between(Instant.now(), game.endTime)
+        if(elapsedTime.isNegative) {
+            println("Elapsed time was: ${elapsedTime.toSeconds()} seconds, so completing story: $storyId")
+            completeStory(storyId, sessionId)
+        }
     }
 
     fun completeStory(storyId: String, sessionId: String) {

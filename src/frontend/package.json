@@ -23,7 +23,7 @@
         "test": "react-scripts test",
         "eject": "react-scripts eject",
         "lint": "eslint .",
-        "format": "prettier --write \"**/*.+(js|jsx|json|css|md)\""
+        "format": "prettier --print-width 120 --write \"**/*.+(js|jsx|json|css|md)\""
     },
     "eslintConfig": {
         "extends": "react-app"

@@ -7,16 +7,18 @@ import {BrowserRouter as Router, Switch, Route} from "react-router-dom";
 export default class App extends React.Component {
     render() {
         return (
-            <Router>
-                <Switch>
-                    <Route path="/lobby/:lobbyId">
-                        <Lobby />
-                    </Route>
-                    <Route path="/">
-                        <Homepage />
-                    </Route>
-                </Switch>
-            </Router>
+            <div id="content" >
+                <Router>
+                    <Switch>
+                        <Route path="/lobby/:lobbyId">
+                            <Lobby />
+                        </Route>
+                        <Route path="/">
+                            <Homepage />
+                        </Route>
+                    </Switch>
+                </Router>
+            </div>
         );
     }
 }

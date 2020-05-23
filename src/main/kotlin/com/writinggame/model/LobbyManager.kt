@@ -4,7 +4,7 @@ object LobbyManager {
     private val lobbies: HashMap<String, Lobby> = HashMap()
 
     private fun createLobby(lobbyId: String, creator: Player): Lobby {
-        val newLobby = Lobby(lobbyId, creator)
+        val newLobby = Lobby(lobbyId, creator, GameSettings())
         lobbies[lobbyId] = newLobby
 
         return newLobby
