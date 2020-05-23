@@ -11,7 +11,7 @@ class Lobby(val lobbyId: String, var creator: Player, settings: GameSettings) {
     var gameState: GameStateType = GameStateType.GATHERING_PLAYERS
     //TODO initializing this up front is convenient for Kotlin but bad practice, I never use the initialized value
     var game: Game = Game(this, settings)
-    val completedStories: MutableList<Story> = mutableListOf()
+    val gallery: MutableList<Story> = mutableListOf()
 
     fun addPlayer(player: Player): Lobby {
         while(players.any { it.username == player.username }) {
@@ -31,7 +31,7 @@ class Lobby(val lobbyId: String, var creator: Player, settings: GameSettings) {
     fun startGame(sessionId: String, settings: GameSettings) {
         if(isCreator(sessionId)) {
             if(gameState == GameStateType.READING) {
-                completedStories.addAll(game.completedStories)
+                gallery.addAll(game.completedStories)
                 gameState = GameStateType.GATHERING_PLAYERS
             } else {
                 gameState = GameStateType.PLAYING

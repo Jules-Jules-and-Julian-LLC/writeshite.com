@@ -52,6 +52,7 @@ export default class Lobby extends React.Component {
                         me.setState({
                             gameState: responseObj.gameState,
                             stories: responseObj.game.stories,
+                            gallery: responseObj.gallery,
                             endTime: new Date(responseObj.game.endTime)
                         });
                         //re-render once a second to update timer
@@ -64,6 +65,7 @@ export default class Lobby extends React.Component {
                             lobby: responseObj.lobby,
                             stories: stories,
                             completedStories: responseObj.lobby.game.completedStories,
+                            gallery: responseObj.lobby.gallery,
                             endTime: new Date(responseObj.lobby.game.endTime)
                         });
                         window.setInterval(me.forceUpdate.bind(me), 1000);
@@ -204,7 +206,7 @@ export default class Lobby extends React.Component {
             );
         } else if (this.state.lobby && this.state.gameState === "GATHERING_PLAYERS") {
             let players = this.state.lobby.players.map(player => <li key={player.username}>{player.username}</li>);
-            let gallery = this.state.completedStories.map(story =>
+            let gallery = this.state.gallery.map(story =>
                 <li key={story.creatingPlayer.username}>{this.convertMessagesToStory(story.messages)}</li>
             );
             return (
@@ -216,19 +218,19 @@ export default class Lobby extends React.Component {
                     <div>
                         <ul>{players}</ul>
                     </div>
-                    {this.state.completedStories && this.state.completedStories.length > 0 && this.state.showGallery && (
+                    {this.state.gallery && this.state.gallery.length > 0 && this.state.showGallery && (
                         <div>
                             Gallery: <br />
                             <ul>{gallery}</ul>
                         </div>
                     )}
-                    {this.state.completedStories && this.state.completedStories.length > 0 && (
-                        <button type="button" onClick={this.toggleGallery}>
-                            {this.state.showGallery && (<span>Hide</span>)}{!this.state.showGallery && (<span>Show</span>)} Gallery
-                        </button>
-                    )}
                     {this.state.lobby.creator.username === this.state.username && (
                         <div>
+                            { this.state.gallery && this.state.gallery.length > 0 && (
+                                <button type="button" onClick={this.toggleGallery}>
+                                    {this.state.showGallery && (<span>Hide</span>)}{!this.state.showGallery && (<span>Show</span>)} Gallery
+                                </button>
+                            )}
                             <div>
                                 <input
                                     type="text"

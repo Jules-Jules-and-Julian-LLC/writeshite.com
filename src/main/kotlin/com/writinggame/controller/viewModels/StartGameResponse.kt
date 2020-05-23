@@ -9,4 +9,5 @@ class StartGameResponse(lobby: Lobby) {
     val responseType: ResponseType = ResponseType.START_GAME
     val gameState: GameStateType = lobby.gameState
     val game: Game = lobby.game
+    val gallery = lobby.gallery
 }
