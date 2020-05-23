@@ -20,6 +20,7 @@ export default class Lobby extends React.Component {
         this.getCurrentStory = this.getCurrentStory.bind(this);
         this.handleUsernameChange = this.handleUsernameChange.bind(this);
         this.handleMessageChange = this.handleMessageChange.bind(this);
+        this.convertMessagesToStory = this.convertMessagesToStory.bind(this);
     }
 
     componentDidMount() {
@@ -133,6 +134,13 @@ export default class Lobby extends React.Component {
         this.setState({message: event.target.value});
     }
 
+    convertMessagesToStory(messages) {
+        let joined = messages.map(m => m.text).join(" ");
+        return joined.split('\n').map((item, key) => {
+          return <span key={key}>{item}<br/></span>
+        });
+    }
+
     render() {
         if (!this.state.stompClient) {
             return <div>Connecting to lobby, please wait...</div>;
@@ -180,7 +188,7 @@ export default class Lobby extends React.Component {
             let lobby = this.state.lobby;
             let players = lobby.players.map(player => <li key={player.username}>{player.username} ({this.state.stories[player.username].length} in queue)</li>);
             let stories = this.state.stories[this.state.username];
-            let currentStory = stories && stories[0] && stories[0].messages.map(m => m.text).join(" ");
+            let currentStory = stories && stories[0] && this.convertMessagesToStory(stories[0].messages);
 
             return (
                 <div id="game-content" style={{"width": "700px"}}>
@@ -196,12 +204,7 @@ export default class Lobby extends React.Component {
                             </div>
                     </div>
                     <div>
-                        <input
-                            type="text"
-                            name="message"
-                            onChange={this.handleMessageChange}
-                            value={this.state.message}
-                        />
+                        <textarea name="message" onChange={this.handleMessageChange} value={this.state.message} style={{"width": "700px"}}/>
                         <form onSubmit={this.sendMessage}>
                             <input type="submit" value="Send" />
                         </form>
@@ -211,7 +214,7 @@ export default class Lobby extends React.Component {
             );
         } else if (this.state.gameState === "READING") {
             let myCreatedStory = this.state.completedStories.find(el => el.creatingPlayer.username === this.state.username);
-            let myReadableStory = myCreatedStory && myCreatedStory.messages.map(m => m.text).join(" ");
+            let myReadableStory = myCreatedStory && this.convertMessagesToStory(myCreatedStory.messages);
             return (
                 <div id="reading-content" style={{"width": "700px"}}>
                     You are now reading:
