@@ -10,7 +10,7 @@ class Game(lobby: Lobby, val settings: GameSettings) {
     val stories: HashMap<String, MutableList<Story>> = initializeStories(lobby)
     val completedStories: MutableList<Story> = mutableListOf()
     private val players = lobby.players
-    val endTime: Instant = Instant.now().plusSeconds(60 * settings.roundTimeMinutes)
+    val endTime: Instant? = if (settings.roundTimeMinutes != null) Instant.now().plusSeconds(60 * settings.roundTimeMinutes) else null
 
     private fun initializeStories(lobby: Lobby): HashMap<String, MutableList<Story>> {
         val stories = HashMap<String, MutableList<Story>>()

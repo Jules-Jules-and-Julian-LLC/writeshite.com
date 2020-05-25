@@ -13,7 +13,8 @@ export default class Lobby extends React.Component {
             joined: false,
             roundTime: "",
             message: "",
-            showGallery: true
+            showGallery: true,
+            timed: true
         };
 
         this.startGame = this.startGame.bind(this);
@@ -24,6 +25,7 @@ export default class Lobby extends React.Component {
         this.handleUsernameChange = this.handleUsernameChange.bind(this);
         this.handleMessageChange = this.handleMessageChange.bind(this);
         this.handleRoundTimeChange = this.handleRoundTimeChange.bind(this);
+        this.handleTimedChange = this.handleTimedChange.bind(this);
         this.convertMessagesToStory = this.convertMessagesToStory.bind(this);
         this.calculateRoundTimeLeft = this.calculateRoundTimeLeft.bind(this);
         this.toggleGallery = this.toggleGallery.bind(this);
@@ -53,7 +55,7 @@ export default class Lobby extends React.Component {
                             gameState: responseObj.gameState,
                             stories: responseObj.game.stories,
                             gallery: responseObj.gallery,
-                            endTime: new Date(responseObj.game.endTime)
+                            endTime: responseObj.game.endTime && new Date(responseObj.game.endTime)
                         });
                         //re-render once a second to update timer
                         window.setInterval(me.forceUpdate.bind(me), 1000);
@@ -66,7 +68,7 @@ export default class Lobby extends React.Component {
                             stories: stories,
                             completedStories: responseObj.lobby.game.completedStories,
                             gallery: responseObj.lobby.gallery,
-                            endTime: new Date(responseObj.lobby.game.endTime)
+                            endTime: responseObj.lobby.game.endTime && new Date(responseObj.lobby.game.endTime)
                         });
                         window.setInterval(me.forceUpdate.bind(me), 1000);
                     } else if (responseType === "STORY_CHANGE") {
@@ -88,7 +90,7 @@ export default class Lobby extends React.Component {
 
     startGame(event) {
         event.preventDefault();
-        if (!this.state.roundTime || this.state.roundTime === "" || parseInt(this.state.roundTime) > 0) {
+        if(!this.state.timed || (this.state.timed && parseInt(this.state.roundTime) > 0)) {
             this.state.stompClient.send(
                 "/app/lobby." + this.state.lobbyId + ".startGame",
                 {},
@@ -147,6 +149,13 @@ export default class Lobby extends React.Component {
 
     handleRoundTimeChange(event) {
         this.setState({roundTime: event.target.value});
+    }
+
+    handleTimedChange(event) {
+        this.setState({timed: !this.state.timed});
+        if(!this.state.timed) {
+            this.setState({roundTime: null});
+        }
     }
 
     convertMessagesToStory(messages) {
@@ -232,14 +241,23 @@ export default class Lobby extends React.Component {
                                 </button>
                             )}
                             <div>
-                                <input
-                                    type="text"
-                                    name="roundTime"
-                                    placeholder="Minutes per game (default 5)"
-                                    onChange={this.handleRoundTimeChange}
-                                    value={this.state.roundTime}
-                                    style={{"width": "200px"}}
+                                {this.state.timed && (
+                                    <input
+                                        type="text"
+                                        name="roundTime"
+                                        placeholder="Minutes per game"
+                                        onChange={this.handleRoundTimeChange}
+                                        value={this.state.roundTime}
+                                        style={{"width": "200px"}}
+                                    />
+                                )}
+                                <input type="checkbox"
+                                    name="timed"
+                                    value="Timed?"
+                                    checked={this.state.timed}
+                                    onChange={this.handleTimedChange}
                                 />
+                                <label for="timed">Timed?</label>
                             </div>
                             <form onSubmit={this.startGame}>
                                 <input type="submit" value="Start game" />
@@ -266,19 +284,21 @@ export default class Lobby extends React.Component {
                     <div>
                         <ul>{players}</ul>
                     </div>
-                    <div>
-                        {roundOver && <span>Round is over! You may send one last message.</span>}
-                        {!roundOver && (
-                            <span>
-                                There is {timeLeft.days > 0 && <span>{timeLeft.days}:</span>}
-                                {timeLeft.hours > 0 && <span>{timeLeft.hours}:</span>}
+                    {this.state.endTime && (
+                        <div>
+                            {roundOver && <span>Round is over! You may send one last message.</span>}
+                            {!roundOver && (
                                 <span>
-                                    {timeLeft.minutes}:{timeLeft.seconds.toString().padStart(2, '0')}
-                                </span>{" "}
-                                left in the round.
-                            </span>
-                        )}
-                    </div>
+                                    There is {timeLeft.days > 0 && <span>{timeLeft.days}:</span>}
+                                    {timeLeft.hours > 0 && <span>{timeLeft.hours}:</span>}
+                                    <span>
+                                        {timeLeft.minutes}:{timeLeft.seconds.toString().padStart(2, '0')}
+                                    </span>{" "}
+                                    left in the round.
+                                </span>
+                            )}
+                        </div>
+                    )}
                     <div>You have {stories.length} stories in queue.</div>
                     <div>
                         Current story:

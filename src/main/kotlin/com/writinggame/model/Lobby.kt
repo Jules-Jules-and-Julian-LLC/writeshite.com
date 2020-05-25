@@ -66,10 +66,12 @@ class Lobby(val lobbyId: String, var creator: Player, settings: GameSettings) {
         val story = game.getStory(storyId)
         story?.addMessage(message, sessionId)
 
-        val elapsedTime = Duration.between(Instant.now(), game.endTime)
-        if(elapsedTime.isNegative) {
-            println("Elapsed time was: ${elapsedTime.toSeconds()} seconds, so completing story: $storyId")
-            completeStory(storyId, sessionId)
+        if(game.endTime != null) {
+            val elapsedTime = Duration.between(Instant.now(), game.endTime)
+            if(elapsedTime.isNegative) {
+                println("Elapsed time was: ${elapsedTime.toSeconds()} seconds, so completing story: $storyId")
+                completeStory(storyId, sessionId)
+            }
         }
     }
 
