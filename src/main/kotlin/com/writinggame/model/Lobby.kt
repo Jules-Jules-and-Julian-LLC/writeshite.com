@@ -48,9 +48,9 @@ class Lobby(val lobbyId: String, var creator: Player, settings: GameSettings) {
         val player = getPlayer(sessionId)
         if(player != null) {
             players.remove(player)
-            if(creator == player && players.isNotEmpty()) {
-                creator = players[0]
-            }
+        }
+        if(players.isNotEmpty() && creator !in players) {
+            creator = players[0]
         }
     }
 
