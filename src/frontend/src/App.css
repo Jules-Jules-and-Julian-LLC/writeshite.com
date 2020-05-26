@@ -7,6 +7,25 @@ ul {
     width: 50%;
 }
 
+.warning-border {
+    border-color: red;
+}
+
+.settings-input {
+    width: 5em;
+    margin-left: 10px;
+    margin-bottom: 5px;
+}
+
+.section-header {
+    margin-bottom: 5px;
+    font-weight: bold;
+}
+
+.bold-text {
+    font-weight: bold;
+}
+
 .centered {
     margin: auto;
     width: 50%;
