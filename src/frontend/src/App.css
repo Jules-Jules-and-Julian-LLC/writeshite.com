@@ -7,6 +7,10 @@ ul {
     width: 50%;
 }
 
+.warning-border {
+    border-color: red;
+}
+
 .settings-input {
     width: 5em;
     margin-left: 10px;

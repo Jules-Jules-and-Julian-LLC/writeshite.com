@@ -2,4 +2,8 @@ package com.writinggame.model
 
 import com.fasterxml.jackson.annotation.JsonIgnore
 
-data class Message(val text: String, @JsonIgnore val creatorSessionId: String)
+data class Message(val text: String, @JsonIgnore val creatorSessionId: String) {
+    fun wordCount(): Int {
+        return text.split("\\s+".toRegex()).size
+    }
+}

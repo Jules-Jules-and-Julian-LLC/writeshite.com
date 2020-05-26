@@ -9,7 +9,7 @@ class Lobby(val lobbyId: String, var creator: Player, settings: GameSettings) {
     val players: MutableList<Player> = mutableListOf(creator)
     val createDatetime: LocalDateTime = LocalDateTime.now()
     var gameState: GameStateType = GameStateType.GATHERING_PLAYERS
-    //TODO initializing this up front is convenient for Kotlin but bad practice, I never use the initialized value
+    //TODO initializing this up front is convenient for Kotlin but bad practice, I never use the initial value
     var game: Game = Game(this, settings)
     val gallery: MutableList<Story> = mutableListOf()
 
@@ -64,7 +64,7 @@ class Lobby(val lobbyId: String, var creator: Player, settings: GameSettings) {
 
     fun addMessageToStory(message: String, storyId: String, sessionId: String) {
         val story = game.getStory(storyId)
-        story?.addMessage(message, sessionId)
+        story?.addMessage(message, sessionId, game.settings)
 
         if(game.endTime != null) {
             val elapsedTime = Duration.between(Instant.now(), game.endTime)
