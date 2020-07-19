@@ -1,6 +1,6 @@
 package com.writinggame.model
 
-import com.writinggame.domain.GameStateType
+import com.writinggame.domain.LobbyStateType
 import java.time.Duration
 import java.time.Instant
 import java.time.LocalDateTime
@@ -8,7 +8,7 @@ import java.time.LocalDateTime
 class Lobby(val lobbyId: String, var creator: Player, settings: GameSettings) {
     val players: MutableList<Player> = mutableListOf(creator)
     val createDatetime: LocalDateTime = LocalDateTime.now()
-    var gameState: GameStateType = GameStateType.GATHERING_PLAYERS
+    var lobbyState: LobbyStateType = LobbyStateType.GATHERING_PLAYERS
     //TODO initializing this up front is convenient for Kotlin but bad practice, I never use the initial value
     var game: Game = Game(this, settings)
     val gallery: MutableList<Story> = mutableListOf()
@@ -19,7 +19,7 @@ class Lobby(val lobbyId: String, var creator: Player, settings: GameSettings) {
         }
 
         players.add(player)
-        game.addPlayer(player, gameState)
+        game.addPlayer(player, lobbyState)
 
         if(players.size == 1) {
             creator = player
@@ -30,11 +30,11 @@ class Lobby(val lobbyId: String, var creator: Player, settings: GameSettings) {
 
     fun startGame(sessionId: String, settings: GameSettings) {
         if(isCreator(sessionId)) {
-            if(gameState == GameStateType.READING) {
+            if(lobbyState == LobbyStateType.READING) {
                 gallery.addAll(game.completedStories)
-                gameState = GameStateType.GATHERING_PLAYERS
+                lobbyState = LobbyStateType.GATHERING_PLAYERS
             } else {
-                gameState = GameStateType.PLAYING
+                lobbyState = LobbyStateType.PLAYING
             }
             game = Game(this, settings)
         }
@@ -81,7 +81,7 @@ class Lobby(val lobbyId: String, var creator: Player, settings: GameSettings) {
             return
         }
 
-        gameState = game.completeStory(storyId)
+        lobbyState = game.completeStory(storyId)
     }
 
     private fun storyNotInPlayerQueue(storyId: String, player: Player): Boolean {
