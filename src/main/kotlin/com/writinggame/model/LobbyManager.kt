@@ -1,5 +1,9 @@
 package com.writinggame.model
 
+import com.writinggame.database.LobbyBag
+import com.writinggame.database.PlayerBag
+import org.apache.ibatis.session.SqlSession
+
 object LobbyManager {
     private val lobbies: HashMap<String, Lobby> = HashMap()
 
@@ -10,13 +14,13 @@ object LobbyManager {
         return newLobby
     }
 
-    fun joinLobby(username: String, sessionId: String, lobbyId: String): Lobby {
-        val player = Player(sessionId, username, lobbyId)
-        return if(!lobbyExists(lobbyId)) {
-            createLobby(lobbyId, player)
-        } else {
-            getLobby(lobbyId).addPlayer(player)
-        }
+    fun joinLobby(username: String, sessionId: String, lobbyId: String, session: SqlSession): Lobby {
+        //TODO this could be one query
+        LobbyBag(session).createLobbyIfNotExists(lobbyId)
+        PlayerBag(session).createPlayer(lobbyId, username, sessionId)
+
+        //TODO Lobby find is not going to map to a real Lobby, need to have some DTO or something
+        return LobbyBag(session).find(lobbyId)
     }
 
     fun leaveLobby(sessionId: String) {

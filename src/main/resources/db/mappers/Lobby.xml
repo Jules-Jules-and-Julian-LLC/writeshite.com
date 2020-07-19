@@ -1,13 +1,20 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.writinggame.db.mappers">
-    <resultMap id="playerResultMap" type="com.writinggame.model.Player">
+    <resultMap id="lobbyResultMap" type="com.writinggame.model.Lobby">
         <result property="username" column="name"/>
         <result property="lobbyId" column="lobby_id"/>
         <result property="clientId" column="client_id"/>
     </resultMap>
 
-    <select id="selectPlayers" resultMap="playerResultMap">
-        SELECT * FROM player;
+    <select id="findLobby" resultMap="lobbyResultMap">
+        SELECT *
+        FROM lobby
+        WHERE id = #{lobbyId}
     </select>
+
+    <insert id="createLobbyIfNotExists">
+        INSERT INTO lobby(id, lobby_state, create_datetime)
+        VALUES (#{lobbyId}, #{GATHERING_PLAYERS}, clock_timestamp()) ON CONFLICT DO NOTHING
+    </insert>
 </mapper>

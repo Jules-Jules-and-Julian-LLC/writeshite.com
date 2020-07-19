@@ -1,6 +1,7 @@
 package com.writinggame.controller
 
 import com.writinggame.controller.viewModels.*
+import com.writinggame.database.WriteShiteSessionFactory
 import com.writinggame.model.GameSettings
 import com.writinggame.model.LobbyManager
 import org.slf4j.Logger
@@ -20,9 +21,11 @@ class LobbyController {
     fun joinGame(username: String, @DestinationVariable("lobbyId") lobbyId: String,
                  @Header("simpSessionId") sessionId: String): JoinGameResponse {
         println("Got to join lobby with lobby id: $lobbyId and username: $username and session ID: $sessionId")
-        val newLobby = LobbyManager.joinLobby(username, sessionId, lobbyId)
+        WriteShiteSessionFactory.openSession().use {
+            val newLobby = LobbyManager.joinLobby(username, sessionId, lobbyId, it)
 
-        return JoinGameResponse(newLobby, sessionId)
+            return JoinGameResponse(newLobby, sessionId)
+        }
     }
 
     @MessageMapping("/lobby.{lobbyId}.startGame")

@@ -1,5 +1,6 @@
 package com.writinggame
 
+import com.writinggame.database.LobbyBag
 import com.writinggame.database.PlayerBag
 import com.writinggame.database.WriteShiteSessionFactory
 import com.writinggame.model.Player
@@ -17,6 +18,10 @@ fun main(args : Array<String>) {
         for (player in list) {
             println("Player: ${player.username}, lobby: ${player.lobbyId}, clientID: ${player.clientId}")
         }
+
+        LobbyBag(session).createLobbyIfNotExists("myLobby")
+
+        session.commit()
     }
     SpringApplication.run(Application::class.java, *args)
 }
