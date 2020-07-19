@@ -30,6 +30,6 @@ class WebSocketConfig : WebSocketMessageBrokerConfigurer {
         if(sha.sessionId != null) {
             LobbyManager.leaveLobby(sha.sessionId!!)
         }
-        println("[Disonnected] " + sha.sessionId)
+        println("[Disconnected] " + sha.sessionId)
     }
 }

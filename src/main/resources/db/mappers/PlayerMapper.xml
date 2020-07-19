@@ -1,7 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.writinggame.db.mappers">
-    <select id="selectPlayers" resultType="com.writinggame.model.Player">
-        SELECT * FROM write_shite.player;
+    <resultMap id="playerResultMap" type="com.writinggame.model.Player">
+        <result property="username" column="name"/>
+        <result property="lobbyId" column="lobby_id"/>
+        <result property="clientId" column="client_id"/>
+    </resultMap>
+
+    <select id="selectPlayers" resultMap="playerResultMap">
+        SELECT * FROM player;
     </select>
 </mapper>

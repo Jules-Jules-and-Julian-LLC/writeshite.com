@@ -14,8 +14,8 @@ class Application
 fun main(args : Array<String>) {
     WriteShiteSessionFactory.openSession().use { session: SqlSession ->
         val list: List<Player> = PlayerBag(session).findPlayers()
-        for (a in list) {
-            println("Player: ${a.username}")
+        for (player in list) {
+            println("Player: ${player.username}, lobby: ${player.lobbyId}, clientID: ${player.clientId}")
         }
     }
     SpringApplication.run(Application::class.java, *args)

@@ -11,7 +11,7 @@ object LobbyManager {
     }
 
     fun joinLobby(username: String, sessionId: String, lobbyId: String): Lobby {
-        val player = Player(sessionId, username)
+        val player = Player(sessionId, username, lobbyId)
         return if(!lobbyExists(lobbyId)) {
             createLobby(lobbyId, player)
         } else {
