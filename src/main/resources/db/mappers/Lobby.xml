@@ -1,20 +1,39 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.writinggame.db.mappers">
+<mapper namespace="com.writinggame.db.mappers.Lobby">
     <resultMap id="lobbyResultMap" type="com.writinggame.model.Lobby">
+        <id column="id"/>
+        <!-- TODO -->
         <result property="username" column="name"/>
         <result property="lobbyId" column="lobby_id"/>
         <result property="clientId" column="client_id"/>
     </resultMap>
 
-    <select id="findLobby" resultMap="lobbyResultMap">
+    <insert id="insert">
+        INSERT INTO lobby(
+            lobby_id,
+            lobby_state,
+            create_datetime
+        )
+        VALUES (
+            #{lobbyId},
+            #{GATHERING_PLAYERS},
+            clock_timestamp()
+        ) ON CONFLICT DO NOTHING
+    </insert>
+
+    <update id="update">
+        UPDATE lobby
+        SET lobby_id = #{lobbyId},
+            lobby_state = #{lobbyState},
+            create_datetime = #{createDatetime}
+        WHERE lobby_id = #{lobbyId}
+    </update>
+
+    <select id="find" resultMap="lobbyResultMap">
         SELECT *
         FROM lobby
-        WHERE id = #{lobbyId}
+        WHERE lobby_id = #{lobbyId}
     </select>
 
-    <insert id="createLobbyIfNotExists">
-        INSERT INTO lobby(id, lobby_state, create_datetime)
-        VALUES (#{lobbyId}, #{GATHERING_PLAYERS}, clock_timestamp()) ON CONFLICT DO NOTHING
-    </insert>
 </mapper>

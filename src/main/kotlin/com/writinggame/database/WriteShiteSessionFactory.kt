@@ -7,11 +7,15 @@ import org.apache.ibatis.session.SqlSessionFactoryBuilder
 import java.io.InputStream
 
 object WriteShiteSessionFactory {
-    fun openSession(): SqlSession {
+    private val sqlSessionFactory: SqlSessionFactory = buildSqlSessionFactory()
+
+    private fun buildSqlSessionFactory(): SqlSessionFactory {
         val resource = "mybatis-config.xml"
         val inputStream: InputStream = Resources.getResourceAsStream(resource)
-        val sqlSessionFactory: SqlSessionFactory = SqlSessionFactoryBuilder().build(inputStream)
+        return SqlSessionFactoryBuilder().build(inputStream)
+    }
 
+    fun openSession(): SqlSession {
         return sqlSessionFactory.openSession()
     }
 }

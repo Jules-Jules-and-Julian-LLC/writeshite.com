@@ -14,6 +14,7 @@
             </dataSource>
         </environment>
     </environments>
+
     <mappers>
         <mapper resource="db/mappers/Player.xml"/>
         <mapper resource="db/mappers/Lobby.xml"/>

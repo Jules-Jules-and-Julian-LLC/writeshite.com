@@ -14,12 +14,17 @@ class Application
 
 fun main(args : Array<String>) {
     WriteShiteSessionFactory.openSession().use { session: SqlSession ->
+        val player = Player(session, clientId = "asdf", username = "me", lobbyId = "orio")
+        player.save()
+        val player2: Player = player.find()
+
+
         val list: List<Player> = PlayerBag(session).findPlayers()
-        for (player in list) {
-            println("Player: ${player.username}, lobby: ${player.lobbyId}, clientID: ${player.clientId}")
+        for (player3 in list) {
+            println("Player: ${player3.username}, lobby: ${player3.lobbyId}, clientID: ${player3.clientId}")
         }
 
-        LobbyBag(session).createLobbyIfNotExists("myLobby")
+//        LobbyBag(session).createLobbyIfNotExists("myLobby")
 
         session.commit()
     }

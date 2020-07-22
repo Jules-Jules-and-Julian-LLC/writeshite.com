@@ -16,8 +16,9 @@ object LobbyManager {
 
     fun joinLobby(username: String, sessionId: String, lobbyId: String, session: SqlSession): Lobby {
         //TODO this could be one query
-        LobbyBag(session).createLobbyIfNotExists(lobbyId)
-        PlayerBag(session).createPlayer(lobbyId, username, sessionId)
+//        LobbyBag(session).createLobbyIfNotExists(lobbyId)
+        Player(session, clientId = sessionId, username = username, lobbyId = lobbyId).save()
+//        PlayerBag(session).createPlayer(lobbyId, username, sessionId)
 
         //TODO Lobby find is not going to map to a real Lobby, need to have some DTO or something
         return LobbyBag(session).find(lobbyId)
