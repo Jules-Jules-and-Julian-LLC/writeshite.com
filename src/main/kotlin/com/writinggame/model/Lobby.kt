@@ -1,17 +1,23 @@
 package com.writinggame.model
 
 import com.writinggame.domain.LobbyStateType
+import org.apache.ibatis.session.SqlSession
 import java.time.Duration
 import java.time.Instant
 import java.time.LocalDateTime
 
-class Lobby(val lobbyId: String, var creator: Player, settings: GameSettings) {
+class Lobby(val lobbyId: String, var creator: Player, settings: GameSettings, session: SqlSession?):
+    PersistedObject(session) {
     val players: MutableList<Player> = mutableListOf(creator)
     val createDatetime: LocalDateTime = LocalDateTime.now()
     var lobbyState: LobbyStateType = LobbyStateType.GATHERING_PLAYERS
     //TODO initializing this up front is convenient for Kotlin but bad practice, I never use the initial value
     var game: Game = Game(this, settings)
     val gallery: MutableList<Story> = mutableListOf()
+
+    override fun getKey(): Any {
+        return lobbyId
+    }
 
     fun addPlayer(player: Player): Lobby {
         while(players.any { it.username == player.username }) {

@@ -8,20 +8,23 @@ object LobbyManager {
     private val lobbies: HashMap<String, Lobby> = HashMap()
 
     private fun createLobby(lobbyId: String, creator: Player): Lobby {
-        val newLobby = Lobby(lobbyId, creator, GameSettings())
+        val newLobby = Lobby(lobbyId, creator, GameSettings(), null)
         lobbies[lobbyId] = newLobby
 
         return newLobby
     }
 
     fun joinLobby(username: String, sessionId: String, lobbyId: String, session: SqlSession): Lobby {
-        //TODO this could be one query
-//        LobbyBag(session).createLobbyIfNotExists(lobbyId)
-        Player(session, clientId = sessionId, username = username, lobbyId = lobbyId).save()
-//        PlayerBag(session).createPlayer(lobbyId, username, sessionId)
+        val player = Player(session, clientId = sessionId, username = username, lobbyId = lobbyId)
+        var lobby = LobbyBag(session).find(lobbyId)
+        if(lobby == null) {
+            lobby = Lobby(lobbyId, player, GameSettings(), session).save()
+        }
+        //TODO fix the type hinting
+        //Can't save until the lobby exists
+        player.save<Player>()
 
-        //TODO Lobby find is not going to map to a real Lobby, need to have some DTO or something
-        return LobbyBag(session).find(lobbyId)
+        return lobby
     }
 
     fun leaveLobby(sessionId: String) {

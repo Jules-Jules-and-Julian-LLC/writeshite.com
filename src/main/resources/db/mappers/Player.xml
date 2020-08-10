@@ -28,6 +28,12 @@
         )
     </insert>
 
+    <delete id="delete">
+        DELETE FROM player
+        WHERE player.username = #{username}
+            AND player.lobby_id = #{lobbyId}
+    </delete>
+
     <select id="selectPlayers" resultMap="playerResultMap">
         SELECT * FROM player;
     </select>

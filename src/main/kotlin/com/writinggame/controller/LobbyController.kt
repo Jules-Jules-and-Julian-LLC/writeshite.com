@@ -24,6 +24,7 @@ class LobbyController {
         WriteShiteSessionFactory.openSession().use {
             val newLobby = LobbyManager.joinLobby(username, sessionId, lobbyId, it)
 
+            it.commit()
             return JoinGameResponse(newLobby, sessionId)
         }
     }

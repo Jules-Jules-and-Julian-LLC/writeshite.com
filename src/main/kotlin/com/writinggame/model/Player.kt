@@ -10,7 +10,6 @@ class Player(session: SqlSession? = null, @JsonIgnore val clientId: String, var 
     override fun getKey(): Any {
         return PlayerKey(username, lobbyId)
     }
-
 }
 
 data class PlayerKey(val username: String, val lobbyId: String)

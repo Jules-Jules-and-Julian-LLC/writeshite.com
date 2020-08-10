@@ -1,6 +1,5 @@
 package com.writinggame
 
-import com.writinggame.database.LobbyBag
 import com.writinggame.database.PlayerBag
 import com.writinggame.database.WriteShiteSessionFactory
 import com.writinggame.model.Player
@@ -15,8 +14,8 @@ class Application
 fun main(args : Array<String>) {
     WriteShiteSessionFactory.openSession().use { session: SqlSession ->
         val player = Player(session, clientId = "asdf", username = "me", lobbyId = "orio")
-        player.save()
-        val player2: Player = player.find()
+        player.save<Player>()
+        val player2: Player = player.findDbMe()
 
 
         val list: List<Player> = PlayerBag(session).findPlayers()
