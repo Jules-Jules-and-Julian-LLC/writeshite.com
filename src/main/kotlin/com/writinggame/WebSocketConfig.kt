@@ -1,6 +1,6 @@
 package com.writinggame
 
-import com.writinggame.model.LobbyManager
+import com.writinggame.controller.LobbyManager
 import org.springframework.context.annotation.Configuration
 import org.springframework.context.event.EventListener
 import org.springframework.messaging.simp.config.MessageBrokerRegistry

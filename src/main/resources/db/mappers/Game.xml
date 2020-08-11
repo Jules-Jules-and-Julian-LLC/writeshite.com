@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.writinggame.db.mappers.Game">
+    <resultMap id="gameResultMap" type="com.writinggame.model.Game">
+        <id column="id"/>
+        <result property="roundTimeMinutes" column="round_time_minutes"/>
+        <result property="roundEndDatetime" column="round_end_datetime"/>
+        <result property="minWordsPerMessage" column="min_words_per_message"/>
+        <result property="maxWordsPerMessage" column="max_words_per_message"/>
+        <result property="lobbyId" column="lobby_id"/>
+    </resultMap>
+
+    <select id="find" resultMap="gameResultMap">
+        SELECT *
+        FROM game
+        WHERE id = #{id}
+    </select>
+
+    <insert id="insert">
+        INSERT INTO game(
+            id,
+            round_time_minutes,
+            round_end_datetime,
+            min_words_per_message,
+            max_words_per_message,
+            lobby_id
+        )
+        VALUES (
+            #{id},
+            #{roundTimeMinutes},
+            #{roundEndDatetime},
+            #{minWordsPerMessage},
+            #{maxWordsPerMessage},
+            #{lobbyId}
+        ) ON CONFLICT DO NOTHING
+    </insert>
+
+    <update id="update">
+        UPDATE game
+        SET id = #{id},
+            round_time_minutes = #{roundTimeMinutes},
+            round_end_datetime = #{roundEndDatetime},
+            min_words_per_message = #{minWordsPerMessage},
+            max_words_per_message = #{maxWordsPerMessage},
+            lobby_id = #{lobbyId}
+        WHERE id = #{id}
+    </update>
+
+    <delete id="delete">
+        DELETE FROM game
+        WHERE id = #{id}
+    </delete>
+
+</mapper>

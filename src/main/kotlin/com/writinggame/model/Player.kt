@@ -4,8 +4,8 @@ import com.fasterxml.jackson.annotation.JsonIgnore
 import org.apache.ibatis.session.SqlSession
 
 //TODO player text color, error if username empty
-class Player(session: SqlSession? = null, @JsonIgnore val clientId: String, var username: String, val lobbyId: String) : PersistedObject(session) {
-    constructor(clientId: String, username: String, lobbyId: String) : this(null, clientId, username, lobbyId)
+class Player(@JsonIgnore val clientId: String, var username: String, val lobbyId: String, session: SqlSession? = null) : PersistedObject(session) {
+    constructor(clientId: String, username: String, lobbyId: String) : this(clientId, username, lobbyId, null)
 
     override fun getKey(): Any {
         return PlayerKey(username, lobbyId)

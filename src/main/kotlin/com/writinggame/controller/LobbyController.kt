@@ -1,9 +1,9 @@
 package com.writinggame.controller
 
 import com.writinggame.controller.viewModels.*
+import com.writinggame.database.LobbyBag
 import com.writinggame.database.WriteShiteSessionFactory
 import com.writinggame.model.GameSettings
-import com.writinggame.model.LobbyManager
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.messaging.handler.annotation.DestinationVariable
@@ -19,13 +19,13 @@ class LobbyController {
     @MessageMapping("/lobby.{lobbyId}.joinGame")
     @SendTo("/topic/lobby.{lobbyId}")
     fun joinGame(username: String, @DestinationVariable("lobbyId") lobbyId: String,
-                 @Header("simpSessionId") sessionId: String): JoinGameResponse {
+                 @Header("simpSessionId") sessionId: String): LobbyViewModel {
         println("Got to join lobby with lobby id: $lobbyId and username: $username and session ID: $sessionId")
-        WriteShiteSessionFactory.openSession().use {
-            val newLobby = LobbyManager.joinLobby(username, sessionId, lobbyId, it)
+        WriteShiteSessionFactory.openSession().use { session ->
+            LobbyManager.joinLobby(username, sessionId, lobbyId, session)
 
-            it.commit()
-            return JoinGameResponse(newLobby, sessionId)
+            session.commit()
+            return LobbyBag(session).findCurrentLobbyState(lobbyId)
         }
     }
 
@@ -33,40 +33,35 @@ class LobbyController {
     @SendTo("/topic/lobby.{lobbyId}")
     fun startGame(@DestinationVariable("lobbyId") lobbyId: String,
                   @Header("simpSessionId") sessionId: String,
-                  settings: GameSettings): StartGameResponse {
-        val lobby = LobbyManager.getLobby(lobbyId)
-        lobby.startGame(sessionId, settings)
-        println("Starting game for lobby $lobbyId player $sessionId can start: ${lobby.playerCanStartGame(sessionId)} round time: ${settings.roundTimeMinutes}")
+                  settings: GameSettings): LobbyViewModel {
+        WriteShiteSessionFactory.openSession().use { session ->
+            LobbyManager.startGame(lobbyId, sessionId, settings)
 
-        return StartGameResponse(lobby)
+            return LobbyBag(session).findCurrentLobbyState(lobbyId)
+        }
     }
 
     @MessageMapping("/lobby.{lobbyId}.newMessage")
     @SendTo("/topic/lobby.{lobbyId}")
     fun newMessage(@DestinationVariable("lobbyId") lobbyId: String,
                    @Header("simpSessionId") sessionId: String,
-                   receivedMessage: ReceivedMessage): StoryChangeResponse {
-        val message = receivedMessage.message
-        val storyId = receivedMessage.storyId
-        val lobby = LobbyManager.getLobby(lobbyId)
-        println("Adding message for lobby $lobbyId player $sessionId message $message storyId $storyId")
+                   receivedMessage: ReceivedMessage): LobbyViewModel {
+        WriteShiteSessionFactory.openSession().use { session ->
+            LobbyManager.addMessageToStory(lobbyId, receivedMessage.message, receivedMessage.storyId, sessionId)
 
-        lobby.addMessageToStory(message, storyId, sessionId)
-        lobby.game.passStory(sessionId, storyId)
-
-        return StoryChangeResponse(lobby)
+            return LobbyBag(session).findCurrentLobbyState(lobbyId)
+        }
     }
 
     @MessageMapping("/lobby.{lobbyId}.completeStory")
     @SendTo("/topic/lobby.{lobbyId}")
     fun completeStory(@DestinationVariable("lobbyId") lobbyId: String,
                       @Header("simpSessionId") sessionId: String,
-                      storyId: String): StoryChangeResponse {
-        val lobby = LobbyManager.getLobby(lobbyId)
-        println("Completing story: $storyId for lobby: $lobbyId by user: $sessionId")
+                      storyId: String): LobbyViewModel {
+        WriteShiteSessionFactory.openSession().use { session ->
+            LobbyManager.completeStory(lobbyId, sessionId, storyId)
 
-        lobby.completeStory(storyId, sessionId)
-
-        return StoryChangeResponse(lobby)
+            return LobbyBag(session).findCurrentLobbyState(lobbyId)
+        }
     }
 }

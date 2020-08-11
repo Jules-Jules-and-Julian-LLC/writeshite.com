@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.writinggame.db.mappers.GalleryEntry">
+    <resultMap id="galleryEntryResultMap" type="com.writinggame.model.GalleryEntry">
+        <id column="id"/>
+        <result property="creatorUsername" column="creator_username"/>
+        <result property="lobbyId" column="lobby_id"/>
+        <result property="roundNumber" column="round_number"/>
+        <result property="storyText" column="story_text"/>
+    </resultMap>
+
+    <select id="find" resultMap="galleryEntryResultMap">
+        SELECT *
+        FROM gallery_entry
+        WHERE id = #{id}
+    </select>
+
+    <insert id="insert">
+        INSERT INTO gallery_entry(
+            id,
+            creator_username,
+            lobby_id,
+            round_number,
+            story_text
+        )
+        VALUES (
+            #{id},
+            #{creatorUsername},
+            #{lobbyId},
+            #{roundNumber},
+            #{storyText}
+        ) ON CONFLICT DO NOTHING
+    </insert>
+
+    <update id="update">
+        UPDATE gallery_entry
+        SET id = #{id},
+            creator_username = #{creatorUsername},
+            lobby_id = #{lobbyId},
+            round_number = #{roundNumber},
+            story_text = #{storyText}
+        WHERE id = #{id}
+    </update>
+
+    <delete id="delete">
+        DELETE FROM gallery_entry
+        WHERE id = #{id}
+    </delete>
+
+</mapper>

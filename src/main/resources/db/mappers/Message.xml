@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.writinggame.db.mappers.Message">
+    <resultMap id="messageResultMap" type="com.writinggame.model.Message">
+        <id column="id"/>
+        <result property="storyId" column="story_id"/>
+        <result property="creatorUsername" column="creator_username"/>
+        <result property="text" column="text"/>
+    </resultMap>
+
+    <select id="find" resultMap="messageResultMap">
+        SELECT *
+        FROM message
+        WHERE id = #{id}
+    </select>
+
+    <insert id="insert">
+        INSERT INTO message(
+            id,
+            story_id,
+            creator_username,
+            text
+        )
+        VALUES (
+            #{id},
+            #{storyId},
+            #{creatorUsername},
+            #{text}
+        ) ON CONFLICT DO NOTHING
+    </insert>
+
+    <update id="update">
+        UPDATE message
+        SET id = #{id},
+            story_id = #{storyId},
+            creator_username = #{creatorUsername},
+            text = #{text}
+        WHERE id = #{id}
+    </update>
+
+    <delete id="delete">
+        DELETE FROM message
+        WHERE id = #{id}
+    </delete>
+
+</mapper>

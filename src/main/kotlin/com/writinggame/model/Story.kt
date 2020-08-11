@@ -1,16 +1,10 @@
 package com.writinggame.model
 
-import java.util.*
+import org.apache.ibatis.session.SqlSession
 
-class Story(val creatingPlayer: Player) {
-    val messages: MutableList<Message> = mutableListOf()
-    val id: String = UUID.randomUUID().toString()
-
-    fun addMessage(text: String, creatorSessionId: String, settings: GameSettings) {
-        val message = Message(text.trim(), creatorSessionId)
-        if((settings.minWordsPerMessage == null || settings.minWordsPerMessage <= message.wordCount())
-            && (settings.maxWordsPerMessage == null || message.wordCount() <= settings.maxWordsPerMessage)) {
-            messages.add(message)
-        }
+class Story(val id: Int, val gameId: Int, val creatorUsername: String, var editingUsername: String,
+            session: SqlSession?) : PersistedObject(session) {
+    override fun getKey(): Any {
+        return id
     }
 }

@@ -2,9 +2,8 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.writinggame.db.mappers.Player">
     <resultMap id="playerResultMap" type="com.writinggame.model.Player">
-        <id column="id"/>
-        <result property="username" column="username"/>
-        <result property="lobbyId" column="lobby_id"/>
+        <id property="username" column="username"/>
+        <id property="lobbyId" column="lobby_id"/>
         <result property="clientId" column="client_id"/>
     </resultMap>
 
@@ -12,7 +11,7 @@
         SELECT *
         FROM player
         WHERE player.lobby_id = #{lobbyId}
-        AND player.username = #{username}
+            AND player.username = #{username}
     </select>
 
     <insert id="insert">
@@ -27,6 +26,14 @@
             #{clientId}
         )
     </insert>
+
+    <update id="update">
+        UPDATE player
+        SET username = #{username},
+            lobby_id = #{lobbyID},
+            client_id = #{clientId}
+
+    </update>
 
     <delete id="delete">
         DELETE FROM player

@@ -2,23 +2,35 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.writinggame.db.mappers.Lobby">
     <resultMap id="lobbyResultMap" type="com.writinggame.model.Lobby">
-        <id column="id"/>
-        <!-- TODO -->
-        <result property="username" column="name"/>
-        <result property="lobbyId" column="lobby_id"/>
-        <result property="clientId" column="client_id"/>
+        <id column="lobby_id"/>
+        <result property="lobbyState" column="lobby_state"/>
+        <result property="createDatetime" column="create_datetime"/>
+        <result property="lastUpdateDatetime" column="last_update_datetime"/>
     </resultMap>
+
+    <resultMap id="lobbyViewModelResultMap" type="com.writinggame.controller.viewModels.LobbyViewModel">
+        <id column="lobby_id"/>
+        <!-- TODO, good luck future Julian -->
+    </resultMap>
+
+    <select id="find" resultMap="lobbyResultMap">
+        SELECT *
+        FROM lobby
+        WHERE lobby_id = #{lobbyId}
+    </select>
 
     <insert id="insert">
         INSERT INTO lobby(
             lobby_id,
             lobby_state,
-            create_datetime
+            create_datetime,
+            last_update_datetime
         )
         VALUES (
             #{lobbyId},
-            #{GATHERING_PLAYERS},
-            clock_timestamp()
+            #{lobbyState},
+            #{createDatetime},
+            #{lastUpdateDatetime}
         ) ON CONFLICT DO NOTHING
     </insert>
 
@@ -26,14 +38,14 @@
         UPDATE lobby
         SET lobby_id = #{lobbyId},
             lobby_state = #{lobbyState},
-            create_datetime = #{createDatetime}
+            create_datetime = #{createDatetime},
+            lastUpdateDatetime = #{lastUpdateDatetime
         WHERE lobby_id = #{lobbyId}
     </update>
 
-    <select id="find" resultMap="lobbyResultMap">
-        SELECT *
-        FROM lobby
+    <delete id="delete">
+        DELETE FROM lobby
         WHERE lobby_id = #{lobbyId}
-    </select>
+    </delete>
 
 </mapper>

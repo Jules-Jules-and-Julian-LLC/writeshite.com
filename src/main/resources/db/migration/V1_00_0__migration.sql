@@ -24,16 +24,23 @@ CREATE TABLE game (
 CREATE TABLE story (
     id SERIAL PRIMARY KEY,
     game_id INTEGER NOT NULL REFERENCES game(id),
-    creator_player_name VARCHAR(255) NOT NULL,
-    editing_player_name VARCHAR(255) NOT NULL,
-    story_state VARCHAR(255) NOT NULL
+    creator_username VARCHAR(255) NOT NULL,
+    editing_username VARCHAR(255) NOT NULL
 );
 
 CREATE TABLE message (
     id SERIAL PRIMARY KEY,
     story_id INTEGER NOT NULL REFERENCES story(id),
-    creator_player_name VARCHAR(255) NOT NULL,
+    creator_username VARCHAR(255) NOT NULL,
     text VARCHAR(65535) NOT NULL --TODO revisit size
+);
+
+CREATE TABLE gallery_entry (
+    id SERIAL PRIMARY KEY,
+    creator_username VARCHAR(255) NOT NULL,
+    lobby_id VARCHAR(255) NOT NULL,
+    round_number INTEGER NOT NULL,
+    story_text TEXT NOT NULL
 );
 
 --Triggers to update lobby's last_update_datetime when any child objects change.

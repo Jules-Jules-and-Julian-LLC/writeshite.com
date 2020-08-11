@@ -12,21 +12,6 @@ import org.springframework.boot.autoconfigure.SpringBootApplication
 class Application
 
 fun main(args : Array<String>) {
-    WriteShiteSessionFactory.openSession().use { session: SqlSession ->
-        val player = Player(session, clientId = "asdf", username = "me", lobbyId = "orio")
-        player.save<Player>()
-        val player2: Player = player.findDbMe()
-
-
-        val list: List<Player> = PlayerBag(session).findPlayers()
-        for (player3 in list) {
-            println("Player: ${player3.username}, lobby: ${player3.lobbyId}, clientID: ${player3.clientId}")
-        }
-
-//        LobbyBag(session).createLobbyIfNotExists("myLobby")
-
-        session.commit()
-    }
     SpringApplication.run(Application::class.java, *args)
 }
 

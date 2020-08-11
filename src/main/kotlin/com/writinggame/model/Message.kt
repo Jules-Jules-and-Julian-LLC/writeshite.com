@@ -1,9 +1,11 @@
 package com.writinggame.model
 
-import com.fasterxml.jackson.annotation.JsonIgnore
+import org.apache.ibatis.session.SqlSession
 
-data class Message(val text: String, @JsonIgnore val creatorSessionId: String) {
-    fun wordCount(): Int {
-        return text.split("\\s+".toRegex()).size
+class Message(val id: Int, val storyId: Int, val creatorUsername: String, val text: String,
+              session: SqlSession?) : PersistedObject(session) {
+    override fun getKey(): Any {
+        return id
     }
+
 }
