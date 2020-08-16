@@ -3,15 +3,69 @@
 <mapper namespace="com.writinggame.db.mappers.Lobby">
     <resultMap id="lobbyResultMap" type="com.writinggame.model.Lobby">
         <id column="lobby_id"/>
-        <result property="lobbyState" column="lobby_state"/>
+        <result property="state" column="state"/>
+        <result property="creatorUsername" column="creator_username"/>
         <result property="createDatetime" column="create_datetime"/>
         <result property="lastUpdateDatetime" column="last_update_datetime"/>
     </resultMap>
 
     <resultMap id="lobbyViewModelResultMap" type="com.writinggame.controller.viewModels.LobbyViewModel">
         <id column="lobby_id"/>
-        <!-- TODO, good luck future Julian -->
+        <result column="lobby_state" property="state"/>
+        <result column="lobby_creator_username" property="creatorUsername"/>
+        <result column="lobby_create_datetime" property="createDatetime"/>
+        <result column="lobby_last_update_datetime" property="lastUpdateDatetime"/>
+        <association property="game" javaType="com.writinggame.controller.viewModels.GameViewModel">
+            <result column="round_time_minutes" property="roundTimeMinutes"/>
+            <result column="round_end_datetime" property="roundEndDatetime"/>
+            <result column="min_words_per_message" property="minWordsPerMessage"/>
+            <result column="max_words_per_message" property="maxWordsPerMessage"/>
+            <collection property="stories" ofType="com.writinggame.controller.viewModels.StoryViewModel">
+                <result column="story_creator_username" property="creatorUsername"/>
+                <result column="editing_username" property="editingUsername"/>
+                <result column="story_state" property="state"/>
+                <collection property="messages" ofType="com.writinggame.controller.viewModels.MessageViewModel">
+                    <result column="message_creator_username" property="creatorUsername"/>
+                    <result column="text" property="text"/>
+                </collection>
+            </collection>
+        </association>
+        <collection property="players" ofType="com.writinggame.controller.viewModels.PlayerViewModel">
+            <result column="player_username" property="username"/>
+        </collection>
     </resultMap>
+
+    <!-- TODO if this doesn't work, add IDs in to help Mybatis? -->
+    <select id="findCurrentLobbyState" resultMap="lobbyViewModelResultMap">
+        SELECT lobby.lobby_id AS lobby_id,
+            lobby.state AS lobby_state,
+            lobby.creator_username AS lobby_creator_username,
+            lobby.create_datetime AS lobby_create_datetime,
+            lobby.last_update_datetime AS lobby_last_update_datetime,
+            player.username AS player_username
+            game.round_time_minutes AS round_time_minutes,
+            game.round_end_datetime AS round_end_datetime,
+            game.min_words_per_message AS min_words_per_message
+            game.max_words_per_message AS max_words_per_message,
+            story.state as story_state,
+            story.creator_username AS story_creator_username
+            story.editing_username AS editing_username
+            message.creator_username AS message_creator_username,
+            message.text AS text
+        FROM lobby
+        JOIN player ON player.lobby_id = lobby.lobby_id
+        JOIN game ON game.lobby_id = lobby.lobby_id
+        JOIN story ON story.game_id = game.id
+        JOIN message ON message.story_id = story.id
+        WHERE lobby = #{lobbyId}
+    </select>
+
+    <select id="findPlayerNames">
+        SELECT player.username
+        FROM lobby
+        JOIN player ON player.lobby_id = lobby.lobby_id
+        WHERE lobby.lobby_id = #{lobbyId}
+    </select>
 
     <select id="find" resultMap="lobbyResultMap">
         SELECT *
@@ -22,13 +76,15 @@
     <insert id="insert">
         INSERT INTO lobby(
             lobby_id,
-            lobby_state,
+            state,
+            creator_username,
             create_datetime,
             last_update_datetime
         )
         VALUES (
             #{lobbyId},
-            #{lobbyState},
+            #{state},
+            #{creatorUsername},
             #{createDatetime},
             #{lastUpdateDatetime}
         ) ON CONFLICT DO NOTHING
@@ -37,7 +93,8 @@
     <update id="update">
         UPDATE lobby
         SET lobby_id = #{lobbyId},
-            lobby_state = #{lobbyState},
+            state = #{state},
+            creator_username = #{creatorUsername},
             create_datetime = #{createDatetime},
             lastUpdateDatetime = #{lastUpdateDatetime
         WHERE lobby_id = #{lobbyId}

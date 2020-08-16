@@ -1,5 +1,5 @@
-INSERT INTO lobby(lobby_id, lobby_state, create_datetime)
-	VALUES ('orio', 'GATHERING_PLAYERS', clock_timestamp());
+INSERT INTO lobby(lobby_id, state, create_datetime, creator_username)
+	VALUES ('orio', 'GATHERING_PLAYERS', clock_timestamp(), 'julian');
 
 INSERT INTO player(username, lobby_id, client_id)
 	VALUES ('julian', 'orio', 'asdf1234');

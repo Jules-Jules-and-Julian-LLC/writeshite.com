@@ -1,6 +1,7 @@
 CREATE TABLE lobby(
     lobby_id VARCHAR(255) PRIMARY KEY,
-    lobby_state VARCHAR(255) NOT NULL,
+    state VARCHAR(255) NOT NULL,
+    creator_username VARCHAR(255) NOT NULL,
     create_datetime TIMESTAMP WITH TIME ZONE,
     last_update_datetime TIMESTAMP WITH TIME ZONE
 );
@@ -25,7 +26,8 @@ CREATE TABLE story (
     id SERIAL PRIMARY KEY,
     game_id INTEGER NOT NULL REFERENCES game(id),
     creator_username VARCHAR(255) NOT NULL,
-    editing_username VARCHAR(255) NOT NULL
+    editing_username VARCHAR(255) NOT NULL,
+    state VARCHAR(255) NOT NULL
 );
 
 CREATE TABLE message (

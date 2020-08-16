@@ -1,6 +1,7 @@
 package com.writinggame
 
 import com.writinggame.controller.LobbyManager
+import com.writinggame.database.WriteShiteSessionFactory
 import org.springframework.context.annotation.Configuration
 import org.springframework.context.event.EventListener
 import org.springframework.messaging.simp.config.MessageBrokerRegistry
@@ -28,7 +29,7 @@ class WebSocketConfig : WebSocketMessageBrokerConfigurer {
     fun onSocketDisconnected(event: SessionDisconnectEvent) {
         val sha = StompHeaderAccessor.wrap(event.message)
         if(sha.sessionId != null) {
-            LobbyManager.leaveLobby(sha.sessionId!!)
+            LobbyManager.leaveLobby(sha.sessionId!!, WriteShiteSessionFactory.openSession())
         }
         println("[Disconnected] " + sha.sessionId)
     }

@@ -27,6 +27,7 @@ abstract class PersistedObject(private val session: SqlSession?) {
             session.update(dbMapperPrefix + this.javaClass.simpleName + ".update", this)
         }
 
+        //TODO can be just return this?
         return findDbMe()
     }
 

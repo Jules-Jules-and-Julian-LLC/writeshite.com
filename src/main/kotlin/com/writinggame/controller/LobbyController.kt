@@ -35,7 +35,7 @@ class LobbyController {
                   @Header("simpSessionId") sessionId: String,
                   settings: GameSettings): LobbyViewModel {
         WriteShiteSessionFactory.openSession().use { session ->
-            LobbyManager.startGame(lobbyId, sessionId, settings)
+            LobbyManager.startGame(lobbyId, sessionId, settings, session)
 
             return LobbyBag(session).findCurrentLobbyState(lobbyId)
         }
@@ -47,7 +47,7 @@ class LobbyController {
                    @Header("simpSessionId") sessionId: String,
                    receivedMessage: ReceivedMessage): LobbyViewModel {
         WriteShiteSessionFactory.openSession().use { session ->
-            LobbyManager.addMessageToStory(lobbyId, receivedMessage.message, receivedMessage.storyId, sessionId)
+            LobbyManager.addMessageToStory(lobbyId, receivedMessage.message, receivedMessage.storyId, sessionId, session)
 
             return LobbyBag(session).findCurrentLobbyState(lobbyId)
         }

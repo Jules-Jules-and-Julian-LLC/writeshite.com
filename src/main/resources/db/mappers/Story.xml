@@ -6,6 +6,7 @@
         <result property="gameId" column="game_id"/>
         <result property="creatorUsername" column="creator_username"/>
         <result property="editingUsername" column="editing_username"/>
+        <result property="state" column="state"/>
     </resultMap>
 
     <select id="find" resultMap="storyResultMap">
@@ -19,13 +20,15 @@
             id,
             game_id,
             creator_username,
-            editing_username
+            editing_username,
+            state
         )
         VALUES (
             #{id},
             #{gameId},
             #{creatorUsername},
-            #{editingUsername}
+            #{editingUsername},
+            #{state}
         ) ON CONFLICT DO NOTHING
     </insert>
 
@@ -34,7 +37,8 @@
         SET id = #{id},
             game_id = #{gameId},
             creator_username = #{creatorUsername},
-            editing_username = #{editingUsername}
+            editing_username = #{editingUsername},
+            state = #{state}
         WHERE id = #{id}
     </update>
 

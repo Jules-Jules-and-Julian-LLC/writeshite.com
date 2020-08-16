@@ -44,4 +44,10 @@
     <select id="selectPlayers" resultMap="playerResultMap">
         SELECT * FROM player;
     </select>
+
+    <select id="findByClientId" resultMap="playerResultMap">
+        SELECT *
+        FROM player
+        WHERE player.client_id = #{clientId}
+    </select>
 </mapper>
