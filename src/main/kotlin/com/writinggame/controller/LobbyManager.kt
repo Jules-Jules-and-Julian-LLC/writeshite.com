@@ -7,19 +7,25 @@ import com.writinggame.domain.LobbyStateType
 import com.writinggame.domain.StoryStateType
 import com.writinggame.model.*
 import org.apache.ibatis.session.SqlSession
-import java.time.ZonedDateTime
-import java.time.temporal.TemporalAccessor
+import java.time.OffsetDateTime
 
 object LobbyManager {
     fun joinLobby(username: String, sessionId: String, lobbyId: String, session: SqlSession): Lobby {
-        val player = Player(sessionId, username, lobbyId, session)
-        var lobby: Lobby? = LobbyBag(session).lenientFind(lobbyId)
+        val lobbyBag = LobbyBag(session)
+        var lobby: Lobby? = lobbyBag.lenientFind(lobbyId)
+        var usernameUniqueIdentifier = ""
+
         if(lobby == null) {
-            lobby = Lobby(lobbyId, LobbyStateType.GATHERING_PLAYERS, player.username, session = session).save()
+            lobby = Lobby(lobbyId, LobbyStateType.GATHERING_PLAYERS, username, session = session).save()
+        } else {
+            val playerNames = lobbyBag.findPlayerNames(lobbyId)
+            if (playerNames.contains(username)) {
+                usernameUniqueIdentifier = " Is Not Imaginative"
+            }
         }
-        //TODO fix the type hinting
-        //Can't save until the lobby exists
-        player.save<Player>()
+
+        //Now that we have a lobby, we can add the player to it
+        Player(sessionId, username + usernameUniqueIdentifier, lobbyId, session).save<Player>()
 
         return lobby
     }
@@ -39,7 +45,7 @@ object LobbyManager {
         val player: Player = PlayerBag(session).findByClientId(sessionId)
         if(player.username == lobby.creatorUsername) {
             val game = Game(-1, settings.roundTimeMinutes,
-                if (settings.roundTimeMinutes != null) ZonedDateTime.now().plusMinutes(settings.roundTimeMinutes.toLong()) else null,
+                if (settings.roundTimeMinutes != null) OffsetDateTime.now().plusMinutes(settings.roundTimeMinutes.toLong()) else null,
                 settings.minWordsPerMessage,
                 settings.maxWordsPerMessage,
                 lobbyId,

@@ -2,16 +2,16 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.writinggame.db.mappers.Lobby">
     <resultMap id="lobbyResultMap" type="com.writinggame.model.Lobby">
-        <id column="lobby_id"/>
-        <result property="state" column="state"/>
+        <id property="lobbyId" column="lobby_id"/>
+        <result property="state" column="state" javaType="com.writinggame.domain.LobbyStateType"/>
         <result property="creatorUsername" column="creator_username"/>
-        <result property="createDatetime" column="create_datetime"/>
-        <result property="lastUpdateDatetime" column="last_update_datetime"/>
+        <result property="createDatetime" column="create_datetime" jdbcType="TIMESTAMP" javaType="java.time.OffsetDateTime"/>
+        <result property="lastUpdateDatetime" column="last_update_datetime" jdbcType="TIMESTAMP" javaType="java.time.OffsetDateTime"/>
     </resultMap>
 
     <resultMap id="lobbyViewModelResultMap" type="com.writinggame.controller.viewModels.LobbyViewModel">
-        <id column="lobby_id"/>
-        <result column="lobby_state" property="state"/>
+        <id property="lobbyId" column="lobby_id"/>
+        <result column="lobby_state" property="state" javaType="com.writinggame.domain.LobbyStateType"/>
         <result column="lobby_creator_username" property="creatorUsername"/>
         <result column="lobby_create_datetime" property="createDatetime"/>
         <result column="lobby_last_update_datetime" property="lastUpdateDatetime"/>
@@ -21,9 +21,9 @@
             <result column="min_words_per_message" property="minWordsPerMessage"/>
             <result column="max_words_per_message" property="maxWordsPerMessage"/>
             <collection property="stories" ofType="com.writinggame.controller.viewModels.StoryViewModel">
+                <result column="story_state" property="state" javaType="com.writinggame.domain.StoryStateType"/>
                 <result column="story_creator_username" property="creatorUsername"/>
                 <result column="editing_username" property="editingUsername"/>
-                <result column="story_state" property="state"/>
                 <collection property="messages" ofType="com.writinggame.controller.viewModels.MessageViewModel">
                     <result column="message_creator_username" property="creatorUsername"/>
                     <result column="text" property="text"/>
@@ -42,35 +42,35 @@
             lobby.creator_username AS lobby_creator_username,
             lobby.create_datetime AS lobby_create_datetime,
             lobby.last_update_datetime AS lobby_last_update_datetime,
-            player.username AS player_username
+            player.username AS player_username,
             game.round_time_minutes AS round_time_minutes,
             game.round_end_datetime AS round_end_datetime,
-            game.min_words_per_message AS min_words_per_message
+            game.min_words_per_message AS min_words_per_message,
             game.max_words_per_message AS max_words_per_message,
             story.state as story_state,
-            story.creator_username AS story_creator_username
-            story.editing_username AS editing_username
+            story.creator_username AS story_creator_username,
+            story.editing_username AS editing_username,
             message.creator_username AS message_creator_username,
             message.text AS text
         FROM lobby
-        JOIN player ON player.lobby_id = lobby.lobby_id
-        JOIN game ON game.lobby_id = lobby.lobby_id
-        JOIN story ON story.game_id = game.id
-        JOIN message ON message.story_id = story.id
-        WHERE lobby = #{lobbyId}
+        LEFT JOIN player ON player.lobby_id = lobby.lobby_id
+        LEFT JOIN game ON game.lobby_id = lobby.lobby_id
+        LEFT JOIN story ON story.game_id = game.id
+        LEFT JOIN message ON message.story_id = story.id
+        WHERE UPPER(lobby.lobby_id) = UPPER(#{lobbyId})
     </select>
 
-    <select id="findPlayerNames">
+    <select id="findPlayerNames" resultType="String">
         SELECT player.username
         FROM lobby
         JOIN player ON player.lobby_id = lobby.lobby_id
-        WHERE lobby.lobby_id = #{lobbyId}
+        WHERE UPPER(lobby.lobby_id) = (#{lobbyId})
     </select>
 
     <select id="find" resultMap="lobbyResultMap">
         SELECT *
         FROM lobby
-        WHERE lobby_id = #{lobbyId}
+        WHERE UPPER(lobby_id) = UPPEr(#{lobbyId})
     </select>
 
     <insert id="insert">
@@ -97,12 +97,12 @@
             creator_username = #{creatorUsername},
             create_datetime = #{createDatetime},
             lastUpdateDatetime = #{lastUpdateDatetime
-        WHERE lobby_id = #{lobbyId}
+        WHERE UPPER(lobby_id) = UPPER(#{lobbyId})
     </update>
 
     <delete id="delete">
         DELETE FROM lobby
-        WHERE lobby_id = #{lobbyId}
+        WHERE UPPER(lobby_id) = UPPER(#{lobbyId})
     </delete>
 
 </mapper>
