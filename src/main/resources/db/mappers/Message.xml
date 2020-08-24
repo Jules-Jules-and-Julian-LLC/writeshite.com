@@ -43,4 +43,10 @@
         WHERE id = #{id}
     </delete>
 
+    <select id="findByStoryId" resultMap="messageResultMap">
+        SELECT *
+        FROM message
+        WHERE message.story_id = #{storyId}
+    </select>
+
 </mapper>

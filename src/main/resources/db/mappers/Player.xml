@@ -50,4 +50,10 @@
         FROM player
         WHERE player.client_id = #{clientId}
     </select>
+
+    <select id="findByLobbyId" resultMap="playerResultMap">
+        SELECT *
+        FROM player
+        WHERE UPPER(player.lobby_id) = UPPER(#{lobbyId})
+    </select>
 </mapper>

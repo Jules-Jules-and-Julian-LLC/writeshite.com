@@ -2,9 +2,10 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.writinggame.db.mappers.Game">
     <resultMap id="gameResultMap" type="com.writinggame.model.Game">
-        <id column="id"/>
+        <id column="id" property="id"/>
         <result property="roundTimeMinutes" column="round_time_minutes"/>
-        <result property="roundEndDatetime" column="round_end_datetime"/>
+        <result property="roundEndDatetime" column="round_end_datetime" jdbcType="TIMESTAMP" javaType="java.time.OffsetDateTime"/>
+        <result property="roundEndDatetime" column="round_end_datetime" jdbcType="TIMESTAMP" javaType="java.time.OffsetDateTime"/>
         <result property="minWordsPerMessage" column="min_words_per_message"/>
         <result property="maxWordsPerMessage" column="max_words_per_message"/>
         <result property="lobbyId" column="lobby_id"/>
@@ -50,5 +51,11 @@
         DELETE FROM game
         WHERE id = #{id}
     </delete>
+
+    <select id="findByLobbyId" resultMap="gameResultMap">
+        SELECT *
+        FROM game
+        WHERE UPPER(game.lobby_id) = UPPER(#{lobbyId})
+    </select>
 
 </mapper>

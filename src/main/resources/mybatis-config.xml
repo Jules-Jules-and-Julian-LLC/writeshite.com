@@ -16,7 +16,11 @@
     </environments>
 
     <mappers>
-        <mapper resource="db/mappers/Player.xml"/>
+        <mapper resource="db/mappers/GalleryEntry.xml"/>
+        <mapper resource="db/mappers/Game.xml"/>
         <mapper resource="db/mappers/Lobby.xml"/>
+        <mapper resource="db/mappers/Message.xml"/>
+        <mapper resource="db/mappers/Player.xml"/>
+        <mapper resource="db/mappers/Story.xml"/>
     </mappers>
 </configuration>

@@ -47,4 +47,10 @@
         WHERE id = #{id}
     </delete>
 
+    <select id="findByGameId" resultMap="storyResultMap">
+        SELECT *
+        FROM story
+        WHERE story.game_id = #{gameId}
+    </select>
+
 </mapper>
