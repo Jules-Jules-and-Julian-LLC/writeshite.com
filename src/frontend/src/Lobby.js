@@ -76,11 +76,15 @@ export default class Lobby extends React.Component {
                         //re-render once a second to update timer
                         window.setInterval(me.forceUpdate.bind(me), 1000);
                     } else if (responseType === "STORY_CHANGE") {
-                        me.setState({
-                            stories: responseObj.stories,
-                            completedStories: responseObj.completedStories,
-                            gameState: responseObj.gameState
-                        });
+                        let eventReceivedDatetime = responseObj.eventReceivedDatetime;
+                        if(!me.state.lastEventReceivedDatetime || eventReceivedDatetime > me.state.lastEventReceivedDatetime) {
+                            me.setState({
+                                lastEventReceivedDatetime: responseObj.eventReceivedDatetime,
+                                stories: responseObj.stories,
+                                completedStories: responseObj.completedStories,
+                                gameState: responseObj.gameState
+                            });
+                        }
                     } else {
                         console.log("ERROR: Unhandled responseType: " + responseType);
                     }

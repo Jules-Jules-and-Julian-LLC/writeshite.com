@@ -9,7 +9,6 @@ class Lobby(val lobbyId: String, var creator: Player, settings: GameSettings) {
     val players: MutableList<Player> = mutableListOf(creator)
     val createDatetime: LocalDateTime = LocalDateTime.now()
     var gameState: GameStateType = GameStateType.GATHERING_PLAYERS
-    //TODO initializing this up front is convenient for Kotlin but bad practice, I never use the initial value
     var game: Game = Game(this, settings)
     val gallery: MutableList<Story> = mutableListOf()
 
@@ -29,7 +28,7 @@ class Lobby(val lobbyId: String, var creator: Player, settings: GameSettings) {
     }
 
     fun startGame(sessionId: String, settings: GameSettings) {
-        if(isCreator(sessionId)) {
+        if(isCreator(sessionId) && players.size > 1) {
             if(gameState == GameStateType.READING) {
                 gallery.addAll(game.completedStories)
                 gameState = GameStateType.GATHERING_PLAYERS
@@ -81,7 +80,7 @@ class Lobby(val lobbyId: String, var creator: Player, settings: GameSettings) {
             return
         }
 
-        gameState = game.completeStory(storyId)
+        gameState = game.completeStory(storyId, player)
     }
 
     private fun storyNotInPlayerQueue(storyId: String, player: Player): Boolean {

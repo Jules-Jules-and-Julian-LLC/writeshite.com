@@ -30,19 +30,24 @@ class Game(lobby: Lobby, val settings: GameSettings) {
     }
 
     fun passStory(sessionId: String, storyId: String) {
-
         val story = getStory(storyId)
         if(story != null) {
             val player = getPlayer(sessionId)
             val playerQueue = stories[player.username]
-            val nextPlayerQueue = getNextPlayerQueue(player)
+            val nextPlayer = getPlayerToPassTo(player)
+            val nextPlayerQueue = stories[nextPlayer.username]
 
-            playerQueue!!.remove(story)
-            nextPlayerQueue.add(story)
+            playerQueue?.remove(story)
+            nextPlayerQueue?.add(story)
+
+            if(playerQueue?.isEmpty() == true) {
+                player.waitingSince = ZonedDateTime.now()
+            }
+            nextPlayer.waitingSince = null
         }
     }
 
-    fun completeStory(storyId: String): GameStateType {
+    fun completeStory(storyId: String, completingPlayer: Player): GameStateType {
         val story = getStory(storyId)
         if(story != null) {
             completedStories.add(story)
@@ -52,6 +57,10 @@ class Game(lobby: Lobby, val settings: GameSettings) {
             }
         }
 
+        if(stories[completingPlayer.username]?.isEmpty() == true) {
+            completingPlayer.waitingSince = ZonedDateTime.now()
+        }
+
         return if (stories.values.flatten().isEmpty()) GameStateType.READING else GameStateType.PLAYING
     }
 
@@ -59,11 +68,25 @@ class Game(lobby: Lobby, val settings: GameSettings) {
         return players.find { it.clientId == sessionId }!!
     }
 
-    private fun getNextPlayerQueue(player: Player): MutableList<Story> {
-        val playersIndex = players.indexOf(player)
-        val nextPlayer = players[(playersIndex + 1) % players.size]
+    private fun getPlayerByUsername(username: String): Player {
+        return players.find { it.username == username }!!
+    }
 
-        return stories[nextPlayer.username]!!
+    private fun getPlayerToPassTo(player: Player): Player {
+        val notMyStories = stories.filter { it.key != player.username }
+        val minStories = notMyStories.map { it.value.size }.min()
+        val minStoryQueues = notMyStories.filter { it.value.size == minStories }
+
+        if(minStoryQueues.keys.size == 1) {
+            return getPlayerByUsername(minStoryQueues.keys.first())
+        }
+
+        val waitingPlayers = notMyStories.filter { getPlayerByUsername(it.key).waitingSince != null }
+        return if(waitingPlayers.isEmpty()) {
+            getPlayerByUsername(notMyStories.keys.random())
+        } else {
+            getPlayerByUsername(waitingPlayers.minBy { getPlayerByUsername(it.key).waitingSince!! }!!.key)
+        }
     }
 
     fun getStory(storyId: String) : Story? {
@@ -72,10 +95,11 @@ class Game(lobby: Lobby, val settings: GameSettings) {
 
     fun removePlayer(sessionId: String) {
         val player = getPlayer(sessionId)
-        val nextPlayerQueue = getNextPlayerQueue(player)
+        val nextPlayer = getPlayerToPassTo(player)
+        val nextPlayerQueue = stories[nextPlayer.username]
 
         while(stories[player.username]!!.isNotEmpty()) {
-            nextPlayerQueue.add(stories[player.username]!!.removeAt(0))
+            nextPlayerQueue?.add(stories[player.username]!!.removeAt(0))
         }
     }
 }

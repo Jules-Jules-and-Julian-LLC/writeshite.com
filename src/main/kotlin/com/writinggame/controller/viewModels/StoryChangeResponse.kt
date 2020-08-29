@@ -5,10 +5,11 @@ import com.writinggame.model.Game
 import com.writinggame.model.Lobby
 import com.writinggame.model.Player
 import com.writinggame.model.Story
+import java.time.ZonedDateTime
 import java.util.*
 import kotlin.collections.HashMap
 
-class StoryChangeResponse(lobby: Lobby) {
+class StoryChangeResponse(lobby: Lobby, val eventReceivedDatetime: ZonedDateTime) {
     val stories: HashMap<String, MutableList<Story>> = lobby.game.stories
     val completedStories = lobby.game.completedStories
     val gameState = lobby.gameState

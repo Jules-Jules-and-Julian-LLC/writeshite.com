@@ -10,6 +10,7 @@ import org.springframework.messaging.handler.annotation.Header
 import org.springframework.messaging.handler.annotation.MessageMapping
 import org.springframework.messaging.handler.annotation.SendTo
 import org.springframework.stereotype.Controller
+import java.time.ZonedDateTime
 
 @Controller
 class LobbyController {
@@ -42,6 +43,7 @@ class LobbyController {
     fun newMessage(@DestinationVariable("lobbyId") lobbyId: String,
                    @Header("simpSessionId") sessionId: String,
                    receivedMessage: ReceivedMessage): StoryChangeResponse {
+        val receivedDatetime = ZonedDateTime.now()
         val message = receivedMessage.message
         val storyId = receivedMessage.storyId
         val lobby = LobbyManager.getLobby(lobbyId)
@@ -50,7 +52,7 @@ class LobbyController {
         lobby.addMessageToStory(message, storyId, sessionId)
         lobby.game.passStory(sessionId, storyId)
 
-        return StoryChangeResponse(lobby)
+        return StoryChangeResponse(lobby, receivedDatetime)
     }
 
     @MessageMapping("/lobby.{lobbyId}.completeStory")
@@ -58,11 +60,12 @@ class LobbyController {
     fun completeStory(@DestinationVariable("lobbyId") lobbyId: String,
                       @Header("simpSessionId") sessionId: String,
                       storyId: String): StoryChangeResponse {
+        val receivedDatetime = ZonedDateTime.now()
         val lobby = LobbyManager.getLobby(lobbyId)
         println("Completing story: $storyId for lobby: $lobbyId by user: $sessionId")
 
         lobby.completeStory(storyId, sessionId)
 
-        return StoryChangeResponse(lobby)
+        return StoryChangeResponse(lobby, receivedDatetime)
     }
 }
