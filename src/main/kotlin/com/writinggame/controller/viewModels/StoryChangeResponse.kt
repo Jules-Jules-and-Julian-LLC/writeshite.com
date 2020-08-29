@@ -9,9 +9,8 @@ import java.time.ZonedDateTime
 import java.util.*
 import kotlin.collections.HashMap
 
-class StoryChangeResponse(lobby: Lobby, val eventReceivedDatetime: ZonedDateTime) {
+class StoryChangeResponse(lobby: Lobby, eventReceivedDatetime: ZonedDateTime): Response(ResponseType.STORY_CHANGE, eventReceivedDatetime) {
     val stories: HashMap<String, MutableList<Story>> = lobby.game.stories
     val completedStories = lobby.game.completedStories
     val gameState = lobby.gameState
-    val responseType: ResponseType = ResponseType.STORY_CHANGE
 }

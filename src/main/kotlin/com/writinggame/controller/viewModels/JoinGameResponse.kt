@@ -2,7 +2,7 @@ package com.writinggame.controller.viewModels
 
 import com.writinggame.domain.ResponseType
 import com.writinggame.model.Lobby
+import java.time.ZonedDateTime
 
-class JoinGameResponse(val lobby: Lobby, sessionId: String) {
-    val responseType: ResponseType = ResponseType.JOIN_GAME
+class JoinGameResponse(val lobby: Lobby, sessionId: String, eventReceivedDatetime: ZonedDateTime): Response(ResponseType.JOIN_GAME, eventReceivedDatetime) {
 }

@@ -49,44 +49,44 @@ export default class Lobby extends React.Component {
                 stompClient.subscribe("/topic/lobby." + me.state.lobbyId, function(response) {
                     let responseObj = JSON.parse(response.body);
                     const responseType = responseObj.responseType;
-                    if (responseType === "START_GAME") {
-                        me.setState({
-                            message: "",
-                            gameState: responseObj.gameState,
-                            stories: responseObj.game.stories,
-                            gallery: responseObj.gallery,
-                            settings: responseObj.game.settings,
-                            endTime: responseObj.game.endTime && new Date(responseObj.game.endTime)
-                        });
-                        //re-render once a second to update timer
-                        window.setInterval(me.forceUpdate.bind(me), 1000);
-                    } else if (responseType === "JOIN_GAME") {
-                        let stories = responseObj.lobby.game.stories;
-                        me.setState({
-                            joined: me.state.clickedSetUsername,
-                            gameState: responseObj.lobby.gameState,
-                            lobby: responseObj.lobby,
-                            stories: stories,
-                            completedStories: responseObj.lobby.game.completedStories,
-                            gallery: responseObj.lobby.gallery,
-                            endTime: responseObj.lobby.game.endTime && new Date(responseObj.lobby.game.endTime),
-                            settings: responseObj.lobby.game.settings,
-                            roundTime: responseObj.lobby.game.settings.roundTimeMinutes
-                        });
-                        //re-render once a second to update timer
-                        window.setInterval(me.forceUpdate.bind(me), 1000);
-                    } else if (responseType === "STORY_CHANGE") {
-                        let eventReceivedDatetime = responseObj.eventReceivedDatetime;
-                        if(!me.state.lastEventReceivedDatetime || eventReceivedDatetime > me.state.lastEventReceivedDatetime) {
+                    const eventReceivedDatetime = responseObj.eventReceivedDatetime;
+                    if(!me.state.lastEventReceivedDatetime || eventReceivedDatetime > me.state.lastEventReceivedDatetime) {
+                        if (responseType === "START_GAME") {
+                            me.setState({
+                                message: "",
+                                gameState: responseObj.gameState,
+                                stories: responseObj.game.stories,
+                                gallery: responseObj.gallery,
+                                settings: responseObj.game.settings,
+                                endTime: responseObj.game.endTime && new Date(responseObj.game.endTime)
+                            });
+                            //re-render once a second to update timer
+                            window.setInterval(me.forceUpdate.bind(me), 1000);
+                        } else if (responseType === "JOIN_GAME") {
+                            let stories = responseObj.lobby.game.stories;
+                            me.setState({
+                                joined: me.state.clickedSetUsername,
+                                gameState: responseObj.lobby.gameState,
+                                lobby: responseObj.lobby,
+                                stories: stories,
+                                completedStories: responseObj.lobby.game.completedStories,
+                                gallery: responseObj.lobby.gallery,
+                                endTime: responseObj.lobby.game.endTime && new Date(responseObj.lobby.game.endTime),
+                                settings: responseObj.lobby.game.settings,
+                                roundTime: responseObj.lobby.game.settings.roundTimeMinutes
+                            });
+                            //re-render once a second to update timer
+                            window.setInterval(me.forceUpdate.bind(me), 1000);
+                        } else if (responseType === "STORY_CHANGE") {
                             me.setState({
                                 lastEventReceivedDatetime: responseObj.eventReceivedDatetime,
                                 stories: responseObj.stories,
                                 completedStories: responseObj.completedStories,
                                 gameState: responseObj.gameState
                             });
+                        } else {
+                            console.log("ERROR: Unhandled responseType: " + responseType);
                         }
-                    } else {
-                        console.log("ERROR: Unhandled responseType: " + responseType);
                     }
                 });
             },
@@ -391,7 +391,7 @@ export default class Lobby extends React.Component {
                             <input type="submit" value="Send" />
                         </form>
                         <button type="button" onClick={this.completeStory}>
-                            This story is done
+                            This Story Is Done
                         </button>
                     </div>
                 </div>
