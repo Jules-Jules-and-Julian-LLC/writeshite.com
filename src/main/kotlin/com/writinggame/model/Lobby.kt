@@ -12,9 +12,11 @@ class Lobby(val lobbyId: String, var creator: Player, settings: GameSettings) {
     var game: Game = Game(this, settings)
     val gallery: MutableList<Story> = mutableListOf()
 
-    fun addPlayer(player: Player): Lobby {
+    fun addPlayer(player: Player): Pair<Lobby, Boolean> {
+        var renamedPlayer = false
         while(players.any { it.username == player.username }) {
-            player.username = player.username + " Isn't Imaginative"
+            player.username = player.username + "2"
+            renamedPlayer = true
         }
 
         players.add(player)
@@ -24,7 +26,7 @@ class Lobby(val lobbyId: String, var creator: Player, settings: GameSettings) {
             creator = player
         }
 
-        return this
+        return Pair(this, renamedPlayer)
     }
 
     fun startGame(sessionId: String, settings: GameSettings) {
@@ -86,5 +88,9 @@ class Lobby(val lobbyId: String, var creator: Player, settings: GameSettings) {
     private fun storyNotInPlayerQueue(storyId: String, player: Player): Boolean {
         val playerStories = game.stories[player.username]
         return playerStories == null || playerStories.none { it.id == storyId }
+    }
+
+    fun getPlayerBySessionId(sessionId: String): Player? {
+        return players.find { it.clientId == sessionId }
     }
 }

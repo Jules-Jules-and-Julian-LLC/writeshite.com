@@ -16,7 +16,7 @@ import org.springframework.web.socket.messaging.SessionDisconnectEvent
 class WebSocketConfig : WebSocketMessageBrokerConfigurer {
 
     override fun configureMessageBroker(registry: MessageBrokerRegistry) {
-        registry.enableSimpleBroker("/topic", "/user")
+        registry.enableSimpleBroker("/topic/", "/user/", "/queue/")
         registry.setApplicationDestinationPrefixes("/app")
     }
 
@@ -30,6 +30,6 @@ class WebSocketConfig : WebSocketMessageBrokerConfigurer {
         if(sha.sessionId != null) {
             LobbyManager.leaveLobby(sha.sessionId!!)
         }
-        println("[Disonnected] " + sha.sessionId)
+        println("[Disconnected] " + sha.sessionId)
     }
 }

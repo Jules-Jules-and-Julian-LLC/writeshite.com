@@ -46,11 +46,20 @@ export default class Lobby extends React.Component {
                 let disconnect = e => stompClient.disconnect();
                 window.addEventListener("beforeunload", disconnect.bind(me));
 
+                stompClient.subscribe('/user/queue/overrideUsername', function(message){
+                    let newUsername = message.body;
+                    me.setState({username: message.body});
+                    localStorage.setItem("username", message.body);
+                });
+
                 stompClient.subscribe("/topic/lobby." + me.state.lobbyId, function(response) {
                     let responseObj = JSON.parse(response.body);
                     const responseType = responseObj.responseType;
                     const eventReceivedDatetime = responseObj.eventReceivedDatetime;
                     if(!me.state.lastEventReceivedDatetime || eventReceivedDatetime > me.state.lastEventReceivedDatetime) {
+                        me.setState({
+                            lastEventReceivedDatetime: responseObj.eventReceivedDatetime,
+                        });
                         if (responseType === "START_GAME") {
                             me.setState({
                                 message: "",
@@ -79,7 +88,6 @@ export default class Lobby extends React.Component {
                             window.setInterval(me.forceUpdate.bind(me), 1000);
                         } else if (responseType === "STORY_CHANGE") {
                             me.setState({
-                                lastEventReceivedDatetime: responseObj.eventReceivedDatetime,
                                 stories: responseObj.stories,
                                 completedStories: responseObj.completedStories,
                                 gameState: responseObj.gameState

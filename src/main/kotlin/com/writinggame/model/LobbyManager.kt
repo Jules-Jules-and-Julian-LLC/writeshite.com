@@ -10,10 +10,14 @@ object LobbyManager {
         return newLobby
     }
 
-    fun joinLobby(username: String, sessionId: String, lobbyId: String): Lobby {
+    /**
+     * @return Pair of the updated lobby and whether the added player was renamed or not.
+     */
+    fun joinLobby(username: String, sessionId: String, lobbyId: String): Pair<Lobby, Boolean> {
         val player = Player(sessionId, username)
+
         return if(!lobbyExists(lobbyId)) {
-            createLobby(lobbyId, player)
+            Pair(createLobby(lobbyId, player), false)
         } else {
             getLobby(lobbyId).addPlayer(player)
         }
