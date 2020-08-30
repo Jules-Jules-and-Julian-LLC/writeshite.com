@@ -47,7 +47,6 @@ export default class Lobby extends React.Component {
                 window.addEventListener("beforeunload", disconnect.bind(me));
 
                 stompClient.subscribe('/user/queue/overrideUsername', function(message){
-                    let newUsername = message.body;
                     me.setState({username: message.body});
                     localStorage.setItem("username", message.body);
                 });
