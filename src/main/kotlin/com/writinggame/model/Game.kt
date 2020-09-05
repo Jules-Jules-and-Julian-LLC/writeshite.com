@@ -1,6 +1,7 @@
 package com.writinggame.model
 
 import com.writinggame.domain.GameStateType
+import com.writinggame.domain.StoryPassStyleType
 import java.time.Instant
 import java.time.ZonedDateTime
 import kotlin.collections.HashMap
@@ -73,6 +74,23 @@ class Game(lobby: Lobby, val settings: GameSettings) {
     }
 
     private fun getPlayerToPassTo(player: Player): Player {
+        return when(settings.passStyle) {
+            StoryPassStyleType.ORDERED -> getNextPlayer(player)
+            StoryPassStyleType.RANDOM -> getRandomPlayer(player)
+            StoryPassStyleType.MINIMIZE_WAIT -> getMinimizeWaitPlayer(player)
+        }
+    }
+
+    private fun getNextPlayer(player: Player): Player {
+        val playersIndex = players.indexOf(player)
+        return players[(playersIndex + 1) % players.size]
+    }
+
+    private fun getRandomPlayer(player: Player): Player {
+        return players.filterNot { it.username == player.username }.random()
+    }
+
+    private fun getMinimizeWaitPlayer(player: Player): Player {
         val notMyStories = stories.filter { it.key != player.username }
         val minStories = notMyStories.map { it.value.size }.min()
         val minStoryQueues = notMyStories.filter { it.value.size == minStories }
@@ -83,7 +101,7 @@ class Game(lobby: Lobby, val settings: GameSettings) {
 
         val waitingPlayers = notMyStories.filter { getPlayerByUsername(it.key).waitingSince != null }
         return if(waitingPlayers.isEmpty()) {
-            getPlayerByUsername(notMyStories.keys.random())
+            getRandomPlayer(player)
         } else {
             getPlayerByUsername(waitingPlayers.minBy { getPlayerByUsername(it.key).waitingSince!! }!!.key)
         }
@@ -95,7 +113,7 @@ class Game(lobby: Lobby, val settings: GameSettings) {
 
     fun removePlayer(sessionId: String) {
         val player = getPlayer(sessionId)
-        val nextPlayer = getPlayerToPassTo(player)
+        val nextPlayer = getNextPlayer(player)
         val nextPlayerQueue = stories[nextPlayer.username]
 
         while(stories[player.username]!!.isNotEmpty()) {

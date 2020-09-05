@@ -28,6 +28,7 @@ export default class Lobby extends React.Component {
         this.convertMessagesToStory = this.convertMessagesToStory.bind(this);
         this.calculateRoundTimeLeft = this.calculateRoundTimeLeft.bind(this);
         this.toggleGallery = this.toggleGallery.bind(this);
+        this.onPassStyleChange = this.onPassStyleChange.bind(this);
     }
 
     componentDidMount() {
@@ -80,7 +81,7 @@ export default class Lobby extends React.Component {
                                 completedStories: responseObj.lobby.game.completedStories,
                                 gallery: responseObj.lobby.gallery,
                                 endTime: responseObj.lobby.game.endTime && new Date(responseObj.lobby.game.endTime),
-                                settings: responseObj.lobby.game.settings,
+                                settings: me.state.settings || responseObj.lobby.game.settings,
                                 roundTime: responseObj.lobby.game.settings.roundTimeMinutes
                             });
                             //re-render once a second to update timer
@@ -115,7 +116,8 @@ export default class Lobby extends React.Component {
                 JSON.stringify({
                         roundTimeMinutes: parseInt(this.state.roundTime),
                         minWordsPerMessage: minWordsPerMessage,
-                        maxWordsPerMessage: maxWordsPerMessage
+                        maxWordsPerMessage: maxWordsPerMessage,
+                        passStyle: this.state.settings.passStyle
                     })
             );
         }
@@ -201,6 +203,12 @@ export default class Lobby extends React.Component {
 
     toggleGallery() {
         this.setState({showGallery: !this.state.showGallery});
+    }
+
+    onPassStyleChange(event) {
+        let newSettings = this.state.settings;
+        newSettings["passStyle"] = event.target.value;
+        this.setState({settings: newSettings});
     }
 
     getWordCount(text) {
@@ -329,6 +337,36 @@ export default class Lobby extends React.Component {
                                         onChange={e => this.handleSimpleStateChange(e, "maxWordsPerMessage")}
                                         value={this.state.maxWordsPerMessage}
                                     />
+                                </div>
+                                <div class="setting">
+                                    <span class="bold-text">Pass Stories</span> <br />
+                                    <label>
+                                        <input
+                                          type="radio"
+                                          value="MINIMIZE_WAIT"
+                                          checked={this.state.settings.passStyle === "MINIMIZE_WAIT"}
+                                          onChange={this.onPassStyleChange}
+                                        />
+                                        To Minimize Wait Time
+                                    </label> <br />
+                                    <label>
+                                        <input
+                                          type="radio"
+                                          value="ORDERED"
+                                          checked={this.state.settings.passStyle === "ORDERED"}
+                                          onChange={this.onPassStyleChange}
+                                        />
+                                        In Order
+                                    </label> <br />
+                                    <label>
+                                        <input
+                                          type="radio"
+                                          value="RANDOM"
+                                          checked={this.state.settings.passStyle === "RANDOM"}
+                                          onChange={this.onPassStyleChange}
+                                        />
+                                        Randomly
+                                    </label>
                                 </div>
                             </div>
                             <form onSubmit={this.startGame}>

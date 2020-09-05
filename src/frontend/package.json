@@ -18,7 +18,7 @@
     },
     "proxy": "http://localhost:8080",
     "scripts": {
-        "start": "react-scripts start",
+        "start": "react-scripts start --no-cache",
         "build": "react-scripts build",
         "test": "react-scripts test",
         "eject": "react-scripts eject",
