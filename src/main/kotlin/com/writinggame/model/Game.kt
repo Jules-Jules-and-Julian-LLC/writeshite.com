@@ -1,6 +1,6 @@
 package com.writinggame.model
 
-import com.writinggame.domain.GameStateType
+import com.writinggame.domain.LobbyStateType
 import com.writinggame.domain.StoryPassStyleType
 import java.time.Instant
 import java.time.ZonedDateTime
@@ -20,11 +20,11 @@ class Game(lobby: Lobby, val settings: GameSettings) {
         return stories
     }
 
-    fun addPlayer(player: Player, gameState: GameStateType) {
+    fun addPlayer(player: Player, lobbyState: LobbyStateType) {
         if(!stories.containsKey(player.username)) {
             val playerStories = stories.getOrPut(player.username, { mutableListOf() })
 
-            if(gameState == GameStateType.GATHERING_PLAYERS) {
+            if(lobbyState == LobbyStateType.GATHERING_PLAYERS) {
                 playerStories.add(Story(player))
             }
         }
@@ -48,7 +48,7 @@ class Game(lobby: Lobby, val settings: GameSettings) {
         }
     }
 
-    fun completeStory(storyId: String, completingPlayer: Player): GameStateType {
+    fun completeStory(storyId: String, completingPlayer: Player): LobbyStateType {
         val story = getStory(storyId)
         if(story != null) {
             completedStories.add(story)
@@ -62,7 +62,7 @@ class Game(lobby: Lobby, val settings: GameSettings) {
             completingPlayer.waitingSince = ZonedDateTime.now()
         }
 
-        return if (stories.values.flatten().isEmpty()) GameStateType.READING else GameStateType.PLAYING
+        return if (stories.values.flatten().isEmpty()) LobbyStateType.READING else LobbyStateType.PLAYING
     }
 
     private fun getPlayer(sessionId: String): Player {

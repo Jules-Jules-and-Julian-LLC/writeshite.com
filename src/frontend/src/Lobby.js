@@ -29,6 +29,7 @@ export default class Lobby extends React.Component {
         this.calculateRoundTimeLeft = this.calculateRoundTimeLeft.bind(this);
         this.toggleGallery = this.toggleGallery.bind(this);
         this.onPassStyleChange = this.onPassStyleChange.bind(this);
+        this.messageAreaKeyDown = this.messageAreaKeyDown.bind(this);
     }
 
     componentDidMount() {
@@ -63,7 +64,7 @@ export default class Lobby extends React.Component {
                         if (responseType === "START_GAME") {
                             me.setState({
                                 message: "",
-                                gameState: responseObj.gameState,
+                                lobbyState: responseObj.lobbyState,
                                 stories: responseObj.game.stories,
                                 gallery: responseObj.gallery,
                                 settings: responseObj.game.settings,
@@ -75,7 +76,7 @@ export default class Lobby extends React.Component {
                             let stories = responseObj.lobby.game.stories;
                             me.setState({
                                 joined: me.state.clickedSetUsername,
-                                gameState: responseObj.lobby.gameState,
+                                lobbyState: responseObj.lobby.lobbyState,
                                 lobby: responseObj.lobby,
                                 stories: stories,
                                 completedStories: responseObj.lobby.game.completedStories,
@@ -90,7 +91,7 @@ export default class Lobby extends React.Component {
                             me.setState({
                                 stories: responseObj.stories,
                                 completedStories: responseObj.completedStories,
-                                gameState: responseObj.gameState
+                                lobbyState: responseObj.lobbyState
                             });
                         } else {
                             console.log("ERROR: Unhandled responseType: " + responseType);
@@ -124,7 +125,7 @@ export default class Lobby extends React.Component {
     }
 
     sendMessage(event) {
-        event.preventDefault();
+        event && event.preventDefault();
         let currentStory = this.getCurrentStory();
 
         if (currentStory && this.state.message && this.state.message !== "" && this.isInputValid()) {
@@ -211,6 +212,12 @@ export default class Lobby extends React.Component {
         this.setState({settings: newSettings});
     }
 
+    messageAreaKeyDown(event) {
+        if((event.altKey || event.ctrlKey || event.metaKey) && event.keyCode === 13) {
+            this.sendMessage();
+        }
+    }
+
     getWordCount(text) {
         let trimmed = text.trim();
         if(trimmed === "") {
@@ -281,7 +288,7 @@ export default class Lobby extends React.Component {
                     </form>
                 </div>
             );
-        } else if (this.state.lobby && this.state.gameState === "GATHERING_PLAYERS") {
+        } else if (this.state.lobby && this.state.lobbyState === "GATHERING_PLAYERS") {
             let players = this.state.lobby.players.map(player => <li key={player.username}>{player.username}</li>);
             let gallery = this.state.gallery.map(story =>
                 <li key={story.creatingPlayer.username}>{this.convertMessagesToStory(story.messages)}</li>
@@ -376,7 +383,7 @@ export default class Lobby extends React.Component {
                     )}
                 </div>
             );
-        } else if (this.state.gameState === "PLAYING") {
+        } else if (this.state.lobbyState === "PLAYING") {
             let lobby = this.state.lobby;
             let players = lobby.players.map(player => (
                 <li key={player.username}>
@@ -429,6 +436,7 @@ export default class Lobby extends React.Component {
                             value={this.state.message}
                             class={invalidInput && "warning-border"}
                             style={{width: "700px"}}
+                            onKeyUp={this.messageAreaKeyDown}
                         />
                         {belowMin && (<span>Too few words</span>)}
                         {aboveMax && (<span>Too many words</span>)}
@@ -441,7 +449,7 @@ export default class Lobby extends React.Component {
                     </div>
                 </div>
             );
-        } else if (this.state.gameState === "READING") {
+        } else if (this.state.lobbyState === "READING") {
             let myCreatedStory = this.state.completedStories.find(
                 el => el.creatingPlayer.username === this.state.username
             );
