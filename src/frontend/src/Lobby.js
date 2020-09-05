@@ -261,8 +261,12 @@ export default class Lobby extends React.Component {
         return this.state.settings.maxWordsPerMessage && this.getWordCount(this.state.message) > this.state.settings.maxWordsPerMessage;
     }
 
+    isMessageTooLong() {
+        return this.state.message.length > 30000;
+    }
+
     isInputValid() {
-        return !this.isBelowMin() && !this.isAboveMax();
+        return !this.isBelowMin() && !this.isAboveMax() && !this.isMessageTooLong();
     }
 
     render() {
@@ -397,6 +401,7 @@ export default class Lobby extends React.Component {
             let wordRangeSentence = this.getWordRangeSentence();
             let belowMin = this.isBelowMin();
             let aboveMax = this.isAboveMax();
+            let tooLong = this.isMessageTooLong();
             let invalidInput = !this.isInputValid();
 
             return (
@@ -439,7 +444,7 @@ export default class Lobby extends React.Component {
                             onKeyUp={this.messageAreaKeyDown}
                         />
                         {belowMin && (<span>Too few words</span>)}
-                        {aboveMax && (<span>Too many words</span>)}
+                        {(aboveMax || tooLong) && (<span>Too many words</span>)}
                         <form onSubmit={this.sendMessage}>
                             <input type="submit" value="Send" />
                         </form>
