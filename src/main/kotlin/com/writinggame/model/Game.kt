@@ -48,13 +48,12 @@ class Game(lobby: Lobby, val settings: GameSettings) {
         }
     }
 
-    fun completeStory(storyId: String, completingPlayer: Player): LobbyStateType {
-        val story = getStory(storyId)
+    private fun completeStory(story: Story?, completingPlayer: Player): LobbyStateType {
         if(story != null) {
             completedStories.add(story)
 
             stories.keys.forEach {username ->
-                stories[username]?.removeIf { it.id == storyId }
+                stories[username]?.removeIf { it.id == story.id }
             }
         }
 
@@ -63,6 +62,11 @@ class Game(lobby: Lobby, val settings: GameSettings) {
         }
 
         return if (stories.values.flatten().isEmpty()) LobbyStateType.READING else LobbyStateType.PLAYING
+    }
+
+    fun completeStory(storyId: String, completingPlayer: Player): LobbyStateType {
+        val story = getStory(storyId)
+        return completeStory(story, completingPlayer)
     }
 
     private fun getPlayer(sessionId: String): Player {
@@ -118,6 +122,12 @@ class Game(lobby: Lobby, val settings: GameSettings) {
 
         while(stories[player.username]!!.isNotEmpty()) {
             nextPlayerQueue?.add(stories[player.username]!!.removeAt(0))
+        }
+    }
+
+    fun completeAllStories(sessionId: String) {
+        while(stories.values.flatten().isNotEmpty()) {
+            completeStory(stories.values.flatten().elementAt(0), getPlayer(sessionId))
         }
     }
 }

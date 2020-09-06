@@ -41,7 +41,7 @@ class Lobby(val lobbyId: String, var creator: Player, settings: GameSettings) {
         }
     }
 
-    private fun isCreator(sessionId: String): Boolean {
+    fun isCreator(sessionId: String): Boolean {
         return sessionId == creator.clientId
     }
 
@@ -57,10 +57,6 @@ class Lobby(val lobbyId: String, var creator: Player, settings: GameSettings) {
 
     private fun getPlayer(sessionId: String): Player? {
         return players.find { it.clientId == sessionId }
-    }
-
-    fun playerCanStartGame(sessionId: String): Boolean {
-        return isCreator(sessionId)
     }
 
     fun addMessageToStory(message: String, storyId: String, sessionId: String) {
@@ -92,5 +88,12 @@ class Lobby(val lobbyId: String, var creator: Player, settings: GameSettings) {
 
     fun getPlayerBySessionId(sessionId: String): Player? {
         return players.find { it.clientId == sessionId }
+    }
+
+    fun endRound(sessionId: String) {
+        if(isCreator(sessionId)) {
+            game.completeAllStories(sessionId)
+            lobbyState = LobbyStateType.READING
+        }
     }
 }

@@ -19,6 +19,7 @@ export default class Lobby extends React.Component {
         };
 
         this.startGame = this.startGame.bind(this);
+        this.endRound = this.endRound.bind(this);
         this.sendMessage = this.sendMessage.bind(this);
         this.completeStory = this.completeStory.bind(this);
         this.setUsername = this.setUsername.bind(this);
@@ -122,6 +123,11 @@ export default class Lobby extends React.Component {
                     })
             );
         }
+    }
+
+    endRound(event) {
+        event.preventDefault();
+        this.state.stompClient.send("/app/lobby." + this.state.lobbyId + ".endRound", {}, {});
     }
 
     sendMessage(event) {
@@ -451,6 +457,13 @@ export default class Lobby extends React.Component {
                         <button type="button" onClick={this.completeStory}>
                             This Story Is Done
                         </button>
+                    </div>
+                    <div>
+                        {this.state.lobby.creator.username === this.state.username && (
+                            <button type="button" onClick={this.endRound}>
+                                End Round
+                            </button>
+                        )}
                     </div>
                 </div>
             );

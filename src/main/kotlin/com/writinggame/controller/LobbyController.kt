@@ -79,7 +79,7 @@ class LobbyController {
             val receivedDatetime = ZonedDateTime.now()
             val lobby = LobbyManager.getLobby(lobbyId)
             lobby.startGame(sessionId, settings)
-            println("Starting game for lobby $lobbyId player $sessionId can start: ${lobby.playerCanStartGame(sessionId)} round time: ${settings.roundTimeMinutes}")
+            println("Starting game for lobby $lobbyId player $sessionId can start: ${lobby.isCreator(sessionId)} round time: ${settings.roundTimeMinutes}")
 
             return@submit StartGameResponse(lobby, receivedDatetime)
         }.get(TIMEOUT_MINUTES, TimeUnit.MINUTES)
@@ -115,6 +115,21 @@ class LobbyController {
             println("Completing story: $storyId for lobby: $lobbyId by user: $sessionId")
 
             lobby.completeStory(storyId, sessionId)
+
+            return@submit StoryChangeResponse(lobby, receivedDatetime)
+        }.get(TIMEOUT_MINUTES, TimeUnit.MINUTES)
+    }
+
+    @MessageMapping("/lobby.{lobbyId}.endRound")
+    @SendTo("/topic/lobby.{lobbyId}")
+    fun completeStory(@DestinationVariable("lobbyId") lobbyId: String,
+                      @Header("simpSessionId") sessionId: String): StoryChangeResponse {
+        return getExecutorServiceForLobby(lobbyId).submit<StoryChangeResponse> {
+            val receivedDatetime = ZonedDateTime.now()
+            val lobby = LobbyManager.getLobby(lobbyId)
+            println("Ending round for lobby: $lobbyId by user: $sessionId")
+
+            lobby.endRound(sessionId)
 
             return@submit StoryChangeResponse(lobby, receivedDatetime)
         }.get(TIMEOUT_MINUTES, TimeUnit.MINUTES)
