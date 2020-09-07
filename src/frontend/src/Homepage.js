@@ -1,5 +1,6 @@
 import React from "react";
 import {withRouter} from "react-router";
+import Logo from "./Logo";
 
 class Homepage extends React.Component {
     constructor(props) {
@@ -27,14 +28,12 @@ class Homepage extends React.Component {
     render() {
         return (
             <div id="homepage-content">
-                <div id="logo">
-                    <img src="logo.svg" alt="logo" />
-                </div>
+                <Logo />
                 <div class="centered">
                     <input type="text" name="lobbyId" placeholder="Lobby ID" onChange={this.handleLobbyIdChange} />
                 </div>
                 <form class="centered" onSubmit={this.joinGame}>
-                    <input type="submit" value="Join game" />
+                    <input class="button" type="submit" value="Join game" />
                 </form>
             </div>
         );

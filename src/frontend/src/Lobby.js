@@ -1,6 +1,7 @@
 import React from "react";
 import SockJS from "sockjs-client";
 import Stomp from "stompjs";
+import Logo from "./Logo";
 
 export default class Lobby extends React.Component {
     constructor(props) {
@@ -281,20 +282,18 @@ export default class Lobby extends React.Component {
         } else if (!this.state.joined) {
             return (
                 <div id="set-user-info-content">
-                    <div id="logo">
-                        <img src="../../logo.svg" alt="logo" />
-                    </div>
+                    <Logo />
                     <div class="centered">
                         <input
                             type="text"
                             name="username"
-                            placeholder="Name"
+                            placeholder="Username"
                             onChange={this.handleUsernameChange}
                             value={this.state.username}
                         />
                     </div>
                     <form class="centered" onSubmit={this.setUsername}>
-                        <input type="submit" value="Set username" />
+                        <input class="button" type="submit" value="Set Username" />
                     </form>
                 </div>
             );
@@ -305,9 +304,7 @@ export default class Lobby extends React.Component {
             );
             return (
                 <div id="lobby-content" style={{"width": "700px"}}>
-                    <div id="logo">
-                        <img src="../../logo.svg" alt="logo" />
-                    </div>
+                    <Logo />
                     <span class="section-header">Players</span>
                     <div>
                         <ul>{players}</ul>
@@ -387,7 +384,7 @@ export default class Lobby extends React.Component {
                                 </div>
                             </div>
                             <form onSubmit={this.startGame}>
-                                <input type="submit" value="Start game" />
+                                <input class="button" type="submit" value="Start game" />
                             </form>
                         </div>
                     )}
@@ -452,15 +449,15 @@ export default class Lobby extends React.Component {
                         {belowMin && (<span>Too few words</span>)}
                         {(aboveMax || tooLong) && (<span>Too many words</span>)}
                         <form onSubmit={this.sendMessage}>
-                            <input type="submit" value="Send" />
+                            <input class="button" type="submit" value="Send" />
                         </form>
-                        <button type="button" onClick={this.completeStory}>
+                        <button class="button" type="button" onClick={this.completeStory}>
                             This Story Is Done
                         </button>
                     </div>
                     <div>
                         {this.state.lobby.creator.username === this.state.username && (
-                            <button type="button" onClick={this.endRound}>
+                            <button class="button" type="button" onClick={this.endRound}>
                                 End Round
                             </button>
                         )}
