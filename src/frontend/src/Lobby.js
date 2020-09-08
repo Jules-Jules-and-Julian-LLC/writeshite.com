@@ -1,7 +1,7 @@
 import React from "react";
 import SockJS from "sockjs-client";
 import Stomp from "stompjs";
-import Logo from "./Logo";
+import LogoPage from "./LogoPage";
 
 export default class Lobby extends React.Component {
     constructor(props) {
@@ -281,21 +281,22 @@ export default class Lobby extends React.Component {
             return <div>Connecting to lobby, please wait...</div>;
         } else if (!this.state.joined) {
             return (
-                <div id="set-user-info-content">
-                    <Logo />
-                    <div class="centered">
-                        <input
-                            type="text"
-                            name="username"
-                            placeholder="Username"
-                            onChange={this.handleUsernameChange}
-                            value={this.state.username}
-                        />
+                <LogoPage>
+                    <div id="set-user-info-content">
+                        <div class="centered">
+                            <input
+                                type="text"
+                                name="username"
+                                placeholder="Username"
+                                onChange={this.handleUsernameChange}
+                                value={this.state.username}
+                            />
+                        </div>
+                        <form class="centered" onSubmit={this.setUsername}>
+                            <input class="button" type="submit" value="Set Username" />
+                        </form>
                     </div>
-                    <form class="centered" onSubmit={this.setUsername}>
-                        <input class="button" type="submit" value="Set Username" />
-                    </form>
-                </div>
+                </LogoPage>
             );
         } else if (this.state.lobby && this.state.lobbyState === "GATHERING_PLAYERS") {
             let players = this.state.lobby.players.map(player => <li key={player.username}>{player.username}</li>);
@@ -303,92 +304,93 @@ export default class Lobby extends React.Component {
                 <li key={story.creatingPlayer.username}>{this.convertMessagesToStory(story.messages)}</li>
             );
             return (
-                <div id="lobby-content" style={{"width": "700px"}}>
-                    <Logo />
-                    <span class="section-header">Players</span>
-                    <div>
-                        <ul>{players}</ul>
-                    </div>
-                    {this.state.gallery && this.state.gallery.length > 0 && this.state.showGallery && (
+                <LogoPage>
+                    <div id="lobby-content">
+                        <span class="section-header">Players</span>
                         <div>
-                            <span class="section-header">Gallery</span> <br />
-                            <ul>{gallery}</ul>
+                            <ul>{players}</ul>
                         </div>
-                    )}
-                    {this.state.lobby.creator.username === this.state.username && (
-                        <div>
-                            { this.state.gallery && this.state.gallery.length > 0 && (
-                                <button type="button" onClick={this.toggleGallery}>
-                                    {this.state.showGallery && (<span>Hide</span>)}{!this.state.showGallery && (<span>Show</span>)} Gallery
-                                </button>
-                            )}
-                            <div id="settings">
-                                <span class="section-header">Optional Settings</span>
-                                <div class="setting">
-                                    <span class="bold-text">Minutes per round</span> <br />
-                                    <input
-                                        type="text"
-                                        name="roundTime"
-                                        class="settings-input"
-                                        onChange={(e) => this.handleSimpleStateChange(e, "roundTime")}
-                                        value={this.state.roundTime}
-                                    />
-                                </div>
-                                <div class="setting">
-                                    <span class="bold-text">Words per message</span> <br />
-                                    <input
-                                        type="text"
-                                        name="minWordsPerMessage"
-                                        class="settings-input"
-                                        onChange={e => this.handleSimpleStateChange(e, "minWordsPerMessage")}
-                                        value={this.state.minWordsPerMessage}
-                                    />
-                                    <span style={{"margin-left": "10px"}}>-</span>
-                                    <input
-                                        type="text"
-                                        name="maxWordsPerMessage"
-                                        class="settings-input"
-                                        onChange={e => this.handleSimpleStateChange(e, "maxWordsPerMessage")}
-                                        value={this.state.maxWordsPerMessage}
-                                    />
-                                </div>
-                                <div class="setting">
-                                    <span class="bold-text">Pass Stories</span> <br />
-                                    <label>
-                                        <input
-                                          type="radio"
-                                          value="MINIMIZE_WAIT"
-                                          checked={this.state.settings.passStyle === "MINIMIZE_WAIT"}
-                                          onChange={this.onPassStyleChange}
-                                        />
-                                        To Minimize Wait Time
-                                    </label> <br />
-                                    <label>
-                                        <input
-                                          type="radio"
-                                          value="ORDERED"
-                                          checked={this.state.settings.passStyle === "ORDERED"}
-                                          onChange={this.onPassStyleChange}
-                                        />
-                                        In Order
-                                    </label> <br />
-                                    <label>
-                                        <input
-                                          type="radio"
-                                          value="RANDOM"
-                                          checked={this.state.settings.passStyle === "RANDOM"}
-                                          onChange={this.onPassStyleChange}
-                                        />
-                                        Randomly
-                                    </label>
-                                </div>
+                        {this.state.gallery && this.state.gallery.length > 0 && this.state.showGallery && (
+                            <div>
+                                <span class="section-header">Gallery</span> <br />
+                                <ul>{gallery}</ul>
                             </div>
-                            <form onSubmit={this.startGame}>
-                                <input class="button" type="submit" value="Start game" />
-                            </form>
-                        </div>
-                    )}
-                </div>
+                        )}
+                        {this.state.lobby.creator.username === this.state.username && (
+                            <div>
+                                { this.state.gallery && this.state.gallery.length > 0 && (
+                                    <button type="button" onClick={this.toggleGallery}>
+                                        {this.state.showGallery && (<span>Hide</span>)}{!this.state.showGallery && (<span>Show</span>)} Gallery
+                                    </button>
+                                )}
+                                <div id="settings">
+                                    <span class="section-header">Optional Settings</span>
+                                    <div class="setting">
+                                        <span class="bold-text">Minutes per round</span> <br />
+                                        <input
+                                            type="text"
+                                            name="roundTime"
+                                            class="settings-input"
+                                            onChange={(e) => this.handleSimpleStateChange(e, "roundTime")}
+                                            value={this.state.roundTime}
+                                        />
+                                    </div>
+                                    <div class="setting">
+                                        <span class="bold-text">Words per message</span> <br />
+                                        <input
+                                            type="text"
+                                            name="minWordsPerMessage"
+                                            class="settings-input"
+                                            onChange={e => this.handleSimpleStateChange(e, "minWordsPerMessage")}
+                                            value={this.state.minWordsPerMessage}
+                                        />
+                                        <span style={{"margin-left": "10px"}}>-</span>
+                                        <input
+                                            type="text"
+                                            name="maxWordsPerMessage"
+                                            class="settings-input"
+                                            onChange={e => this.handleSimpleStateChange(e, "maxWordsPerMessage")}
+                                            value={this.state.maxWordsPerMessage}
+                                        />
+                                    </div>
+                                    <div class="setting">
+                                        <span class="bold-text">Pass Stories</span> <br />
+                                        <label>
+                                            <input
+                                              type="radio"
+                                              value="MINIMIZE_WAIT"
+                                              checked={this.state.settings.passStyle === "MINIMIZE_WAIT"}
+                                              onChange={this.onPassStyleChange}
+                                            />
+                                            To Minimize Wait Time
+                                        </label> <br />
+                                        <label>
+                                            <input
+                                              type="radio"
+                                              value="ORDERED"
+                                              checked={this.state.settings.passStyle === "ORDERED"}
+                                              onChange={this.onPassStyleChange}
+                                            />
+                                            In Order
+                                        </label> <br />
+                                        <label>
+                                            <input
+                                              type="radio"
+                                              value="RANDOM"
+                                              checked={this.state.settings.passStyle === "RANDOM"}
+                                              onChange={this.onPassStyleChange}
+                                            />
+                                            Randomly
+                                        </label>
+                                    </div>
+                                </div>
+                                <form onSubmit={this.startGame}>
+                                    <input class="button" type="submit" value="Start game" />
+                                </form>
+                            </div>
+                        )}
+                    </div>
+                </LogoPage>
             );
         } else if (this.state.lobbyState === "PLAYING") {
             let lobby = this.state.lobby;

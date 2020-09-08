@@ -1,6 +1,6 @@
 @import url("https://fonts.googleapis.com/css?family=Dancing+Script");
 
-#logo {
+.logo-text {
     font-family: 'Dancing Script', latin;
     font-size:100px;
     white-space: nowrap;
@@ -28,11 +28,19 @@ body {
     width: 150px;
     border: 1px solid transparent;
     border-radius: 10px;
-    font-size: 1em;
+    font-size: 20px;
+}
+
+.logo-centered {
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+    width: 350px;
 }
 
 ul {
     padding-left: 5px;
+    list-style-type: none;
 }
 
 #content {
@@ -66,41 +74,25 @@ ul {
     width: 50%;
 }
 
-.App {
+#lobby-content {
+    width: 350px;
     text-align: center;
 }
 
-.App-logo {
-    height: 40vmin;
-    pointer-events: none;
+#poop-emoji:hover {
+    animation: poop-spin infinite 1s ease;
+    display: inline-block;
 }
 
-@media (prefers-reduced-motion: no-preference) {
-    .App-logo {
-        animation: App-logo-spin infinite 20s linear;
+@keyframes poop-spin {
+    0% {
+        -webkit-transform: rotate(0deg);  /* Chrome, Opera 15+, Safari 3.1+ */
+        -ms-transform: rotate(0deg);  /* IE 9 */
+        transform: rotate(0deg);  /* Firefox 16+, IE 10+, Opera */
     }
-}
-
-.App-header {
-    background-color: #282c34;
-    min-height: 100vh;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    font-size: calc(10px + 2vmin);
-    color: white;
-}
-
-.App-link {
-    color: #61dafb;
-}
-
-@keyframes App-logo-spin {
-    from {
-        transform: rotate(0deg);
-    }
-    to {
-        transform: rotate(360deg);
+    100% {
+        -webkit-transform: rotate(360deg);  /* Chrome, Opera 15+, Safari 3.1+ */
+        -ms-transform: rotate(360deg);  /* IE 9 */
+        transform: rotate(360deg);  /* Firefox 16+, IE 10+, Opera */
     }
 }
