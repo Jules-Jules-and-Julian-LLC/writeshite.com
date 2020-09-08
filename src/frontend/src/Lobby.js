@@ -319,7 +319,7 @@ export default class Lobby extends React.Component {
                         {this.state.lobby.creator.username === this.state.username && (
                             <div>
                                 { this.state.gallery && this.state.gallery.length > 0 && (
-                                    <button type="button" onClick={this.toggleGallery}>
+                                    <button class="button" type="button" onClick={this.toggleGallery}>
                                         {this.state.showGallery && (<span>Hide</span>)}{!this.state.showGallery && (<span>Show</span>)} Gallery
                                     </button>
                                 )}

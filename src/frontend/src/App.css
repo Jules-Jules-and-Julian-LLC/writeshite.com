@@ -24,9 +24,11 @@ body {
 
 .button {
     margin-top: 5px;
-    background: #AAF683;
+    /*background: #00c8ff; */
+    background: rgb(0,200,255);
+    background: linear-gradient(0deg, rgba(0,200,255,1) 50%, rgba(255,255,255,1) 100%);
     width: 150px;
-    border: 1px solid transparent;
+    border: 0px solid transparent;
     border-radius: 10px;
     font-size: 20px;
 }
