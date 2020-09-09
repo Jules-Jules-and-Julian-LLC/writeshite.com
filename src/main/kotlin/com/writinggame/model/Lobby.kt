@@ -14,7 +14,7 @@ class Lobby(val lobbyId: String, var creator: Player, settings: GameSettings) {
 
     fun addPlayer(player: Player): Pair<Lobby, Boolean> {
         var renamedPlayer = false
-        while(players.any { it.username == player.username }) {
+        while(players.any { it.username.toLowerCase() == player.username.toLowerCase() }) {
             player.username = player.username + "2"
             renamedPlayer = true
         }

@@ -278,7 +278,7 @@ export default class Lobby extends React.Component {
 
     render() {
         if (!this.state.stompClient) {
-            return <div>Connecting to lobby, please wait...</div>;
+            return <div id="connecting-to-lobby" class="centered">Connecting to lobby, please wait...</div>;
         } else if (!this.state.joined) {
             return (
                 <LogoPage>
@@ -410,8 +410,21 @@ export default class Lobby extends React.Component {
             let invalidInput = !this.isInputValid();
 
             return (
-                <div id="game-content" style={{width: "700px"}}>
-                    You are playing a game with:
+                <div id="game-content" class="centered" style={{width: "700px"}}>
+                    {this.state.endTime && (
+                        <div id="timer">
+                            {roundOver && <span>Round is over! <br /> You may send one last message.</span>}
+                            {!roundOver && (
+                                <span>
+                                    {timeLeft.days > 0 && <span>{timeLeft.days}:</span>}
+                                    {timeLeft.hours > 0 && <span>{timeLeft.hours}:</span>}
+                                    <span>
+                                        {timeLeft.minutes}:{timeLeft.seconds.toString().padStart(2, '0')}
+                                    </span>
+                                </span>
+                            )}
+                        </div>
+                    )}
                     <div>
                         <ul>{players}</ul>
                     </div>
@@ -419,21 +432,6 @@ export default class Lobby extends React.Component {
                         {wordRangeSentence && (wordRangeSentence)}
                     </div>
 
-                    {this.state.endTime && (
-                        <div>
-                            {roundOver && <span>Round is over! You may send one last message.</span>}
-                            {!roundOver && (
-                                <span>
-                                    There is {timeLeft.days > 0 && <span>{timeLeft.days}:</span>}
-                                    {timeLeft.hours > 0 && <span>{timeLeft.hours}:</span>}
-                                    <span>
-                                        {timeLeft.minutes}:{timeLeft.seconds.toString().padStart(2, '0')}
-                                    </span>{" "}
-                                    left in the round.
-                                </span>
-                            )}
-                        </div>
-                    )}
                     <div>You have {stories.length} stories in queue.</div>
                     <div>
                         Current story:
@@ -450,12 +448,12 @@ export default class Lobby extends React.Component {
                         />
                         {belowMin && (<span>Too few words</span>)}
                         {(aboveMax || tooLong) && (<span>Too many words</span>)}
-                        <form onSubmit={this.sendMessage}>
+                        <form id="game-buttons" onSubmit={this.sendMessage}>
+                            <button id="complete-story-button" class="button" type="button" onClick={this.completeStory}>
+                                Complete Story
+                            </button>
                             <input class="button" type="submit" value="Send" />
                         </form>
-                        <button class="button" type="button" onClick={this.completeStory}>
-                            This Story Is Done
-                        </button>
                     </div>
                     <div>
                         {this.state.lobby.creator.username === this.state.username && (
@@ -472,11 +470,11 @@ export default class Lobby extends React.Component {
             );
             let myReadableStory = myCreatedStory && this.convertMessagesToStory(myCreatedStory.messages);
             return (
-                <div id="reading-content" style={{width: "700px"}}>
+                <div id="reading-content" class="centered" style={{width: "700px"}}>
                     You are now reading:
                     <div>{myReadableStory}</div>
                     {this.state.lobby.creator.username === this.state.username && (
-                        <button type="button" onClick={this.startGame}>
+                        <button class="button" type="button" onClick={this.startGame}>
                             Start New Game
                         </button>
                     )}
