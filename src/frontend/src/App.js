@@ -7,7 +7,7 @@ import {BrowserRouter as Router, Switch, Route} from "react-router-dom";
 export default class App extends React.Component {
     render() {
         return (
-            <div id="content" >
+            <div id="content">
                 <Router>
                     <Switch>
                         <Route path="/lobby/:lobbyId">

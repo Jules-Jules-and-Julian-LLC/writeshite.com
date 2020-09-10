@@ -1,6 +1,7 @@
 import React from "react";
 import {withRouter} from "react-router";
 import LogoPage from "./LogoPage";
+import PaperStack from "./PaperStack";
 
 class Homepage extends React.Component {
     constructor(props) {
@@ -35,6 +36,7 @@ class Homepage extends React.Component {
                     <form class="centered" onSubmit={this.joinGame}>
                         <input class="button" type="submit" value="Join game" />
                     </form>
+                    <PaperStack count={5} />
                 </LogoPage>
             </div>
         );

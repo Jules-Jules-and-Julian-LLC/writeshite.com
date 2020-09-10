@@ -50,7 +50,7 @@ export default class Lobby extends React.Component {
                 let disconnect = e => stompClient.disconnect();
                 window.addEventListener("beforeunload", disconnect.bind(me));
 
-                stompClient.subscribe('/user/queue/overrideUsername', function(message){
+                stompClient.subscribe("/user/queue/overrideUsername", function(message) {
                     me.setState({username: message.body});
                     localStorage.setItem("username", message.body);
                 });
@@ -59,9 +59,12 @@ export default class Lobby extends React.Component {
                     let responseObj = JSON.parse(response.body);
                     const responseType = responseObj.responseType;
                     const eventReceivedDatetime = responseObj.eventReceivedDatetime;
-                    if(!me.state.lastEventReceivedDatetime || eventReceivedDatetime > me.state.lastEventReceivedDatetime) {
+                    if (
+                        !me.state.lastEventReceivedDatetime ||
+                        eventReceivedDatetime > me.state.lastEventReceivedDatetime
+                    ) {
                         me.setState({
-                            lastEventReceivedDatetime: responseObj.eventReceivedDatetime,
+                            lastEventReceivedDatetime: responseObj.eventReceivedDatetime
                         });
                         if (responseType === "START_GAME") {
                             me.setState({
@@ -111,17 +114,20 @@ export default class Lobby extends React.Component {
         event.preventDefault();
         let minWordsPerMessage = parseInt(this.state.minWordsPerMessage);
         let maxWordsPerMessage = parseInt(this.state.maxWordsPerMessage);
-        if(isNaN(minWordsPerMessage) || isNaN(maxWordsPerMessage)
-            || (minWordsPerMessage > 0 && maxWordsPerMessage > 0 && minWordsPerMessage <= maxWordsPerMessage)) {
+        if (
+            isNaN(minWordsPerMessage) ||
+            isNaN(maxWordsPerMessage) ||
+            (minWordsPerMessage > 0 && maxWordsPerMessage > 0 && minWordsPerMessage <= maxWordsPerMessage)
+        ) {
             this.state.stompClient.send(
                 "/app/lobby." + this.state.lobbyId + ".startGame",
                 {},
                 JSON.stringify({
-                        roundTimeMinutes: parseInt(this.state.roundTime),
-                        minWordsPerMessage: minWordsPerMessage,
-                        maxWordsPerMessage: maxWordsPerMessage,
-                        passStyle: this.state.settings.passStyle
-                    })
+                    roundTimeMinutes: parseInt(this.state.roundTime),
+                    minWordsPerMessage: minWordsPerMessage,
+                    maxWordsPerMessage: maxWordsPerMessage,
+                    passStyle: this.state.settings.passStyle
+                })
             );
         }
     }
@@ -220,17 +226,17 @@ export default class Lobby extends React.Component {
     }
 
     messageAreaKeyDown(event) {
-        if((event.altKey || event.ctrlKey || event.metaKey) && event.keyCode === 13) {
+        if ((event.altKey || event.ctrlKey || event.metaKey) && event.keyCode === 13) {
             this.sendMessage();
         }
     }
 
     getWordCount(text) {
         let trimmed = text.trim();
-        if(trimmed === "") {
+        if (trimmed === "") {
             return 0;
         }
-        return trimmed.split(/\s+/).length
+        return trimmed.split(/\s+/).length;
     }
 
     /*
@@ -243,15 +249,15 @@ export default class Lobby extends React.Component {
         let minWordsPerMessage = this.state.settings.minWordsPerMessage;
         let maxWordsPerMessage = this.state.settings.maxWordsPerMessage;
 
-        if(minWordsPerMessage || maxWordsPerMessage) {
+        if (minWordsPerMessage || maxWordsPerMessage) {
             sentence = "You must use ";
-            if(minWordsPerMessage) {
+            if (minWordsPerMessage) {
                 sentence += "at least " + minWordsPerMessage + " words";
-                if(maxWordsPerMessage) {
+                if (maxWordsPerMessage) {
                     sentence += " and ";
                 }
             }
-            if(maxWordsPerMessage) {
+            if (maxWordsPerMessage) {
                 sentence += "at most " + maxWordsPerMessage + " words";
             }
             sentence += ".";
@@ -261,11 +267,17 @@ export default class Lobby extends React.Component {
     }
 
     isBelowMin() {
-        return this.state.settings.minWordsPerMessage && this.getWordCount(this.state.message) < this.state.settings.minWordsPerMessage;
+        return (
+            this.state.settings.minWordsPerMessage &&
+            this.getWordCount(this.state.message) < this.state.settings.minWordsPerMessage
+        );
     }
 
     isAboveMax() {
-        return this.state.settings.maxWordsPerMessage && this.getWordCount(this.state.message) > this.state.settings.maxWordsPerMessage;
+        return (
+            this.state.settings.maxWordsPerMessage &&
+            this.getWordCount(this.state.message) > this.state.settings.maxWordsPerMessage
+        );
     }
 
     isMessageTooLong() {
@@ -278,7 +290,11 @@ export default class Lobby extends React.Component {
 
     render() {
         if (!this.state.stompClient) {
-            return <div id="connecting-to-lobby" class="centered">Connecting to lobby, please wait...</div>;
+            return (
+                <div id="connecting-to-lobby" class="centered">
+                    Connecting to lobby, please wait...
+                </div>
+            );
         } else if (!this.state.joined) {
             return (
                 <LogoPage>
@@ -300,9 +316,9 @@ export default class Lobby extends React.Component {
             );
         } else if (this.state.lobby && this.state.lobbyState === "GATHERING_PLAYERS") {
             let players = this.state.lobby.players.map(player => <li key={player.username}>{player.username}</li>);
-            let gallery = this.state.gallery.map(story =>
+            let gallery = this.state.gallery.map(story => (
                 <li key={story.creatingPlayer.username}>{this.convertMessagesToStory(story.messages)}</li>
-            );
+            ));
             return (
                 <LogoPage>
                     <div id="lobby-content">
@@ -318,9 +334,10 @@ export default class Lobby extends React.Component {
                         )}
                         {this.state.lobby.creator.username === this.state.username && (
                             <div>
-                                { this.state.gallery && this.state.gallery.length > 0 && (
+                                {this.state.gallery && this.state.gallery.length > 0 && (
                                     <button class="button" type="button" onClick={this.toggleGallery}>
-                                        {this.state.showGallery && (<span>Hide</span>)}{!this.state.showGallery && (<span>Show</span>)} Gallery
+                                        {this.state.showGallery && <span>Hide</span>}
+                                        {!this.state.showGallery && <span>Show</span>} Gallery
                                     </button>
                                 )}
                                 <div id="settings">
@@ -331,7 +348,7 @@ export default class Lobby extends React.Component {
                                             type="text"
                                             name="roundTime"
                                             class="settings-input"
-                                            onChange={(e) => this.handleSimpleStateChange(e, "roundTime")}
+                                            onChange={e => this.handleSimpleStateChange(e, "roundTime")}
                                             value={this.state.roundTime}
                                         />
                                     </div>
@@ -357,28 +374,30 @@ export default class Lobby extends React.Component {
                                         <span class="bold-text">Pass Stories</span> <br />
                                         <label>
                                             <input
-                                              type="radio"
-                                              value="MINIMIZE_WAIT"
-                                              checked={this.state.settings.passStyle === "MINIMIZE_WAIT"}
-                                              onChange={this.onPassStyleChange}
+                                                type="radio"
+                                                value="MINIMIZE_WAIT"
+                                                checked={this.state.settings.passStyle === "MINIMIZE_WAIT"}
+                                                onChange={this.onPassStyleChange}
                                             />
                                             To Minimize Wait Time
-                                        </label> <br />
+                                        </label>{" "}
+                                        <br />
                                         <label>
                                             <input
-                                              type="radio"
-                                              value="ORDERED"
-                                              checked={this.state.settings.passStyle === "ORDERED"}
-                                              onChange={this.onPassStyleChange}
+                                                type="radio"
+                                                value="ORDERED"
+                                                checked={this.state.settings.passStyle === "ORDERED"}
+                                                onChange={this.onPassStyleChange}
                                             />
                                             In Order
-                                        </label> <br />
+                                        </label>{" "}
+                                        <br />
                                         <label>
                                             <input
-                                              type="radio"
-                                              value="RANDOM"
-                                              checked={this.state.settings.passStyle === "RANDOM"}
-                                              onChange={this.onPassStyleChange}
+                                                type="radio"
+                                                value="RANDOM"
+                                                checked={this.state.settings.passStyle === "RANDOM"}
+                                                onChange={this.onPassStyleChange}
                                             />
                                             Randomly
                                         </label>
@@ -413,13 +432,17 @@ export default class Lobby extends React.Component {
                 <div id="game-content" class="centered" style={{width: "700px"}}>
                     {this.state.endTime && (
                         <div id="timer">
-                            {roundOver && <span>Round is over! <br /> You may send one last message.</span>}
+                            {roundOver && (
+                                <span>
+                                    Round is over! <br /> You may send one last message.
+                                </span>
+                            )}
                             {!roundOver && (
                                 <span>
                                     {timeLeft.days > 0 && <span>{timeLeft.days}:</span>}
                                     {timeLeft.hours > 0 && <span>{timeLeft.hours}:</span>}
                                     <span>
-                                        {timeLeft.minutes}:{timeLeft.seconds.toString().padStart(2, '0')}
+                                        {timeLeft.minutes}:{timeLeft.seconds.toString().padStart(2, "0")}
                                     </span>
                                 </span>
                             )}
@@ -428,9 +451,7 @@ export default class Lobby extends React.Component {
                     <div>
                         <ul>{players}</ul>
                     </div>
-                    <div>
-                        {wordRangeSentence && (wordRangeSentence)}
-                    </div>
+                    <div>{wordRangeSentence && wordRangeSentence}</div>
 
                     <div>You have {stories.length} stories in queue.</div>
                     <div>
@@ -446,10 +467,15 @@ export default class Lobby extends React.Component {
                             style={{width: "700px"}}
                             onKeyUp={this.messageAreaKeyDown}
                         />
-                        {belowMin && (<span>Too few words</span>)}
-                        {(aboveMax || tooLong) && (<span>Too many words</span>)}
+                        {belowMin && <span>Too few words</span>}
+                        {(aboveMax || tooLong) && <span>Too many words</span>}
                         <form id="game-buttons" onSubmit={this.sendMessage}>
-                            <button id="complete-story-button" class="button" type="button" onClick={this.completeStory}>
+                            <button
+                                id="complete-story-button"
+                                class="button"
+                                type="button"
+                                onClick={this.completeStory}
+                            >
                                 Complete Story
                             </button>
                             <input class="button" type="submit" value="Send" />

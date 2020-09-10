@@ -1,16 +1,16 @@
 @import url("https://fonts.googleapis.com/css?family=Dancing+Script");
 
 .logo-text {
-    font-family: 'Dancing Script', latin;
-    font-size:100px;
+    font-family: "Dancing Script", latin;
+    font-size: 100px;
     white-space: nowrap;
 }
 
 body {
-    background: rgb(179,86,0);
-    background: linear-gradient(0deg, rgba(179,86,0,1) 0%, rgba(255,141,0,1) 30%);
-    background-attachment:fixed;
-    height:100%;
+    background: rgb(179, 86, 0);
+    background: linear-gradient(0deg, rgba(179, 86, 0, 1) 0%, rgba(255, 141, 0, 1) 30%);
+    background-attachment: fixed;
+    height: 100%;
 }
 
 .noselect {
@@ -99,6 +99,9 @@ ul {
     text-align: center;
 }
 
+.paper {
+}
+
 #poop-emoji:hover {
     animation: poop-spin infinite 1s ease;
     display: inline-block;
@@ -106,13 +109,13 @@ ul {
 
 @keyframes poop-spin {
     0% {
-        -webkit-transform: rotate(0deg);  /* Chrome, Opera 15+, Safari 3.1+ */
-        -ms-transform: rotate(0deg);  /* IE 9 */
-        transform: rotate(0deg);  /* Firefox 16+, IE 10+, Opera */
+        -webkit-transform: rotate(0deg); /* Chrome, Opera 15+, Safari 3.1+ */
+        -ms-transform: rotate(0deg); /* IE 9 */
+        transform: rotate(0deg); /* Firefox 16+, IE 10+, Opera */
     }
     100% {
-        -webkit-transform: rotate(360deg);  /* Chrome, Opera 15+, Safari 3.1+ */
-        -ms-transform: rotate(360deg);  /* IE 9 */
-        transform: rotate(360deg);  /* Firefox 16+, IE 10+, Opera */
+        -webkit-transform: rotate(360deg); /* Chrome, Opera 15+, Safari 3.1+ */
+        -ms-transform: rotate(360deg); /* IE 9 */
+        transform: rotate(360deg); /* Firefox 16+, IE 10+, Opera */
     }
 }
