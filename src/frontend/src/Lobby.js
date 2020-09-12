@@ -2,6 +2,7 @@ import React from "react";
 import SockJS from "sockjs-client";
 import Stomp from "stompjs";
 import LogoPage from "./LogoPage";
+import PaperStack from "./PaperStack";
 
 export default class Lobby extends React.Component {
     constructor(props) {
@@ -414,9 +415,11 @@ export default class Lobby extends React.Component {
         } else if (this.state.lobbyState === "PLAYING") {
             let lobby = this.state.lobby;
             let players = lobby.players.map(player => (
-                <li key={player.username}>
-                    {player.username} ({this.state.stories[player.username].length} in queue)
-                </li>
+                <div class="player-name">
+                    <li key={player.username} class={player.username === this.state.username && "bold-text"}>
+                        {player.username} <PaperStack count={this.state.stories[player.username].length} />
+                    </li>
+                </div>
             ));
             let stories = this.state.stories[this.state.username];
             let currentStory = stories && stories[0] && this.convertMessagesToStory(stories[0].messages);
@@ -453,10 +456,10 @@ export default class Lobby extends React.Component {
                     </div>
                     <div>{wordRangeSentence && wordRangeSentence}</div>
 
-                    <div>You have {stories.length} stories in queue.</div>
                     <div>
-                        Current story:
-                        <div>{currentStory}</div>
+                        <div class="current-story">
+                            <p class="story-text">{currentStory}</p>
+                        </div>
                     </div>
                     <div>
                         <textarea
@@ -497,8 +500,9 @@ export default class Lobby extends React.Component {
             let myReadableStory = myCreatedStory && this.convertMessagesToStory(myCreatedStory.messages);
             return (
                 <div id="reading-content" class="centered" style={{width: "700px"}}>
-                    You are now reading:
-                    <div>{myReadableStory}</div>
+                    <div class="current-story">
+                        <p class="story-text">{myReadableStory}</p>
+                    </div>
                     {this.state.lobby.creator.username === this.state.username && (
                         <button class="button" type="button" onClick={this.startGame}>
                             Start New Game

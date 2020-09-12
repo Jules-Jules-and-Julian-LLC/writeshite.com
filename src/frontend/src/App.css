@@ -100,6 +100,38 @@ ul {
 }
 
 .paper {
+    height: 25px;
+}
+
+.paper-stack {
+    white-space: nowrap;
+}
+
+.player-name {
+    font-size: 25px;
+}
+
+.current-story {
+    background: cornsilk;
+    margin-bottom: 20px;
+    min-height: 5em;
+    position: relative;
+}
+
+.current-story::before {
+    content: "";
+    background-image: url("./images/paper.png");
+    background-size: cover;
+    position: absolute;
+    top: 0px;
+    right: 0px;
+    bottom: 0px;
+    left: 0px;
+    opacity: 0.4;
+}
+
+.story-text {
+    padding: .5em;
 }
 
 #poop-emoji:hover {

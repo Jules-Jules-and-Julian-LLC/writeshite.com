@@ -2,25 +2,23 @@ import React from "react";
 
 class LogoPage extends React.Component {
     render() {
-//        let boxShadowString = "";
-//        for(let i=0; i<this.props.count; i++) {
-//            boxShadowString += "0 1px 1px rgba(0,0,0,0.15),"
-//                                10px 0 0 -1px #eee`
-//        }
-        let style = {
-            background: "#fff",
-            width: "0px",
-            boxShadow: `0 1px 1px rgba(0,0,0,0.15),
-                10px 0 0 -1px #eee,
-                10px 0 1px 0px rgba(0,0,0,0.15),
-                20px 0 0 -2px #eee,
-                20px 0 1px -1px rgba(0,0,0,0.15)`,
-            padding: "15px"
-        };
+        if(this.props.count < 1) {
+            return null;
+        }
+        const paperStack = [];
+        for(let i = 0; i < this.props.count; i++) {
+            let style = {
+                marginLeft: i > 0 ? "-10px" : "",
+                zIndex: -1 * i,
+                position: 'relative'
+            };
+            paperStack.push(<img class="paper" src="../paper_icon.svg" alt="piece of paper" style={style}/>);
+        }
+
         return (
-            <div class="paper" style={style}>
-                {this.props.count}
-            </div>
+            <span class="paper-stack">
+                {paperStack}
+            </span>
         );
     }
 }
