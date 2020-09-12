@@ -2,24 +2,20 @@ import React from "react";
 
 class LogoPage extends React.Component {
     render() {
-        if(this.props.count < 1) {
+        if (this.props.count < 1) {
             return null;
         }
         const paperStack = [];
-        for(let i = 0; i < this.props.count; i++) {
+        for (let i = 0; i < this.props.count; i++) {
             let style = {
                 marginLeft: i > 0 ? "-10px" : "",
                 zIndex: -1 * i,
-                position: 'relative'
+                position: "relative"
             };
-            paperStack.push(<img class="paper" src="../paper_icon.svg" alt="piece of paper" style={style}/>);
+            paperStack.push(<img class="paper" src="../paper_icon.svg" alt="piece of paper" style={style} />);
         }
 
-        return (
-            <span class="paper-stack">
-                {paperStack}
-            </span>
-        );
+        return <span class="paper-stack">{paperStack}</span>;
     }
 }
 

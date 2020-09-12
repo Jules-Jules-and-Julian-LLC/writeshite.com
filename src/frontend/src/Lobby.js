@@ -3,6 +3,7 @@ import SockJS from "sockjs-client";
 import Stomp from "stompjs";
 import LogoPage from "./LogoPage";
 import PaperStack from "./PaperStack";
+import LinedPaper from "./LinedPaper";
 
 export default class Lobby extends React.Component {
     constructor(props) {
@@ -456,11 +457,7 @@ export default class Lobby extends React.Component {
                     </div>
                     <div>{wordRangeSentence && wordRangeSentence}</div>
 
-                    <div>
-                        <div class="current-story">
-                            <p class="story-text">{currentStory}</p>
-                        </div>
-                    </div>
+                    <LinedPaper text={currentStory} />
                     <div>
                         <textarea
                             name="message"
@@ -500,10 +497,8 @@ export default class Lobby extends React.Component {
             );
             let myReadableStory = myCreatedStory && this.convertMessagesToStory(myCreatedStory.messages);
             return (
-                <div id="reading-content" class="centered" style={{width: "700px"}}>
-                    <div class="current-story">
-                        <p class="story-text">{myReadableStory}</p>
-                    </div>
+                <div id="reading-content" class="centered" style={{paddingTop: "25px", width: "700px"}}>
+                    <LinedPaper text={myReadableStory} />
                     {this.state.lobby.creator.username === this.state.username && (
                         <button class="button" type="button" onClick={this.startGame}>
                             Start New Game

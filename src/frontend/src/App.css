@@ -1,5 +1,5 @@
 @import url("https://fonts.googleapis.com/css?family=Dancing+Script");
-
+@import url("https://fonts.googleapis.com/css?family=Indie+Flower");
 .logo-text {
     font-family: "Dancing Script", latin;
     font-size: 100px;
@@ -14,19 +14,17 @@ body {
 }
 
 .noselect {
-    -webkit-touch-callout: none; /* iOS Safari */
-    -webkit-user-select: none; /* Safari */
-    -khtml-user-select: none; /* Konqueror HTML */
-    -moz-user-select: none; /* Old versions of Firefox */
-    -ms-user-select: none; /* Internet Explorer/Edge */
-    user-select: none; /* Non-prefixed version, currently supported by Chrome, Edge, Opera and Firefox */
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -khtml-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
 }
 
 .button {
     margin-top: 5px;
     background: #00c8ff;
-    /*background: rgb(0,200,255);
-    background: linear-gradient(0deg, rgba(0,200,255,1) 100%, rgba(255,255,255,1) 100%);*/
     width: 150px;
     border: 0px solid transparent;
     border-radius: 10px;
@@ -111,29 +109,6 @@ ul {
     font-size: 25px;
 }
 
-.current-story {
-    background: cornsilk;
-    margin-bottom: 20px;
-    min-height: 10em;
-    position: relative;
-}
-
-.current-story::before {
-    content: "";
-    background-image: url("./images/paper.png");
-    background-size: cover;
-    position: absolute;
-    top: 0px;
-    right: 0px;
-    bottom: 0px;
-    left: 0px;
-    opacity: 0.4;
-}
-
-.story-text {
-    padding: .5em;
-}
-
 #poop-emoji:hover {
     animation: poop-spin infinite 1s ease;
     display: inline-block;
@@ -141,13 +116,48 @@ ul {
 
 @keyframes poop-spin {
     0% {
-        -webkit-transform: rotate(0deg); /* Chrome, Opera 15+, Safari 3.1+ */
-        -ms-transform: rotate(0deg); /* IE 9 */
-        transform: rotate(0deg); /* Firefox 16+, IE 10+, Opera */
+        -webkit-transform: rotate(0deg);
+        -ms-transform: rotate(0deg);
+        transform: rotate(0deg);
     }
     100% {
-        -webkit-transform: rotate(360deg); /* Chrome, Opera 15+, Safari 3.1+ */
-        -ms-transform: rotate(360deg); /* IE 9 */
-        transform: rotate(360deg); /* Firefox 16+, IE 10+, Opera */
+        -webkit-transform: rotate(360deg);
+        -ms-transform: rotate(360deg);
+        transform: rotate(360deg);
     }
 }
+
+
+/* Lined paper CSS */
+/* Styling specific to an index card */
+.card {
+    font-family: "Indie Flower", normal;
+    background-color: white;
+    background: repeating-linear-gradient(white, white 25px, #9198e5 26px, #9198e5 27px);
+    background-position-y: 34px;
+    min-height: 300px;
+    width: 700px;
+    padding: 0;
+    margin-bottom: 20px;
+}
+
+.card header {
+    background: linear-gradient(white, white 33px, pink 35px, pink 36px);
+    height: 36px;
+}
+
+.card-title {
+    position: relative;
+    left: 10px;
+    top: 8px;
+    font-size: 30px;
+    font-weight: bold;
+}
+
+.card-text {
+    position: relative;
+    font-size: 21px;
+    margin: 0 20px;
+    line-height: 27px;
+}
+
