@@ -468,7 +468,8 @@ export default class Lobby extends React.Component {
                             value={this.state.message}
                             class={invalidInput && "warning-border"}
                             style={{width: "700px"}}
-                            onKeyUp={this.messageAreaKeyDown}
+                            onKeyDown={this.messageAreaKeyDown}
+                            placeholder="Write Shite here..."
                         />
                         {belowMin && <span>Too few words</span>}
                         {(aboveMax || tooLong) && <span>Too many words</span>}
