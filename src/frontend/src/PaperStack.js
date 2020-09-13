@@ -1,6 +1,6 @@
 import React from "react";
 
-class LogoPage extends React.Component {
+class PaperStack extends React.Component {
     render() {
         if (this.props.count < 1) {
             return null;
@@ -19,4 +19,4 @@ class LogoPage extends React.Component {
     }
 }
 
-export default LogoPage;
+export default PaperStack;

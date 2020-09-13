@@ -7,9 +7,7 @@ class LinedPaper extends React.Component {
                 <header>
                     <span class="card-title">{this.props.title}</span>
                 </header>
-                <p class="card-text">
-                    {this.props.text}
-                </p>
+                <p class="card-text">{this.props.text}</p>
             </div>
         );
     }

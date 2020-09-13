@@ -41,11 +41,32 @@ body {
     width: 175px;
 }
 
-.logo-centered {
+.start-game-button {
+    margin: 10px;
+}
+
+.end-round-button {
+    float: left;
+}
+
+.logo {
     display: block;
     margin-left: auto;
     margin-right: auto;
-    width: 350px;
+    width: 50%;
+}
+
+.logo-page {
+    margin-left: auto;
+    margin-right: auto;
+    margin-bottom: 100px;
+    width: 700px;
+}
+
+.logo-page-content {
+    margin-left: auto;
+    margin-right: auto;
+    text-align: center;
 }
 
 #connecting-to-lobby {
@@ -66,8 +87,8 @@ ul {
     list-style-type: none;
 }
 
-.warning-border {
-    border-color: red;
+.warning-text {
+    color: red;
 }
 
 .settings-input {
@@ -90,11 +111,6 @@ ul {
     margin-left: auto;
     margin-right: auto;
     width: 50%;
-}
-
-#lobby-content {
-    width: 350px;
-    text-align: center;
 }
 
 .paper {
@@ -127,7 +143,6 @@ ul {
     }
 }
 
-
 /* Lined paper CSS */
 /* Styling specific to an index card */
 .card {
@@ -159,5 +174,5 @@ ul {
     font-size: 21px;
     margin: 0 20px;
     line-height: 27px;
+    text-align: left;
 }
-

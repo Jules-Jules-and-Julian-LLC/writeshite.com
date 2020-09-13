@@ -1,6 +1,5 @@
 import React from "react";
 import {withRouter} from "react-router";
-import LogoPage from "./LogoPage";
 
 class Homepage extends React.Component {
     constructor(props) {
@@ -28,14 +27,12 @@ class Homepage extends React.Component {
     render() {
         return (
             <div id="homepage-content">
-                <LogoPage>
-                    <div class="centered">
-                        <input type="text" name="lobbyId" placeholder="Lobby ID" onChange={this.handleLobbyIdChange} />
-                    </div>
-                    <form class="centered" onSubmit={this.joinGame}>
-                        <input class="button" type="submit" value="Join game" />
-                    </form>
-                </LogoPage>
+                <div>
+                    <input type="text" name="lobbyId" placeholder="Lobby ID" onChange={this.handleLobbyIdChange} />
+                </div>
+                <form onSubmit={this.joinGame}>
+                    <input class="button" type="submit" value="Join game" />
+                </form>
             </div>
         );
     }

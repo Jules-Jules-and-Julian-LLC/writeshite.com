@@ -2,6 +2,7 @@ import React from "react";
 import "./App.css";
 import Homepage from "./Homepage";
 import Lobby from "./Lobby";
+import LogoPage from "./LogoPage";
 import {BrowserRouter as Router, Switch, Route} from "react-router-dom";
 
 export default class App extends React.Component {
@@ -11,10 +12,14 @@ export default class App extends React.Component {
                 <Router>
                     <Switch>
                         <Route path="/lobby/:lobbyId">
-                            <Lobby />
+                            <LogoPage>
+                                <Lobby />
+                            </LogoPage>
                         </Route>
                         <Route path="/">
-                            <Homepage />
+                            <LogoPage>
+                                <Homepage />
+                            </LogoPage>
                         </Route>
                     </Switch>
                 </Router>

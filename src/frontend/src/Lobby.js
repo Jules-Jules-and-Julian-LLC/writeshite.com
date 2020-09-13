@@ -1,7 +1,6 @@
 import React from "react";
 import SockJS from "sockjs-client";
 import Stomp from "stompjs";
-import LogoPage from "./LogoPage";
 import PaperStack from "./PaperStack";
 import LinedPaper from "./LinedPaper";
 
@@ -17,8 +16,7 @@ export default class Lobby extends React.Component {
             roundTime: null,
             minWordsPerMessage: null,
             maxWordsPerMessage: null,
-            message: "",
-            showGallery: true
+            message: ""
         };
 
         this.startGame = this.startGame.bind(this);
@@ -31,7 +29,6 @@ export default class Lobby extends React.Component {
         this.handleSimpleStateChange = this.handleSimpleStateChange.bind(this);
         this.convertMessagesToStory = this.convertMessagesToStory.bind(this);
         this.calculateRoundTimeLeft = this.calculateRoundTimeLeft.bind(this);
-        this.toggleGallery = this.toggleGallery.bind(this);
         this.onPassStyleChange = this.onPassStyleChange.bind(this);
         this.messageAreaKeyDown = this.messageAreaKeyDown.bind(this);
     }
@@ -217,10 +214,6 @@ export default class Lobby extends React.Component {
         return timeLeft;
     }
 
-    toggleGallery() {
-        this.setState({showGallery: !this.state.showGallery});
-    }
-
     onPassStyleChange(event) {
         let newSettings = this.state.settings;
         newSettings["passStyle"] = event.target.value;
@@ -254,13 +247,13 @@ export default class Lobby extends React.Component {
         if (minWordsPerMessage || maxWordsPerMessage) {
             sentence = "You must use ";
             if (minWordsPerMessage) {
-                sentence += "at least " + minWordsPerMessage + " words";
+                sentence += "at least " + minWordsPerMessage + " word" + (minWordsPerMessage > 1 ? "s" : "");
                 if (maxWordsPerMessage) {
                     sentence += " and ";
                 }
             }
             if (maxWordsPerMessage) {
-                sentence += "at most " + maxWordsPerMessage + " words";
+                sentence += "at most " + maxWordsPerMessage + " word" + (maxWordsPerMessage > 1 ? "s" : "");
             }
             sentence += ".";
         }
@@ -292,126 +285,112 @@ export default class Lobby extends React.Component {
 
     render() {
         if (!this.state.stompClient) {
-            return (
-                <div id="connecting-to-lobby" class="centered">
-                    Connecting to lobby, please wait...
-                </div>
-            );
+            return <div id="connecting-to-lobby">Connecting to lobby, please wait...</div>;
         } else if (!this.state.joined) {
             return (
-                <LogoPage>
-                    <div id="set-user-info-content">
-                        <div class="centered">
-                            <input
-                                type="text"
-                                name="username"
-                                placeholder="Username"
-                                onChange={this.handleUsernameChange}
-                                value={this.state.username}
-                            />
-                        </div>
-                        <form class="centered" onSubmit={this.setUsername}>
-                            <input class="button" type="submit" value="Set Username" />
-                        </form>
+                <div id="set-user-info-content">
+                    <div>
+                        <input
+                            type="text"
+                            name="username"
+                            placeholder="Username"
+                            onChange={this.handleUsernameChange}
+                            value={this.state.username}
+                        />
                     </div>
-                </LogoPage>
+                    <form onSubmit={this.setUsername}>
+                        <input class="button" type="submit" value="Set Username" />
+                    </form>
+                </div>
             );
         } else if (this.state.lobby && this.state.lobbyState === "GATHERING_PLAYERS") {
             let players = this.state.lobby.players.map(player => <li key={player.username}>{player.username}</li>);
             let gallery = this.state.gallery.map(story => (
-                <li key={story.creatingPlayer.username}>{this.convertMessagesToStory(story.messages)}</li>
+                <li key={story.creatingPlayer.username}><LinedPaper text={this.convertMessagesToStory(story.messages)} /></li>
             ));
             return (
-                <LogoPage>
-                    <div id="lobby-content">
-                        <span class="section-header">Players</span>
-                        <div>
-                            <ul>{players}</ul>
-                        </div>
-                        {this.state.gallery && this.state.gallery.length > 0 && this.state.showGallery && (
-                            <div>
-                                <span class="section-header">Gallery</span> <br />
-                                <ul>{gallery}</ul>
-                            </div>
-                        )}
-                        {this.state.lobby.creator.username === this.state.username && (
-                            <div>
-                                {this.state.gallery && this.state.gallery.length > 0 && (
-                                    <button class="button" type="button" onClick={this.toggleGallery}>
-                                        {this.state.showGallery && <span>Hide</span>}
-                                        {!this.state.showGallery && <span>Show</span>} Gallery
-                                    </button>
-                                )}
-                                <div id="settings">
-                                    <span class="section-header">Optional Settings</span>
-                                    <div class="setting">
-                                        <span class="bold-text">Minutes per round</span> <br />
-                                        <input
-                                            type="text"
-                                            name="roundTime"
-                                            class="settings-input"
-                                            onChange={e => this.handleSimpleStateChange(e, "roundTime")}
-                                            value={this.state.roundTime}
-                                        />
-                                    </div>
-                                    <div class="setting">
-                                        <span class="bold-text">Words per message</span> <br />
-                                        <input
-                                            type="text"
-                                            name="minWordsPerMessage"
-                                            class="settings-input"
-                                            onChange={e => this.handleSimpleStateChange(e, "minWordsPerMessage")}
-                                            value={this.state.minWordsPerMessage}
-                                        />
-                                        <span style={{"margin-left": "10px"}}>-</span>
-                                        <input
-                                            type="text"
-                                            name="maxWordsPerMessage"
-                                            class="settings-input"
-                                            onChange={e => this.handleSimpleStateChange(e, "maxWordsPerMessage")}
-                                            value={this.state.maxWordsPerMessage}
-                                        />
-                                    </div>
-                                    <div class="setting">
-                                        <span class="bold-text">Pass Stories</span> <br />
-                                        <label>
-                                            <input
-                                                type="radio"
-                                                value="MINIMIZE_WAIT"
-                                                checked={this.state.settings.passStyle === "MINIMIZE_WAIT"}
-                                                onChange={this.onPassStyleChange}
-                                            />
-                                            To Minimize Wait Time
-                                        </label>{" "}
-                                        <br />
-                                        <label>
-                                            <input
-                                                type="radio"
-                                                value="ORDERED"
-                                                checked={this.state.settings.passStyle === "ORDERED"}
-                                                onChange={this.onPassStyleChange}
-                                            />
-                                            In Order
-                                        </label>{" "}
-                                        <br />
-                                        <label>
-                                            <input
-                                                type="radio"
-                                                value="RANDOM"
-                                                checked={this.state.settings.passStyle === "RANDOM"}
-                                                onChange={this.onPassStyleChange}
-                                            />
-                                            Randomly
-                                        </label>
-                                    </div>
-                                </div>
-                                <form onSubmit={this.startGame}>
-                                    <input class="button" type="submit" value="Start game" />
-                                </form>
-                            </div>
-                        )}
+                <div id="lobby-content">
+                    <span class="section-header">Players</span>
+                    <div>
+                        <ul>{players}</ul>
                     </div>
-                </LogoPage>
+                    {this.state.lobby.creator.username === this.state.username && (
+                        <div>
+                            <div id="settings">
+                                <span class="section-header">Optional Settings</span>
+                                <div class="setting">
+                                    <span class="bold-text">Minutes per round</span> <br />
+                                    <input
+                                        type="text"
+                                        name="roundTime"
+                                        class="settings-input"
+                                        onChange={e => this.handleSimpleStateChange(e, "roundTime")}
+                                        value={this.state.roundTime}
+                                    />
+                                </div>
+                                <div class="setting">
+                                    <span class="bold-text">Words per message</span> <br />
+                                    <input
+                                        type="text"
+                                        name="minWordsPerMessage"
+                                        class="settings-input"
+                                        onChange={e => this.handleSimpleStateChange(e, "minWordsPerMessage")}
+                                        value={this.state.minWordsPerMessage}
+                                    />
+                                    <span style={{"margin-left": "10px"}}>-</span>
+                                    <input
+                                        type="text"
+                                        name="maxWordsPerMessage"
+                                        class="settings-input"
+                                        onChange={e => this.handleSimpleStateChange(e, "maxWordsPerMessage")}
+                                        value={this.state.maxWordsPerMessage}
+                                    />
+                                </div>
+                                <div class="setting">
+                                    <span class="bold-text">Pass Stories</span> <br />
+                                    <label>
+                                        <input
+                                            type="radio"
+                                            value="MINIMIZE_WAIT"
+                                            checked={this.state.settings.passStyle === "MINIMIZE_WAIT"}
+                                            onChange={this.onPassStyleChange}
+                                        />
+                                        To Minimize Wait Time
+                                    </label>{" "}
+                                    <br />
+                                    <label>
+                                        <input
+                                            type="radio"
+                                            value="ORDERED"
+                                            checked={this.state.settings.passStyle === "ORDERED"}
+                                            onChange={this.onPassStyleChange}
+                                        />
+                                        In Order
+                                    </label>{" "}
+                                    <br />
+                                    <label>
+                                        <input
+                                            type="radio"
+                                            value="RANDOM"
+                                            checked={this.state.settings.passStyle === "RANDOM"}
+                                            onChange={this.onPassStyleChange}
+                                        />
+                                        Randomly
+                                    </label>
+                                </div>
+                            </div>
+                            <form onSubmit={this.startGame}>
+                                <input class="button start-game-button" type="submit" value="Start game" />
+                            </form>
+                        </div>
+                    )}
+                    {this.state.gallery && this.state.gallery.length > 0 && (
+                        <div>
+                            <span class="section-header">Gallery</span> <br />
+                            <ul>{gallery}</ul>
+                        </div>
+                    )}
+                </div>
             );
         } else if (this.state.lobbyState === "PLAYING") {
             let lobby = this.state.lobby;
@@ -433,7 +412,7 @@ export default class Lobby extends React.Component {
             let invalidInput = !this.isInputValid();
 
             return (
-                <div id="game-content" class="centered" style={{width: "700px"}}>
+                <div id="game-content">
                     {this.state.endTime && (
                         <div id="timer">
                             {roundOver && (
@@ -455,21 +434,22 @@ export default class Lobby extends React.Component {
                     <div>
                         <ul>{players}</ul>
                     </div>
-                    <div>{wordRangeSentence && wordRangeSentence}</div>
 
                     <LinedPaper text={currentStory} />
+
+                    <div>{wordRangeSentence && wordRangeSentence}</div>
+
                     <div>
                         <textarea
                             name="message"
                             onChange={e => this.handleSimpleStateChange(e, "message")}
                             value={this.state.message}
-                            class={invalidInput && "warning-border"}
-                            style={{width: "700px"}}
+                            class={invalidInput && "warning-text"}
+                            style={{width: "100%"}}
                             onKeyDown={this.messageAreaKeyDown}
                             placeholder="Write Shite here..."
                         />
-                        {belowMin && <span>Too few words</span>}
-                        {(aboveMax || tooLong) && <span>Too many words</span>}
+
                         <form id="game-buttons" onSubmit={this.sendMessage}>
                             <button
                                 id="complete-story-button"
@@ -484,7 +464,7 @@ export default class Lobby extends React.Component {
                     </div>
                     <div>
                         {this.state.lobby.creator.username === this.state.username && (
-                            <button class="button" type="button" onClick={this.endRound}>
+                            <button class="button end-round-button" type="button" onClick={this.endRound}>
                                 End Round
                             </button>
                         )}
@@ -497,7 +477,7 @@ export default class Lobby extends React.Component {
             );
             let myReadableStory = myCreatedStory && this.convertMessagesToStory(myCreatedStory.messages);
             return (
-                <div id="reading-content" class="centered" style={{paddingTop: "25px", width: "700px"}}>
+                <div id="reading-content">
                     <LinedPaper text={myReadableStory} />
                     {this.state.lobby.creator.username === this.state.username && (
                         <button class="button" type="button" onClick={this.startGame}>
