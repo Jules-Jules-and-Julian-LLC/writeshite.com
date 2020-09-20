@@ -155,6 +155,9 @@ ul {
     padding: 0;
     margin-bottom: 20px;
 }
+.shorten-card {
+    min-height: auto;
+}
 
 .card header {
     background: linear-gradient(white, white 33px, pink 35px, pink 36px);

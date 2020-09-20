@@ -113,16 +113,19 @@ export default class Lobby extends React.Component {
         event.preventDefault();
         let minWordsPerMessage = parseInt(this.state.minWordsPerMessage);
         let maxWordsPerMessage = parseInt(this.state.maxWordsPerMessage);
+        let roundTime = parseInt(this.state.roundTime);
         if (
-            isNaN(minWordsPerMessage) ||
+            (isNaN(minWordsPerMessage) ||
             isNaN(maxWordsPerMessage) ||
-            (minWordsPerMessage > 0 && maxWordsPerMessage > 0 && minWordsPerMessage <= maxWordsPerMessage)
+            (minWordsPerMessage > 0 && maxWordsPerMessage > 0 && minWordsPerMessage <= maxWordsPerMessage)) &&
+            (isNaN(roundTime) ||
+            roundTime > 0)
         ) {
             this.state.stompClient.send(
                 "/app/lobby." + this.state.lobbyId + ".startGame",
                 {},
                 JSON.stringify({
-                    roundTimeMinutes: parseInt(this.state.roundTime),
+                    roundTimeMinutes: roundTime,
                     minWordsPerMessage: minWordsPerMessage,
                     maxWordsPerMessage: maxWordsPerMessage,
                     passStyle: this.state.settings.passStyle
@@ -306,7 +309,7 @@ export default class Lobby extends React.Component {
         } else if (this.state.lobby && this.state.lobbyState === "GATHERING_PLAYERS") {
             let players = this.state.lobby.players.map(player => <li key={player.username}>{player.username}</li>);
             let gallery = this.state.gallery.map(story => (
-                <li key={story.creatingPlayer.username}><LinedPaper text={this.convertMessagesToStory(story.messages)} /></li>
+                <li key={story.creatingPlayer.username}><LinedPaper text={this.convertMessagesToStory(story.messages)} shorten={true} /></li>
             ));
             return (
                 <div id="lobby-content">

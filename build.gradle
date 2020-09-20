@@ -45,7 +45,7 @@ task copyWebApp(type: Copy) {
     from 'src/frontend/build'
     into 'src/main/resources/static/'
 }
-bootRun.dependsOn copyWebApp
+//bootRun.dependsOn copyWebApp
 
 task appNpmAuditFix(type: NpmTask) {
     description = "Fixes security vulnerabilities in project"
