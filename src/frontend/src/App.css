@@ -125,6 +125,10 @@ ul {
     font-size: 25px;
 }
 
+.previous-round-stories {
+    margin-top: 10px;
+}
+
 #poop-emoji:hover {
     animation: poop-spin infinite 1s ease;
     display: inline-block;
@@ -167,7 +171,6 @@ ul {
 .card-title {
     position: relative;
     left: 10px;
-    top: 8px;
     font-size: 30px;
     font-weight: bold;
 }

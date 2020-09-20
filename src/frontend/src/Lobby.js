@@ -70,7 +70,7 @@ export default class Lobby extends React.Component {
                                 message: "",
                                 lobbyState: responseObj.lobbyState,
                                 stories: responseObj.game.stories,
-                                gallery: responseObj.gallery,
+                                previousRoundStories: responseObj.previousRoundStories,
                                 settings: responseObj.game.settings,
                                 endTime: responseObj.game.endTime && new Date(responseObj.game.endTime)
                             });
@@ -84,7 +84,7 @@ export default class Lobby extends React.Component {
                                 lobby: responseObj.lobby,
                                 stories: stories,
                                 completedStories: responseObj.lobby.game.completedStories,
-                                gallery: responseObj.lobby.gallery,
+                                previousRoundStories: responseObj.lobby.previousRoundStories,
                                 endTime: responseObj.lobby.game.endTime && new Date(responseObj.lobby.game.endTime),
                                 settings: me.state.settings || responseObj.lobby.game.settings,
                                 roundTime: responseObj.lobby.game.settings.roundTimeMinutes
@@ -116,10 +116,9 @@ export default class Lobby extends React.Component {
         let roundTime = parseInt(this.state.roundTime);
         if (
             (isNaN(minWordsPerMessage) ||
-            isNaN(maxWordsPerMessage) ||
-            (minWordsPerMessage > 0 && maxWordsPerMessage > 0 && minWordsPerMessage <= maxWordsPerMessage)) &&
-            (isNaN(roundTime) ||
-            roundTime > 0)
+                isNaN(maxWordsPerMessage) ||
+                (minWordsPerMessage > 0 && maxWordsPerMessage > 0 && minWordsPerMessage <= maxWordsPerMessage)) &&
+            (isNaN(roundTime) || roundTime > 0)
         ) {
             this.state.stompClient.send(
                 "/app/lobby." + this.state.lobbyId + ".startGame",
@@ -308,8 +307,10 @@ export default class Lobby extends React.Component {
             );
         } else if (this.state.lobby && this.state.lobbyState === "GATHERING_PLAYERS") {
             let players = this.state.lobby.players.map(player => <li key={player.username}>{player.username}</li>);
-            let gallery = this.state.gallery.map(story => (
-                <li key={story.creatingPlayer.username}><LinedPaper text={this.convertMessagesToStory(story.messages)} shorten={true} /></li>
+            let previousRoundStories = this.state.previousRoundStories.map(story => (
+                <li key={story.creatingPlayer.username}>
+                    <LinedPaper text={this.convertMessagesToStory(story.messages)} title={story.creatingPlayer.username} shorten={true} />
+                </li>
             ));
             return (
                 <div id="lobby-content">
@@ -387,10 +388,19 @@ export default class Lobby extends React.Component {
                             </form>
                         </div>
                     )}
-                    {this.state.gallery && this.state.gallery.length > 0 && (
-                        <div>
-                            <span class="section-header">Gallery</span> <br />
-                            <ul>{gallery}</ul>
+                    <div>
+                        <button
+                            class="button"
+                            type="button"
+                            onClick={() => window.open("../gallery/" + this.state.lobbyId, "_blank")}
+                        >
+                            Open Gallery
+                        </button>
+                    </div>
+                    {this.state.previousRoundStories && this.state.previousRoundStories.length > 0 && (
+                        <div class="previous-round-stories">
+                            <span class="section-header">Previous Round Stories</span> <br />
+                            <ul>{previousRoundStories}</ul>
                         </div>
                     )}
                 </div>

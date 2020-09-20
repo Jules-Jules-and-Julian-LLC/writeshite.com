@@ -63,7 +63,7 @@ repositories {
 dependencies {
     compile "org.springframework.boot:spring-boot-starter-websocket"
     compile "org.jetbrains.kotlin:kotlin-reflect:1.4.10"
-    compile "com.fasterxml.jackson.module:jackson-module-kotlin:2.9.+"
+    compile "com.fasterxml.jackson.module:jackson-module-kotlin:2.11.+"
 
     testCompile "org.springframework.boot:spring-boot-starter-test"
 }

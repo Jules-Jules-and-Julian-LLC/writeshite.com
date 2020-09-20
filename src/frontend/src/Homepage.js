@@ -31,8 +31,21 @@ class Homepage extends React.Component {
                     <input type="text" name="lobbyId" placeholder="Lobby ID" onChange={this.handleLobbyIdChange} />
                 </div>
                 <form onSubmit={this.joinGame}>
-                    <input class="button" type="submit" value="Join game" />
+                    <input class="button" type="submit" value="Join Lobby" />
                 </form>
+                <div>
+                    <button
+                        class="button"
+                        type="button"
+                        onClick={() =>
+                            this.state.lobbyId &&
+                            this.state.lobbyId !== "" &&
+                            window.open("../gallery/" + this.state.lobbyId, "_blank")
+                        }
+                    >
+                        Open Gallery
+                    </button>
+                </div>
             </div>
         );
     }

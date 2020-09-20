@@ -9,5 +9,5 @@ import java.time.ZonedDateTime
 class StartGameResponse(lobby: Lobby, eventReceivedDatetime: ZonedDateTime): Response(ResponseType.START_GAME, eventReceivedDatetime) {
     val lobbyState: LobbyStateType = lobby.lobbyState
     val game: Game = lobby.game
-    val gallery = lobby.gallery
+    val previousRoundStories = lobby.previousRoundStories
 }

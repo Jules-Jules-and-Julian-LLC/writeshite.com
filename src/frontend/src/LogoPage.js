@@ -10,9 +10,7 @@ class LogoPage extends React.Component {
                         💩
                     </span>
                 </div>
-                <div class="logo-page-content">
-                    {this.props.children}
-                </div>
+                <div class="logo-page-content">{this.props.children}</div>
             </div>
         );
     }

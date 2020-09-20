@@ -10,7 +10,7 @@ class Lobby(val lobbyId: String, var creator: Player, settings: GameSettings) {
     val createDatetime: LocalDateTime = LocalDateTime.now()
     var lobbyState: LobbyStateType = LobbyStateType.GATHERING_PLAYERS
     var game: Game = Game(this, settings)
-    val gallery: MutableList<Story> = mutableListOf()
+    var previousRoundStories: MutableList<Story> = mutableListOf()
 
     fun addPlayer(player: Player): Pair<Lobby, Boolean> {
         var renamedPlayer = false
@@ -32,13 +32,18 @@ class Lobby(val lobbyId: String, var creator: Player, settings: GameSettings) {
     fun startGame(sessionId: String, settings: GameSettings) {
         if(isCreator(sessionId) && players.size > 1) {
             if(lobbyState == LobbyStateType.READING) {
-                gallery.addAll(game.completedStories)
+                previousRoundStories = game.completedStories
+                addStoriesToGallery(game.completedStories)
                 lobbyState = LobbyStateType.GATHERING_PLAYERS
             } else {
                 lobbyState = LobbyStateType.PLAYING
             }
             game = Game(this, settings)
         }
+    }
+
+    private fun addStoriesToGallery(completedStories: MutableList<Story>) {
+        GalleryManager.addStoriesToGallery(lobbyId, completedStories)
     }
 
     fun isCreator(sessionId: String): Boolean {
