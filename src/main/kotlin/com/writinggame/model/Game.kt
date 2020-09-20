@@ -96,7 +96,7 @@ class Game(lobby: Lobby, val settings: GameSettings) {
 
     private fun getMinimizeWaitPlayer(player: Player): Player {
         val notMyStories = stories.filter { it.key != player.username }
-        val minStories = notMyStories.map { it.value.size }.min()
+        val minStories = notMyStories.map { it.value.size }.minOrNull()
         val minStoryQueues = notMyStories.filter { it.value.size == minStories }
 
         if(minStoryQueues.keys.size == 1) {
@@ -107,7 +107,7 @@ class Game(lobby: Lobby, val settings: GameSettings) {
         return if(waitingPlayers.isEmpty()) {
             getRandomPlayer(player)
         } else {
-            getPlayerByUsername(waitingPlayers.minBy { getPlayerByUsername(it.key).waitingSince!! }!!.key)
+            getPlayerByUsername(waitingPlayers.minByOrNull { getPlayerByUsername(it.key).waitingSince!! }!!.key)
         }
     }
 

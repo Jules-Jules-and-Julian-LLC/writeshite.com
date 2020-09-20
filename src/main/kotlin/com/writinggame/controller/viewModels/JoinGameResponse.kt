@@ -4,5 +4,4 @@ import com.writinggame.domain.ResponseType
 import com.writinggame.model.Lobby
 import java.time.ZonedDateTime
 
-class JoinGameResponse(val lobby: Lobby, sessionId: String, eventReceivedDatetime: ZonedDateTime): Response(ResponseType.JOIN_GAME, eventReceivedDatetime) {
-}
+class JoinGameResponse(val lobby: Lobby, eventReceivedDatetime: ZonedDateTime): Response(ResponseType.JOIN_GAME, eventReceivedDatetime)

@@ -18,6 +18,7 @@ import org.springframework.messaging.simp.SimpMessageHeaderAccessor
 import org.springframework.messaging.simp.SimpMessageSendingOperations
 import org.springframework.messaging.simp.SimpMessageType
 import org.springframework.stereotype.Controller
+import org.springframework.web.bind.annotation.RequestMapping
 import java.time.ZonedDateTime
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
@@ -49,8 +50,10 @@ class LobbyController {
 
     @MessageMapping("/lobby.{lobbyId}.joinGame")
     @SendTo("/topic/lobby.{lobbyId}")
-    fun joinGame(username: String, @DestinationVariable("lobbyId") lobbyId: String,
-                 @Header("simpSessionId") sessionId: String): JoinGameResponse {
+    fun joinGame(
+        username: String, @DestinationVariable("lobbyId") lobbyId: String,
+        @Header("simpSessionId") sessionId: String
+    ): JoinGameResponse {
         return getExecutorServiceForLobby(lobbyId).submit<JoinGameResponse> {
             val receivedDatetime = ZonedDateTime.now()
             println("Got to join lobby with lobby id: $lobbyId and username: $username and session ID: $sessionId")
@@ -61,20 +64,24 @@ class LobbyController {
             if(renamedPlayer) {
                 val player = lobby.getPlayerBySessionId(sessionId)
                 if(player != null) {
-                    messagingTemplate.convertAndSendToUser(sessionId, "/queue/overrideUsername",
-                        player.username, createHeaders(sessionId))
+                    messagingTemplate.convertAndSendToUser(
+                        sessionId, "/queue/overrideUsername",
+                        player.username, createHeaders(sessionId)
+                    )
                 }
             }
 
-            return@submit JoinGameResponse(lobby, sessionId, receivedDatetime)
+            return@submit JoinGameResponse(lobby, receivedDatetime)
         }.get(TIMEOUT_MINUTES, TimeUnit.MINUTES)
     }
 
     @MessageMapping("/lobby.{lobbyId}.startGame")
     @SendTo("/topic/lobby.{lobbyId}")
-    fun startGame(@DestinationVariable("lobbyId") lobbyId: String,
-                  @Header("simpSessionId") sessionId: String,
-                  settings: GameSettings): StartGameResponse {
+    fun startGame(
+        @DestinationVariable("lobbyId") lobbyId: String,
+        @Header("simpSessionId") sessionId: String,
+        settings: GameSettings
+    ): StartGameResponse {
         return getExecutorServiceForLobby(lobbyId).submit<StartGameResponse> {
             val receivedDatetime = ZonedDateTime.now()
             val lobby = LobbyManager.getLobby(lobbyId)
@@ -87,9 +94,11 @@ class LobbyController {
 
     @MessageMapping("/lobby.{lobbyId}.newMessage")
     @SendTo("/topic/lobby.{lobbyId}")
-    fun newMessage(@DestinationVariable("lobbyId") lobbyId: String,
-                   @Header("simpSessionId") sessionId: String,
-                   receivedMessage: ReceivedMessage): StoryChangeResponse {
+    fun newMessage(
+        @DestinationVariable("lobbyId") lobbyId: String,
+        @Header("simpSessionId") sessionId: String,
+        receivedMessage: ReceivedMessage
+    ): StoryChangeResponse {
         return getExecutorServiceForLobby(lobbyId).submit<StoryChangeResponse> {
             val receivedDatetime = ZonedDateTime.now()
             val message = receivedMessage.message
@@ -106,9 +115,11 @@ class LobbyController {
 
     @MessageMapping("/lobby.{lobbyId}.completeStory")
     @SendTo("/topic/lobby.{lobbyId}")
-    fun completeStory(@DestinationVariable("lobbyId") lobbyId: String,
-                      @Header("simpSessionId") sessionId: String,
-                      storyId: String): StoryChangeResponse {
+    fun completeStory(
+        @DestinationVariable("lobbyId") lobbyId: String,
+        @Header("simpSessionId") sessionId: String,
+        storyId: String
+    ): StoryChangeResponse {
         return getExecutorServiceForLobby(lobbyId).submit<StoryChangeResponse> {
             val receivedDatetime = ZonedDateTime.now()
             val lobby = LobbyManager.getLobby(lobbyId)
@@ -122,8 +133,10 @@ class LobbyController {
 
     @MessageMapping("/lobby.{lobbyId}.endRound")
     @SendTo("/topic/lobby.{lobbyId}")
-    fun completeStory(@DestinationVariable("lobbyId") lobbyId: String,
-                      @Header("simpSessionId") sessionId: String): StoryChangeResponse {
+    fun completeStory(
+        @DestinationVariable("lobbyId") lobbyId: String,
+        @Header("simpSessionId") sessionId: String
+    ): StoryChangeResponse {
         return getExecutorServiceForLobby(lobbyId).submit<StoryChangeResponse> {
             val receivedDatetime = ZonedDateTime.now()
             val lobby = LobbyManager.getLobby(lobbyId)
@@ -133,5 +146,13 @@ class LobbyController {
 
             return@submit StoryChangeResponse(lobby, receivedDatetime)
         }.get(TIMEOUT_MINUTES, TimeUnit.MINUTES)
+    }
+
+    /**
+     * Have to redirect react routed paths to index.html so that the react router JS can handle the routing for us.
+     */
+    @RequestMapping(value = ["/", "/lobby", "/lobby/*"])
+    fun redirect(): String {
+        return "forward:/index.html"
     }
 }

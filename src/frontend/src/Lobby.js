@@ -406,9 +406,6 @@ export default class Lobby extends React.Component {
             let timeLeft = this.calculateRoundTimeLeft();
             let roundOver = !timeLeft.hasOwnProperty("seconds");
             let wordRangeSentence = this.getWordRangeSentence();
-            let belowMin = this.isBelowMin();
-            let aboveMax = this.isAboveMax();
-            let tooLong = this.isMessageTooLong();
             let invalidInput = !this.isInputValid();
 
             return (
