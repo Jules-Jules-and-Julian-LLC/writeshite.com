@@ -15,12 +15,9 @@ object LobbyManager {
      */
     fun joinLobby(username: String, sessionId: String, lobbyId: String): Pair<Lobby, Boolean> {
         val player = Player(sessionId, username)
+        val existingLobby = getLobby(lobbyId)
 
-        return if(!lobbyExists(lobbyId)) {
-            Pair(createLobby(lobbyId, player), false)
-        } else {
-            getLobby(lobbyId).addPlayer(player)
-        }
+        return existingLobby?.addPlayer(player) ?: Pair(createLobby(lobbyId, player), false)
     }
 
     fun leaveLobby(sessionId: String) {
@@ -29,15 +26,11 @@ object LobbyManager {
     }
 
     private fun cleanupEmptyLobbies() {
-        val emptyLobbies = lobbies.keys.filter { lobbyId -> getLobby(lobbyId).players.isEmpty() }
+        val emptyLobbies = lobbies.keys.filter { lobbyId -> getLobby(lobbyId)?.players?.isEmpty() ?: false }
         emptyLobbies.forEach{ lobbies.remove(it) }
     }
 
-    private fun lobbyExists(lobbyId: String): Boolean {
-        return lobbies[lobbyId] != null
-    }
-
-    fun getLobby(lobbyId: String): Lobby {
-        return lobbies[lobbyId] ?: throw Exception("missing lobby")
+    fun getLobby(lobbyId: String): Lobby? {
+        return lobbies[lobbyId]
     }
 }

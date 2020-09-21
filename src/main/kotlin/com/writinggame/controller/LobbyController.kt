@@ -49,15 +49,13 @@ class LobbyController {
 
     @MessageMapping("/lobby.{lobbyId}.joinGame")
     @SendTo("/topic/lobby.{lobbyId}")
-    fun joinGame(
-        username: String, @DestinationVariable("lobbyId") lobbyId: String,
-        @Header("simpSessionId") sessionId: String
-    ): Response {
+    fun joinGame(username: String, @DestinationVariable("lobbyId") lobbyId: String,
+        @Header("simpSessionId") sessionId: String): Response {
         return getExecutorServiceForLobby(lobbyId).submit<Response> {
             val receivedDatetime = ZonedDateTime.now()
 
             val error = RequestInputValidator.validateInput(receivedDatetime, lobbyId, username)
-            if(error != null) {
+            if (error != null) {
                 return@submit error
             }
 
@@ -66,9 +64,9 @@ class LobbyController {
             val lobby = lobbyPair.first
             val renamedPlayer = lobbyPair.second
 
-            if(renamedPlayer) {
+            if (renamedPlayer) {
                 val player = lobby.getPlayerBySessionId(sessionId)
-                if(player != null) {
+                if (player != null) {
                     messagingTemplate.convertAndSendToUser(
                         sessionId, "/queue/overrideUsername",
                         player.username, createHeaders(sessionId)
@@ -82,20 +80,17 @@ class LobbyController {
 
     @MessageMapping("/lobby.{lobbyId}.startGame")
     @SendTo("/topic/lobby.{lobbyId}")
-    fun startGame(
-        @DestinationVariable("lobbyId") lobbyId: String,
-        @Header("simpSessionId") sessionId: String,
-        settings: GameSettings
-    ): Response {
+    fun startGame(@DestinationVariable("lobbyId") lobbyId: String, @Header("simpSessionId") sessionId: String,
+        settings: GameSettings): Response {
         return getExecutorServiceForLobby(lobbyId).submit<Response> {
             val receivedDatetime = ZonedDateTime.now()
 
             val error = RequestInputValidator.validateInput(receivedDatetime, lobbyId)
-            if(error != null) {
+            if (error != null) {
                 return@submit error
             }
 
-            val lobby = LobbyManager.getLobby(lobbyId)
+            val lobby = LobbyManager.getLobby(lobbyId) ?: return@submit ErrorResponse(ErrorType.LOBBY_NOT_FOUND, receivedDatetime)
             lobby.startGame(sessionId, settings)
             println("Starting game for lobby $lobbyId player $sessionId can start: ${lobby.isCreator(sessionId)} round time: ${settings.roundTimeMinutes}")
 
@@ -105,23 +100,24 @@ class LobbyController {
 
     @MessageMapping("/lobby.{lobbyId}.newMessage")
     @SendTo("/topic/lobby.{lobbyId}")
-    fun newMessage(
-        @DestinationVariable("lobbyId") lobbyId: String,
-        @Header("simpSessionId") sessionId: String,
-        receivedMessage: ReceivedMessage
-    ): Response {
+    fun newMessage(@DestinationVariable("lobbyId") lobbyId: String, @Header("simpSessionId") sessionId: String,
+        receivedMessage: ReceivedMessage): Response {
         return getExecutorServiceForLobby(lobbyId).submit<Response> {
             val receivedDatetime = ZonedDateTime.now()
 
-            val error = RequestInputValidator.validateInput(receivedDatetime, lobbyId)
-            if(error != null) {
+            val message = receivedMessage.message
+            val storyId = receivedMessage.storyId
+            val lobby = LobbyManager.getLobby(lobbyId) ?: return@submit ErrorResponse(ErrorType.LOBBY_NOT_FOUND, receivedDatetime)
+            println("Adding message for lobby $lobbyId player $sessionId message $message storyId $storyId")
+
+            val error = RequestInputValidator.validateInput(receivedDatetime, lobbyId, message = message, settings = lobby.game.settings)
+            if (error != null) {
                 return@submit error
             }
 
-            val message = receivedMessage.message
-            val storyId = receivedMessage.storyId
-            val lobby = LobbyManager.getLobby(lobbyId)
-            println("Adding message for lobby $lobbyId player $sessionId message $message storyId $storyId")
+            if(!lobby.canAddMessageToStory(storyId, sessionId)) {
+                return@submit ErrorResponse(ErrorType.CANT_ADD_MESSAGE_TO_STORY, receivedDatetime)
+            }
 
             lobby.addMessageToStory(message, storyId, sessionId)
             lobby.game.passStory(sessionId, storyId)
@@ -132,20 +128,17 @@ class LobbyController {
 
     @MessageMapping("/lobby.{lobbyId}.completeStory")
     @SendTo("/topic/lobby.{lobbyId}")
-    fun completeStory(
-        @DestinationVariable("lobbyId") lobbyId: String,
-        @Header("simpSessionId") sessionId: String,
-        storyId: String
-    ): Response {
+    fun completeStory(@DestinationVariable("lobbyId") lobbyId: String,
+                      @Header("simpSessionId") sessionId: String, storyId: String): Response {
         return getExecutorServiceForLobby(lobbyId).submit<Response> {
             val receivedDatetime = ZonedDateTime.now()
 
             val error = RequestInputValidator.validateInput(receivedDatetime, lobbyId)
-            if(error != null) {
+            if (error != null) {
                 return@submit error
             }
 
-            val lobby = LobbyManager.getLobby(lobbyId)
+            val lobby = LobbyManager.getLobby(lobbyId) ?: return@submit ErrorResponse(ErrorType.LOBBY_NOT_FOUND, receivedDatetime)
             println("Completing story: $storyId for lobby: $lobbyId by user: $sessionId")
 
             lobby.completeStory(storyId, sessionId)
@@ -156,19 +149,16 @@ class LobbyController {
 
     @MessageMapping("/lobby.{lobbyId}.endRound")
     @SendTo("/topic/lobby.{lobbyId}")
-    fun completeStory(
-        @DestinationVariable("lobbyId") lobbyId: String,
-        @Header("simpSessionId") sessionId: String
-    ): Response {
+    fun completeStory(@DestinationVariable("lobbyId") lobbyId: String, @Header("simpSessionId") sessionId: String): Response {
         return getExecutorServiceForLobby(lobbyId).submit<Response> {
             val receivedDatetime = ZonedDateTime.now()
 
             val error = RequestInputValidator.validateInput(receivedDatetime, lobbyId)
-            if(error != null) {
+            if (error != null) {
                 return@submit error
             }
 
-            val lobby = LobbyManager.getLobby(lobbyId)
+            val lobby = LobbyManager.getLobby(lobbyId) ?: return@submit ErrorResponse(ErrorType.LOBBY_NOT_FOUND, receivedDatetime)
             println("Ending round for lobby: $lobbyId by user: $sessionId")
 
             lobby.endRound(sessionId)

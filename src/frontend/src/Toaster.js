@@ -39,6 +39,18 @@ class Toaster extends React.Component {
     static warnInvalidUsername() {
         Toaster.toast("error", "Username is invalid. <br />Usernames must be 1-64 characters long.");
     }
+
+    static warnInvalidMessage() {
+        Toaster.toast("error", "Message is invalid.");
+    }
+
+    static warnCantAddMessageToStory() {
+        Toaster.toast("error", "Can't add message to story, that story is not in your queue.");
+    }
+
+    static warnLobbyNotFound() {
+        Toaster.toast("error", "Lobby not found.");
+    }
 }
 
 export default Toaster;

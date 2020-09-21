@@ -40,12 +40,11 @@ task appNpmBuild(type: NpmTask) {
     args = ["run", "build"]
 }
 
-task copyWebApp(type: Copy) {
+task buildFrontendForProduction(type: Copy) {
     dependsOn appNpmBuild
     from 'src/frontend/build'
     into 'src/main/resources/static/'
 }
-//bootRun.dependsOn copyWebApp
 
 task appNpmAuditFix(type: NpmTask) {
     description = "Fixes security vulnerabilities in project"

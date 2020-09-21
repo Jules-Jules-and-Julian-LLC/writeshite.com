@@ -3,7 +3,6 @@ import SockJS from "sockjs-client";
 import Stomp from "stompjs";
 import PaperStack from "./PaperStack";
 import LinedPaper from "./LinedPaper";
-import Toaster from "./Toaster";
 import InputValidator from "./InputValidator";
 
 export default class Lobby extends React.Component {
@@ -146,7 +145,15 @@ export default class Lobby extends React.Component {
         event && event.preventDefault();
         let currentStory = this.getCurrentStory();
 
-        if (currentStory && this.state.message && this.state.message !== "" && this.isInputValid()) {
+        if (
+            currentStory &&
+            InputValidator.validateMessage(
+                this.state.message,
+                this.state.settings.minWordsPerMessage,
+                this.state.settings.maxWordsPerMessage,
+                true
+            )
+        ) {
             this.state.stompClient.send(
                 "/app/lobby." + this.state.lobbyId + ".newMessage",
                 {},
@@ -232,14 +239,6 @@ export default class Lobby extends React.Component {
         }
     }
 
-    getWordCount(text) {
-        let trimmed = text.trim();
-        if (trimmed === "") {
-            return 0;
-        }
-        return trimmed.split(/\s+/).length;
-    }
-
     /*
         You must use at least N words.
         You must use at most N words.
@@ -265,28 +264,6 @@ export default class Lobby extends React.Component {
         }
 
         return sentence;
-    }
-
-    isBelowMin() {
-        return (
-            this.state.settings.minWordsPerMessage &&
-            this.getWordCount(this.state.message) < this.state.settings.minWordsPerMessage
-        );
-    }
-
-    isAboveMax() {
-        return (
-            this.state.settings.maxWordsPerMessage &&
-            this.getWordCount(this.state.message) > this.state.settings.maxWordsPerMessage
-        );
-    }
-
-    isMessageTooLong() {
-        return this.state.message.length > 30000;
-    }
-
-    isInputValid() {
-        return !this.isBelowMin() && !this.isAboveMax() && !this.isMessageTooLong();
     }
 
     render() {
@@ -427,7 +404,15 @@ export default class Lobby extends React.Component {
             let timeLeft = this.calculateRoundTimeLeft();
             let roundOver = !timeLeft.hasOwnProperty("seconds");
             let wordRangeSentence = this.getWordRangeSentence();
-            let invalidInput = !this.isInputValid();
+            let validInput =
+                !this.state.message ||
+                this.state.message === "" ||
+                InputValidator.validateMessage(
+                    this.state.message,
+                    this.state.settings.minWordsPerMessage,
+                    this.state.settings.maxWordsPerMessage,
+                    false
+                );
 
             return (
                 <div id="game-content">
@@ -453,33 +438,38 @@ export default class Lobby extends React.Component {
                         <ul>{players}</ul>
                     </div>
 
-                    <LinedPaper text={currentStory} />
+                    {!currentStory && <div class="waiting-for-story">Waiting to have a story passed to you...</div>}
+                    {currentStory && (
+                        <div>
+                            <LinedPaper text={currentStory} />
 
-                    <div>{wordRangeSentence && wordRangeSentence}</div>
+                            <div>{wordRangeSentence && wordRangeSentence}</div>
 
-                    <div>
-                        <textarea
-                            name="message"
-                            onChange={e => this.handleSimpleStateChange(e, "message")}
-                            value={this.state.message}
-                            class={invalidInput && "warning-text"}
-                            style={{width: "100%"}}
-                            onKeyDown={this.messageAreaKeyDown}
-                            placeholder="Write Shite here..."
-                        />
+                            <div>
+                                <textarea
+                                    name="message"
+                                    onChange={e => this.handleSimpleStateChange(e, "message")}
+                                    value={this.state.message}
+                                    class={!validInput && "warning-text"}
+                                    style={{width: "100%"}}
+                                    onKeyDown={this.messageAreaKeyDown}
+                                    placeholder="Write Shite here..."
+                                />
 
-                        <form id="game-buttons" onSubmit={this.sendMessage}>
-                            <button
-                                id="complete-story-button"
-                                class="button"
-                                type="button"
-                                onClick={this.completeStory}
-                            >
-                                Complete Story
-                            </button>
-                            <input class="button" type="submit" value="Send" />
-                        </form>
-                    </div>
+                                <form id="game-buttons" onSubmit={this.sendMessage}>
+                                    <button
+                                        id="complete-story-button"
+                                        class="button"
+                                        type="button"
+                                        onClick={this.completeStory}
+                                    >
+                                        Complete Story
+                                    </button>
+                                    <input class="button" type="submit" value="Send" />
+                                </form>
+                            </div>
+                        </div>
+                    )}
                     <div>
                         {this.state.lobby.creator.username === this.state.username && (
                             <button class="button end-round-button" type="button" onClick={this.endRound}>

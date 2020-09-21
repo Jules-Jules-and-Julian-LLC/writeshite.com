@@ -101,4 +101,11 @@ class Lobby(val lobbyId: String, var creator: Player, settings: GameSettings) {
             lobbyState = LobbyStateType.READING
         }
     }
+
+    fun canAddMessageToStory(storyId: String, sessionId: String): Boolean {
+        val story = game.getStory(storyId)
+        val player = getPlayerBySessionId(sessionId)
+        return player != null && story != null && (game.stories[player.username]?.contains(story) != null)
+
+    }
 }
