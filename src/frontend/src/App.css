@@ -84,6 +84,13 @@ body {
     text-align: center;
 }
 
+.gallery-header {
+   font-family: "Dancing Script", latin;
+   font-size: 30px;
+   white-space: nowrap;
+   margin-top: 10px;
+}
+
 #timer {
     font-size: 35px;
     margin-top: 25px;
@@ -167,9 +174,6 @@ ul {
     margin-bottom: 20px;
     word-wrap: anywhere;
 }
-.shorten-card {
-    min-height: auto;
-}
 
 .card header {
     background: linear-gradient(white, white 97%, pink 99%, pink 100%);
@@ -192,4 +196,8 @@ ul {
     padding-top: 5px;
     padding-left: 20px;
     min-height: 5em;
+}
+
+.shorten-card-text {
+    min-height: auto;
 }

@@ -3,11 +3,11 @@ import React from "react";
 class LinedPaper extends React.Component {
     render() {
         return (
-            <div class={this.props.shorten === true ? "card shorten-card" : "card"}>
+            <div class="card">
                 <header>
                     <span class="card-title">{this.props.title}</span>
                 </header>
-                <p class="card-text">{this.props.text}</p>
+                <p class={this.props.shorten === true ? "card-text shorten-card-text" : "card-text"}>{this.props.text}</p>
             </div>
         );
     }

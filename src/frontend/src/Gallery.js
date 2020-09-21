@@ -55,6 +55,9 @@ export default class Lobby extends React.Component {
                     ));
                 body = (
                     <div>
+                        <div class="gallery-header">
+                            Only The Finest Shite, Courtesy Of The {this.state.lobbyId} Lobby
+                        </div>
                         <ul>{entries}</ul>
                     </div>
                 );

@@ -26,6 +26,8 @@ class Game(lobby: Lobby, val settings: GameSettings) {
 
             if(lobbyState == LobbyStateType.GATHERING_PLAYERS) {
                 playerStories.add(Story(player))
+            } else {
+                player.waitingSince = ZonedDateTime.now()
             }
         }
     }
