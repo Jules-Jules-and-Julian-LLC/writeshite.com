@@ -33,11 +33,11 @@ class Toaster extends React.Component {
     }
 
     static warnInvalidLobbyId() {
-        Toaster.toast("error", "Lobby name is invalid. <br />Lobby names must be 1-64 alphanumeric characters.");
+        Toaster.toast("error", "Lobby name is invalid. <br />Lobby names must be 1-32 alphanumeric characters.");
     }
 
     static warnInvalidUsername() {
-        Toaster.toast("error", "Username is invalid. <br />Usernames must be 1-64 characters long.");
+        Toaster.toast("error", "Username is invalid. <br />Usernames must be 1-32 characters long.");
     }
 
     static warnInvalidMessage() {

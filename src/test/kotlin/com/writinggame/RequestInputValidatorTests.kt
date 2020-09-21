@@ -14,12 +14,12 @@ class RequestInputValidatorTests {
     @Test
     fun lobbyIdValid() {
         assertNull(RequestInputValidator.validateInput(now, "123"))
-        assertNull(RequestInputValidator.validateInput(now, "as-1323__--123oiqweuASDZXCddASDASDdf"))
-        //64 chars is max
-        assertNull(RequestInputValidator.validateInput(now, "asdf123asdf123asdf123asdf123asdf123asdf123asdf123asdf123asdf1234"))
+        assertNull(RequestInputValidator.validateInput(now, "as-1323__--123oiqweuASDZXCdd"))
+        //32 chars is max
+        assertNull(RequestInputValidator.validateInput(now, "asdf123asdf123asdf123asdf123asdd"))
 
-        //65 characters is invalid
-        assertErrorWithType(ErrorType.INVALID_LOBBY_ID, RequestInputValidator.validateInput(now, "asdf123asdf123asdf123asdf123asdf123asdf123asdf123asdf123asdf12345"))
+        //33 characters is invalid
+        assertErrorWithType(ErrorType.INVALID_LOBBY_ID, RequestInputValidator.validateInput(now, "asdf123asdf123asdf123asdf123asdd2"))
         //empty is invalid
         assertErrorWithType(ErrorType.INVALID_LOBBY_ID, RequestInputValidator.validateInput(now, ""))
         //non-alphanumeric is invalid
@@ -29,12 +29,12 @@ class RequestInputValidatorTests {
     @Test
     fun usernameValid() {
         assertNull(RequestInputValidator.validateInput(now, username = "123"))
-        assertNull(RequestInputValidator.validateInput(now, username = "as-1323__--123oiqweuASDZXCddASDASDdf"))
-        //64 chars is max
-        assertNull(RequestInputValidator.validateInput(now, username = "asdf123asdf123asdf123asdf123asdf123asdf123asdf123asdf123asdf1234"))
+        assertNull(RequestInputValidator.validateInput(now, username = "as-1323__--123oiqweuASDZX"))
+        //32 chars is max
+        assertNull(RequestInputValidator.validateInput(now, username = "asdf123asdf123asdf123asdf123asdd"))
 
-        //65 characters is invalid
-        assertErrorWithType(ErrorType.INVALID_USERNAME, RequestInputValidator.validateInput(now, username = "asdf123asdf123asdf123asdf123asdf123asdf123asdf123asdf123asdf12345"))
+        //33 characters is invalid
+        assertErrorWithType(ErrorType.INVALID_USERNAME, RequestInputValidator.validateInput(now, username = "asdf123asdf123asdf123asdf123asdd2"))
         assertErrorWithType(ErrorType.INVALID_USERNAME, RequestInputValidator.validateInput(now, username = "really long and obnoxious name asdf areally long and obnoxious name asdf a2"))
         //empty is invalid
         assertErrorWithType(ErrorType.INVALID_USERNAME, RequestInputValidator.validateInput(now, username = ""))

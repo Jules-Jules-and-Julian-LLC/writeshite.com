@@ -34,10 +34,10 @@ object RequestInputValidator {
     }
 
     private fun isLobbyIdValid(lobbyId: String): Boolean {
-        return lobbyId.isNotEmpty() && lobbyId.matches("""^[A-Za-z0-9-_]{1,64}${'$'}""".toRegex())
+        return lobbyId.isNotEmpty() && lobbyId.matches("""^[A-Za-z0-9-_]{1,32}${'$'}""".toRegex())
     }
 
     private fun isUsernameValid(username: String): Boolean {
-        return username.isNotEmpty() && username.length <= 64
+        return username.isNotEmpty() && username.length <= 32
     }
 }

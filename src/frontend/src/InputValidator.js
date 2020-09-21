@@ -3,7 +3,7 @@ import Toaster from "./Toaster";
 
 class InputValidator extends React.Component {
     static validateLobbyId(lobbyId) {
-        if (lobbyId && lobbyId !== "" && lobbyId.match(/^[A-Za-z0-9-_]{1,64}$/)) {
+        if (lobbyId && lobbyId !== "" && lobbyId.match(/^[A-Za-z0-9-_]{1,32}$/)) {
             return true;
         } else {
             Toaster.warnInvalidLobbyId();
@@ -12,7 +12,7 @@ class InputValidator extends React.Component {
     }
 
     static validateUsername(username) {
-        if (username && username !== "" && username.length > 0 && username.length <= 64) {
+        if (username && username !== "" && username.length > 0 && username.length <= 32) {
             return true;
         } else {
             Toaster.warnInvalidUsername();
