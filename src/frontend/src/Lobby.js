@@ -309,7 +309,11 @@ export default class Lobby extends React.Component {
             let players = this.state.lobby.players.map(player => <li key={player.username}>{player.username}</li>);
             let previousRoundStories = this.state.previousRoundStories.map(story => (
                 <li key={story.creatingPlayer.username}>
-                    <LinedPaper text={this.convertMessagesToStory(story.messages)} title={story.creatingPlayer.username} shorten={true} />
+                    <LinedPaper
+                        text={this.convertMessagesToStory(story.messages)}
+                        title={story.creatingPlayer.username}
+                        shorten={true}
+                    />
                 </li>
             ));
             return (

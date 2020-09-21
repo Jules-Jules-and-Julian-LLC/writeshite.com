@@ -8,7 +8,8 @@ export default class Lobby extends React.Component {
 
         this.state = {
             lobbyId: pathname[pathname.length - 1],
-            entries: []
+            entries: [],
+            fromHomepage: new URLSearchParams(window.location.search).get("fromHomepage") === "true"
         };
     }
 
@@ -27,10 +28,12 @@ export default class Lobby extends React.Component {
         }
     }
 
+    //TODO cleanup so not copy pasted buttons then use this.state.fromHomepage to change button behavior
     render() {
         if (!this.state.entries) {
             return <div id="connecting-to-lobby">Loading gallery, please wait...</div>;
         } else {
+            let body;
             if (this.state.entries.length > 0) {
                 let entries = this.state.entries
                     .sort((a, b) => b.createDatetime - a.createDatetime)
@@ -39,37 +42,38 @@ export default class Lobby extends React.Component {
                             <LinedPaper text={entry.text} title={entry.creatorUsername} shorten={true} />
                         </li>
                     ));
-                return (
+                body = (
                     <div>
-                        <div>
-                            <button
-                                class="button"
-                                type="button"
-                                onClick={() => window.open("../lobby/" + this.state.lobbyId, "_self")}
-                            >
-                                Go To Lobby
-                            </button>
-                        </div>
                         <ul>{entries}</ul>
                     </div>
                 );
             } else {
-                return (
+                body = (
+                    <div>
+                        No stories for that lobby yet. <br />
+                        Go Write some Shite!
+                    </div>
+                );
+            }
+
+            return (
+                <div>
                     <div>
                         <button
                             class="button"
                             type="button"
-                            onClick={() => window.open("../lobby/" + this.state.lobbyId, "_self")}
+                            onClick={() =>
+                                this.state.fromHomepage
+                                    ? window.open("../lobby/" + this.state.lobbyId, "_self")
+                                    : window.close()
+                            }
                         >
-                            Go To Lobby
+                            {this.state.fromHomepage ? "Go To Lobby" : "Close Gallery"}
                         </button>
-                        <div>
-                            No stories for that lobby yet. <br />
-                            Go Write some Shite!
-                        </div>
                     </div>
-                );
-            }
+                    <div>{body}</div>
+                </div>
+            );
         }
     }
 }

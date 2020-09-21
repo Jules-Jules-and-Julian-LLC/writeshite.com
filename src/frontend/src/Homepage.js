@@ -40,7 +40,7 @@ class Homepage extends React.Component {
                         onClick={() =>
                             this.state.lobbyId &&
                             this.state.lobbyId !== "" &&
-                            window.open("../gallery/" + this.state.lobbyId, "_blank")
+                            window.open("../gallery/" + this.state.lobbyId + "?fromHomepage=true", "_blank")
                         }
                     >
                         Open Gallery
