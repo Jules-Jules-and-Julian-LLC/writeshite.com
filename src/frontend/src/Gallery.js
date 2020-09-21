@@ -1,5 +1,6 @@
 import React from "react";
 import LinedPaper from "./LinedPaper";
+import InputValidator from "./InputValidator";
 
 export default class Lobby extends React.Component {
     constructor(props) {
@@ -11,6 +12,17 @@ export default class Lobby extends React.Component {
             entries: [],
             fromHomepage: new URLSearchParams(window.location.search).get("fromHomepage") === "true"
         };
+
+        this.handleButtonClick = this.handleButtonClick.bind(this);
+    }
+
+    handleButtonClick(event) {
+        event && event.preventDefault();
+        if (this.state.fromHomepage && InputValidator.validateLobbyId(this.state.lobbyId)) {
+            window.open("../lobby/" + this.state.lobbyId, "_self");
+        } else {
+            window.close();
+        }
     }
 
     componentDidMount() {
@@ -28,7 +40,6 @@ export default class Lobby extends React.Component {
         }
     }
 
-    //TODO cleanup so not copy pasted buttons then use this.state.fromHomepage to change button behavior
     render() {
         if (!this.state.entries) {
             return <div id="connecting-to-lobby">Loading gallery, please wait...</div>;
@@ -59,15 +70,7 @@ export default class Lobby extends React.Component {
             return (
                 <div>
                     <div>
-                        <button
-                            class="button"
-                            type="button"
-                            onClick={() =>
-                                this.state.fromHomepage
-                                    ? window.open("../lobby/" + this.state.lobbyId, "_self")
-                                    : window.close()
-                            }
-                        >
+                        <button class="button" type="button" onClick={this.handleButtonClick}>
                             {this.state.fromHomepage ? "Go To Lobby" : "Close Gallery"}
                         </button>
                     </div>

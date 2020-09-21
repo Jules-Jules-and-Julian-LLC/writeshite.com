@@ -3,6 +3,8 @@ import SockJS from "sockjs-client";
 import Stomp from "stompjs";
 import PaperStack from "./PaperStack";
 import LinedPaper from "./LinedPaper";
+import Toaster from "./Toaster";
+import InputValidator from "./InputValidator";
 
 export default class Lobby extends React.Component {
     constructor(props) {
@@ -97,6 +99,8 @@ export default class Lobby extends React.Component {
                                 completedStories: responseObj.completedStories,
                                 lobbyState: responseObj.lobbyState
                             });
+                        } else if (responseType === "ERROR") {
+                            InputValidator.warnBasedOnErrorType(responseObj.errorType);
                         } else {
                             console.log("ERROR: Unhandled responseType: " + responseType);
                         }
@@ -171,7 +175,7 @@ export default class Lobby extends React.Component {
 
     setUsername(event) {
         event.preventDefault();
-        if (this.state.username !== "") {
+        if (InputValidator.validateUsername(this.state.username)) {
             this.setState({clickedSetUsername: true});
             this.state.stompClient.send("/app/lobby." + this.state.lobbyId + ".joinGame", {}, this.state.username);
         }

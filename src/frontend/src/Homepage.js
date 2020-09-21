@@ -1,5 +1,6 @@
 import React from "react";
 import {withRouter} from "react-router";
+import InputValidator from "./InputValidator";
 
 class Homepage extends React.Component {
     constructor(props) {
@@ -9,13 +10,21 @@ class Homepage extends React.Component {
         };
 
         this.joinGame = this.joinGame.bind(this);
+        this.openGallery = this.openGallery.bind(this);
         this.handleLobbyIdChange = this.handleLobbyIdChange.bind(this);
     }
 
     joinGame(event) {
         event.preventDefault();
-        if (this.state.lobbyId && this.state.lobbyId !== "") {
+        if (InputValidator.validateLobbyId(this.state.lobbyId)) {
             this.props.history.push("/lobby/" + this.state.lobbyId);
+        }
+    }
+
+    openGallery(event) {
+        event.preventDefault();
+        if (InputValidator.validateLobbyId(this.state.lobbyId)) {
+            window.open("../gallery/" + this.state.lobbyId + "?fromHomepage=true", "_blank");
         }
     }
 
@@ -28,21 +37,13 @@ class Homepage extends React.Component {
         return (
             <div id="homepage-content">
                 <div>
-                    <input type="text" name="lobbyId" placeholder="Lobby ID" onChange={this.handleLobbyIdChange} />
+                    <input type="text" name="lobbyId" placeholder="Lobby Name" onChange={this.handleLobbyIdChange} />
                 </div>
                 <form onSubmit={this.joinGame}>
                     <input class="button" type="submit" value="Join Lobby" />
                 </form>
                 <div>
-                    <button
-                        class="button"
-                        type="button"
-                        onClick={() =>
-                            this.state.lobbyId &&
-                            this.state.lobbyId !== "" &&
-                            window.open("../gallery/" + this.state.lobbyId + "?fromHomepage=true", "_blank")
-                        }
-                    >
+                    <button class="button" type="button" onClick={this.openGallery}>
                         Open Gallery
                     </button>
                 </div>

@@ -14,6 +14,7 @@
         "react-router-dom": "^5.1.2",
         "react-scripts": "^3.4.3",
         "stompjs": "^2.3.3",
+        "toastr": "^2.1.4",
         "typescript": "^3.8.3"
     },
     "proxy": "http://localhost:8080",
@@ -23,7 +24,7 @@
         "test": "react-scripts test",
         "eject": "react-scripts eject",
         "lint": "eslint .",
-        "format": "prettier --print-width 120 --write \"**/*.+(js|jsx|json|css|md)\""
+        "format": "prettier --print-width 120 --write \"src/*.+(js|jsx|json|css|md)\""
     },
     "eslintConfig": {
         "extends": "react-app"

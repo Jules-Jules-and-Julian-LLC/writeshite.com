@@ -69,6 +69,14 @@ body {
     text-align: center;
 }
 
+#lobby-content {
+    word-wrap: anywhere;
+}
+
+#game-content {
+    word-wrap: anywhere;
+}
+
 #connecting-to-lobby {
     font-size: 25px;
     margin-top: 25px;
@@ -156,6 +164,7 @@ ul {
     width: 700px;
     padding: 0;
     margin-bottom: 20px;
+    word-wrap: anywhere;
 }
 .shorten-card {
     min-height: auto;

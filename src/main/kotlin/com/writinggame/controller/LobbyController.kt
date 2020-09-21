@@ -1,10 +1,9 @@
 package com.writinggame.controller
 
-import com.writinggame.controller.viewModels.JoinGameResponse
-import com.writinggame.controller.viewModels.ReceivedMessage
-import com.writinggame.controller.viewModels.StartGameResponse
-import com.writinggame.controller.viewModels.StoryChangeResponse
+import com.writinggame.controller.viewModels.*
+import com.writinggame.domain.ErrorType
 import com.writinggame.model.GameSettings
+import com.writinggame.model.Lobby
 import com.writinggame.model.LobbyManager
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
@@ -53,9 +52,15 @@ class LobbyController {
     fun joinGame(
         username: String, @DestinationVariable("lobbyId") lobbyId: String,
         @Header("simpSessionId") sessionId: String
-    ): JoinGameResponse {
-        return getExecutorServiceForLobby(lobbyId).submit<JoinGameResponse> {
+    ): Response {
+        return getExecutorServiceForLobby(lobbyId).submit<Response> {
             val receivedDatetime = ZonedDateTime.now()
+
+            val error = RequestInputValidator.validateInput(receivedDatetime, lobbyId, username)
+            if(error != null) {
+                return@submit error
+            }
+
             println("Got to join lobby with lobby id: $lobbyId and username: $username and session ID: $sessionId")
             val lobbyPair = LobbyManager.joinLobby(username, sessionId, lobbyId)
             val lobby = lobbyPair.first
@@ -81,9 +86,15 @@ class LobbyController {
         @DestinationVariable("lobbyId") lobbyId: String,
         @Header("simpSessionId") sessionId: String,
         settings: GameSettings
-    ): StartGameResponse {
-        return getExecutorServiceForLobby(lobbyId).submit<StartGameResponse> {
+    ): Response {
+        return getExecutorServiceForLobby(lobbyId).submit<Response> {
             val receivedDatetime = ZonedDateTime.now()
+
+            val error = RequestInputValidator.validateInput(receivedDatetime, lobbyId)
+            if(error != null) {
+                return@submit error
+            }
+
             val lobby = LobbyManager.getLobby(lobbyId)
             lobby.startGame(sessionId, settings)
             println("Starting game for lobby $lobbyId player $sessionId can start: ${lobby.isCreator(sessionId)} round time: ${settings.roundTimeMinutes}")
@@ -98,9 +109,15 @@ class LobbyController {
         @DestinationVariable("lobbyId") lobbyId: String,
         @Header("simpSessionId") sessionId: String,
         receivedMessage: ReceivedMessage
-    ): StoryChangeResponse {
-        return getExecutorServiceForLobby(lobbyId).submit<StoryChangeResponse> {
+    ): Response {
+        return getExecutorServiceForLobby(lobbyId).submit<Response> {
             val receivedDatetime = ZonedDateTime.now()
+
+            val error = RequestInputValidator.validateInput(receivedDatetime, lobbyId)
+            if(error != null) {
+                return@submit error
+            }
+
             val message = receivedMessage.message
             val storyId = receivedMessage.storyId
             val lobby = LobbyManager.getLobby(lobbyId)
@@ -119,9 +136,15 @@ class LobbyController {
         @DestinationVariable("lobbyId") lobbyId: String,
         @Header("simpSessionId") sessionId: String,
         storyId: String
-    ): StoryChangeResponse {
-        return getExecutorServiceForLobby(lobbyId).submit<StoryChangeResponse> {
+    ): Response {
+        return getExecutorServiceForLobby(lobbyId).submit<Response> {
             val receivedDatetime = ZonedDateTime.now()
+
+            val error = RequestInputValidator.validateInput(receivedDatetime, lobbyId)
+            if(error != null) {
+                return@submit error
+            }
+
             val lobby = LobbyManager.getLobby(lobbyId)
             println("Completing story: $storyId for lobby: $lobbyId by user: $sessionId")
 
@@ -136,9 +159,15 @@ class LobbyController {
     fun completeStory(
         @DestinationVariable("lobbyId") lobbyId: String,
         @Header("simpSessionId") sessionId: String
-    ): StoryChangeResponse {
-        return getExecutorServiceForLobby(lobbyId).submit<StoryChangeResponse> {
+    ): Response {
+        return getExecutorServiceForLobby(lobbyId).submit<Response> {
             val receivedDatetime = ZonedDateTime.now()
+
+            val error = RequestInputValidator.validateInput(receivedDatetime, lobbyId)
+            if(error != null) {
+                return@submit error
+            }
+
             val lobby = LobbyManager.getLobby(lobbyId)
             println("Ending round for lobby: $lobbyId by user: $sessionId")
 
@@ -151,7 +180,7 @@ class LobbyController {
     /**
      * Have to redirect react routed paths to index.html so that the react router JS can handle the routing for us.
      */
-    @RequestMapping(value = ["/", "/lobby", "/lobby/*"])
+    @RequestMapping(value = ["/", "/lobby", "/lobby/*", "/gallery", "/gallery/*"])
     fun redirect(): String {
         return "forward:/index.html"
     }
