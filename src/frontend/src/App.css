@@ -152,9 +152,7 @@ ul {
 .card {
     font-family: "Indie Flower", normal;
     background-color: white;
-    background: repeating-linear-gradient(white, white 25px, #9198e5 26px, #9198e5 27px);
     background-position-y: 34px;
-    min-height: 300px;
     width: 700px;
     padding: 0;
     margin-bottom: 20px;
@@ -164,8 +162,7 @@ ul {
 }
 
 .card header {
-    background: linear-gradient(white, white 33px, pink 35px, pink 36px);
-    height: 36px;
+    background: linear-gradient(white, white 97%, pink 99%, pink 100%);
 }
 
 .card-title {
@@ -176,9 +173,13 @@ ul {
 }
 
 .card-text {
+    background: repeating-linear-gradient(white, white 25px, #9198e5 26px, #9198e5 27px);
     position: relative;
-    font-size: 21px;
-    margin: 0 20px;
+    font-size: 22px;
+    margin: 0 0px;
     line-height: 27px;
     text-align: left;
+    padding-top: 5px;
+    padding-left: 20px;
+    min-height: 5em;
 }

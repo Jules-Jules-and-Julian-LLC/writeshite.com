@@ -16,7 +16,7 @@ object GalleryManager {
         }
         val file = getFileForLobby(lobbyId)
         if(!file.exists()) {
-            file.createNewFile()
+            return Gallery(lobbyId, mutableListOf())
         }
         return objectMapper.readValue(file)
     }
