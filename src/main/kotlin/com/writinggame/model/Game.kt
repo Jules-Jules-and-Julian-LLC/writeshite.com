@@ -71,10 +71,12 @@ class Game(lobby: Lobby, val settings: GameSettings) {
         return completeStory(story, completingPlayer)
     }
 
+    //TODO remove !!
     private fun getPlayer(sessionId: String): Player {
         return players.find { it.clientId == sessionId }!!
     }
 
+    //TODO remove !!
     private fun getPlayerByUsername(username: String): Player {
         return players.find { it.username == username }!!
     }
@@ -119,12 +121,11 @@ class Game(lobby: Lobby, val settings: GameSettings) {
 
     fun removePlayer(sessionId: String) {
         val player = getPlayer(sessionId)
-        val nextPlayer = getNextPlayer(player)
+        val nextPlayer = getPlayerToPassTo(player)
         val nextPlayerQueue = stories[nextPlayer.username]
 
-        while(stories[player.username]!!.isNotEmpty()) {
-            nextPlayerQueue?.add(stories[player.username]!!.removeAt(0))
-        }
+        nextPlayerQueue?.addAll(stories[player.username] ?: mutableListOf())
+        stories.remove(player.username)
     }
 
     fun completeAllStories(sessionId: String) {

@@ -17,7 +17,8 @@ export default class Lobby extends React.Component {
             roundTime: null,
             minWordsPerMessage: null,
             maxWordsPerMessage: null,
-            message: ""
+            message: "",
+            players: []
         };
 
         this.startGame = this.startGame.bind(this);
@@ -73,7 +74,8 @@ export default class Lobby extends React.Component {
                                 stories: responseObj.game.stories,
                                 previousRoundStories: responseObj.previousRoundStories,
                                 settings: responseObj.game.settings,
-                                endTime: responseObj.game.endTime && new Date(responseObj.game.endTime)
+                                endTime: responseObj.game.endTime && new Date(responseObj.game.endTime),
+                                players: responseObj.players
                             });
                             //re-render once a second to update timer
                             window.setInterval(me.forceUpdate.bind(me), 1000);
@@ -88,7 +90,8 @@ export default class Lobby extends React.Component {
                                 previousRoundStories: responseObj.lobby.previousRoundStories,
                                 endTime: responseObj.lobby.game.endTime && new Date(responseObj.lobby.game.endTime),
                                 settings: me.state.settings || responseObj.lobby.game.settings,
-                                roundTime: responseObj.lobby.game.settings.roundTimeMinutes
+                                roundTime: responseObj.lobby.game.settings.roundTimeMinutes,
+                                players: responseObj.lobby.players
                             });
                             //re-render once a second to update timer
                             window.setInterval(me.forceUpdate.bind(me), 1000);
@@ -96,7 +99,8 @@ export default class Lobby extends React.Component {
                             me.setState({
                                 stories: responseObj.stories,
                                 completedStories: responseObj.completedStories,
-                                lobbyState: responseObj.lobbyState
+                                lobbyState: responseObj.lobbyState,
+                                players: responseObj.players
                             });
                         } else if (responseType === "ERROR") {
                             InputValidator.warnBasedOnErrorType(responseObj.errorType);
@@ -287,7 +291,7 @@ export default class Lobby extends React.Component {
                 </div>
             );
         } else if (this.state.lobby && this.state.lobbyState === "GATHERING_PLAYERS") {
-            let players = this.state.lobby.players.map(player => <li key={player.username}>{player.username}</li>);
+            let players = this.state.players.map(player => <li key={player.username}>{player.username}</li>);
             let previousRoundStories = this.state.previousRoundStories.map(story => (
                 <li key={story.creatingPlayer.username}>
                     <LinedPaper
@@ -392,10 +396,10 @@ export default class Lobby extends React.Component {
             );
         } else if (this.state.lobbyState === "PLAYING") {
             let lobby = this.state.lobby;
-            let players = lobby.players.map(player => (
+            let players = this.state.players.map(player => (
                 <div class="player-name">
                     <li key={player.username} class={player.username === this.state.username && "bold-text"}>
-                        {player.username} <PaperStack count={this.state.stories[player.username].length} />
+                        {player.username} <PaperStack count={this.state.stories[player.username] && this.state.stories[player.username].length} />
                     </li>
                 </div>
             ));
@@ -484,16 +488,20 @@ export default class Lobby extends React.Component {
                 el => el.creatingPlayer.username === this.state.username
             );
             let myReadableStory = myCreatedStory && this.convertMessagesToStory(myCreatedStory.messages);
-            return (
-                <div id="reading-content">
-                    <LinedPaper text={myReadableStory} />
-                    {this.state.lobby.creator.username === this.state.username && (
-                        <button class="button" type="button" onClick={this.startGame}>
-                            Start New Game
-                        </button>
-                    )}
-                </div>
-            );
+            if(!myReadableStory) {
+                return <div class="waiting-for-story">Waiting for others to finish reading...</div>;
+            } else {
+                return (
+                    <div id="reading-content">
+                        <LinedPaper text={myReadableStory} />
+                        {this.state.lobby.creator.username === this.state.username && (
+                            <button class="button" type="button" onClick={this.startGame}>
+                                Start New Game
+                            </button>
+                        )}
+                    </div>
+                );
+            }
         }
     }
 }

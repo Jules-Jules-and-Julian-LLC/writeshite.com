@@ -10,4 +10,5 @@ class StartGameResponse(lobby: Lobby, eventReceivedDatetime: ZonedDateTime): Res
     val lobbyState: LobbyStateType = lobby.lobbyState
     val game: Game = lobby.game
     val previousRoundStories = lobby.previousRoundStories
+    val players = lobby.players
 }

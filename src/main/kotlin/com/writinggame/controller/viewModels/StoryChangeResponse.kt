@@ -10,4 +10,5 @@ class StoryChangeResponse(lobby: Lobby, eventReceivedDatetime: ZonedDateTime): R
     val stories: HashMap<String, MutableList<Story>> = lobby.game.stories
     val completedStories = lobby.game.completedStories
     val lobbyState = lobby.lobbyState
+    val players = lobby.players
 }

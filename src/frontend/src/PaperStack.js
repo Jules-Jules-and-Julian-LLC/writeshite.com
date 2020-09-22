@@ -2,7 +2,7 @@ import React from "react";
 
 class PaperStack extends React.Component {
     render() {
-        if (this.props.count < 1) {
+        if (!this.props.count || this.props.count < 1) {
             return null;
         }
         const paperStack = [];

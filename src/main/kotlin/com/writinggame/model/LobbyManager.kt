@@ -1,11 +1,11 @@
 package com.writinggame.model
 
 object LobbyManager {
-    private val lobbies: HashMap<String, Lobby> = HashMap()
+    private val lobbies: MutableList<Lobby> = mutableListOf()
 
     private fun createLobby(lobbyId: String, creator: Player): Lobby {
         val newLobby = Lobby(lobbyId, creator, GameSettings())
-        lobbies[lobbyId] = newLobby
+        lobbies.add(newLobby)
 
         return newLobby
     }
@@ -20,17 +20,19 @@ object LobbyManager {
         return existingLobby?.addPlayer(player) ?: Pair(createLobby(lobbyId, player), false)
     }
 
-    fun leaveLobby(sessionId: String) {
-        lobbies.values.forEach { it.leave(sessionId) }
+    fun leaveLobby(sessionId: String): Lobby? {
+        val lobby = lobbies.find { lobby -> lobby.players.any{ it.clientId == sessionId } }
+        lobby?.leave(sessionId)
         cleanupEmptyLobbies()
+
+        return lobby
     }
 
     private fun cleanupEmptyLobbies() {
-        val emptyLobbies = lobbies.keys.filter { lobbyId -> getLobby(lobbyId)?.players?.isEmpty() ?: false }
-        emptyLobbies.forEach{ lobbies.remove(it) }
+        lobbies.filter { lobby -> lobby.players.isEmpty() }.forEach{ lobbies.remove(it) }
     }
 
     fun getLobby(lobbyId: String): Lobby? {
-        return lobbies[lobbyId]
+        return lobbies.find { it.lobbyId == lobbyId }
     }
 }

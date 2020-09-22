@@ -52,6 +52,7 @@ class Lobby(val lobbyId: String, var creator: Player, settings: GameSettings) {
     }
 
     fun leave(sessionId: String) {
+        game.removePlayer(sessionId)
         val player = getPlayer(sessionId)
         if(player != null) {
             players.remove(player)
