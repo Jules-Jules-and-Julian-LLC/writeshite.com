@@ -474,6 +474,7 @@ export default class Lobby extends React.Component {
                             <div>
                                 <textarea
                                     name="message"
+                                    id="message-input"
                                     onChange={e => this.handleSimpleStateChange(e, "message")}
                                     value={this.state.message}
                                     className={!validInput ? "warning-text" : undefined}
@@ -487,7 +488,10 @@ export default class Lobby extends React.Component {
                                         id="complete-story-button"
                                         className="button"
                                         type="button"
+                                        title="Does not add current message to the story"
                                         onClick={this.completeStory}
+                                        onMouseEnter={() => document.getElementById("message-input").classList.add("complete-story-hovered")}
+                                        onMouseLeave={() => document.getElementById("message-input").classList.remove("complete-story-hovered")}
                                     >
                                         Complete Story
                                     </button>

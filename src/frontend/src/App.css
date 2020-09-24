@@ -149,6 +149,10 @@ ul {
     color: gray;
 }
 
+.complete-story-hovered {
+    color: gray;
+}
+
 #poop-emoji:hover {
     animation: poop-spin infinite 1s ease;
     display: inline-block;
