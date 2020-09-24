@@ -145,6 +145,10 @@ ul {
     margin-top: 10px;
 }
 
+.message-preview {
+    color: gray;
+}
+
 #poop-emoji:hover {
     animation: poop-spin infinite 1s ease;
     display: inline-block;

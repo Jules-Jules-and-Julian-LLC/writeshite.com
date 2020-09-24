@@ -4,7 +4,6 @@ import com.writinggame.domain.LobbyStateType
 import java.time.Duration
 import java.time.Instant
 import java.time.LocalDateTime
-import java.time.ZonedDateTime
 
 class Lobby(val lobbyId: String, var creator: Player, settings: GameSettings) {
     val players: MutableList<Player> = mutableListOf(creator)
@@ -68,7 +67,7 @@ class Lobby(val lobbyId: String, var creator: Player, settings: GameSettings) {
 
     fun addMessageToStory(message: String, storyId: String, sessionId: String) {
         val story = game.getStory(storyId)
-        story?.addMessage(message, sessionId, game.settings)
+        story?.addMessage(message, sessionId)
 
         if(game.endTime != null) {
             val elapsedTime = Duration.between(Instant.now(), game.endTime)

@@ -208,15 +208,31 @@ export default class Lobby extends React.Component {
     }
 
     convertMessagesToStory(messages) {
-        let joined = messages.map(m => m.text).join(" ");
-        return joined.split("\n").map((item, key) => {
+        let joined = messages.map(m => m.text).join(" ").split("\n");
+        let story = joined.map((item, key) => {
             return (
                 <span key={key}>
                     {item}
-                    <br />
+                    {key !== joined.length - 1 &&
+                        <br />
+                    }
                 </span>
             );
         });
+
+        if(this.state.message && this.state.message !== "") {
+            let messageSplit = this.state.message.split("\n");
+            let messagePreview = messageSplit.map((item, key) => {
+                return <span key={"message-preview-" + key} class="message-preview">
+                    {" " + item}
+                    {key !== messageSplit.length - 1 &&
+                        <br />
+                    }
+                    </span>
+            });
+            story = story.concat(messagePreview);
+        }
+        return story;
     }
 
     calculateRoundTimeLeft() {
