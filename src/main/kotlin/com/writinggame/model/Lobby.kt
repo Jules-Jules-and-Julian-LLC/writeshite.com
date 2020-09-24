@@ -110,4 +110,9 @@ class Lobby(val lobbyId: String, var creator: Player, settings: GameSettings) {
         return player != null && story != null && (game.stories[player.username]?.contains(story) != null)
 
     }
+
+    fun getStoryCreators(): List<Player> {
+        return players.filter { player: Player -> game.completedStories.union(game.stories.values.flatten())
+            .any{story -> story.creatingPlayer == player } }
+    }
 }

@@ -19,8 +19,8 @@ plugins {
 }
 
 bootJar {
-    baseName = 'gs-messaging-stomp-websocket'
-    version = '0.1.0'
+    archiveBaseName = 'gs-messaging-stomp-websocket'
+    archiveVersion = '0.1.0'
 }
 
 bootRun {

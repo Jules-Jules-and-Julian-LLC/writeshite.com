@@ -20,7 +20,8 @@ export default class Lobby extends React.Component {
             maxWordsPerMessage: null,
             message: "",
             players: [],
-            warnedAboutSendButton: false
+            warnedAboutSendButton: false,
+            readingOrder: null
         };
 
         this.startGame = this.startGame.bind(this);
@@ -102,7 +103,8 @@ export default class Lobby extends React.Component {
                                 stories: responseObj.stories,
                                 completedStories: responseObj.completedStories,
                                 lobbyState: responseObj.lobbyState,
-                                players: responseObj.players
+                                players: responseObj.players,
+                                readingOrder: responseObj.readingOrder
                             });
                         } else if (responseType === "ERROR") {
                             InputValidator.warnBasedOnErrorType(responseObj.errorType);
@@ -493,9 +495,19 @@ export default class Lobby extends React.Component {
             if(!myReadableStory) {
                 return <div class="waiting-for-story">Waiting for others to finish reading...</div>;
             } else {
+                let readingOrder;
+                if(this.state.readingOrder) {
+                    readingOrder = this.state.readingOrder.map(player => <li key={player.username}>{player.username}</li>);
+                }
                 return (
                     <div id="reading-content">
                         <LinedPaper text={myReadableStory} />
+                        {readingOrder &&
+                            <div>
+                                <div class="bold-text">Suggested Reading Order</div>
+                                <ul>{readingOrder}</ul>
+                            </div>
+                        }
                         {this.state.lobby.creator.username === this.state.username && (
                             <button class="button" type="button" onClick={this.startGame}>
                                 Start New Game
