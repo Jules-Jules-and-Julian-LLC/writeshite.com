@@ -55,7 +55,7 @@ export default class Lobby extends React.Component {
                     ));
                 body = (
                     <div>
-                        <div class="gallery-header">
+                        <div className="gallery-header">
                             Only The Finest Shite, Courtesy Of The {this.state.lobbyId} Lobby
                         </div>
                         <ul>{entries}</ul>
@@ -73,7 +73,7 @@ export default class Lobby extends React.Component {
             return (
                 <div>
                     <div>
-                        <button class="button" type="button" onClick={this.handleButtonClick}>
+                        <button className="button" type="button" onClick={this.handleButtonClick}>
                             {this.state.fromHomepage ? "Go To Lobby" : "Close Gallery"}
                         </button>
                     </div>

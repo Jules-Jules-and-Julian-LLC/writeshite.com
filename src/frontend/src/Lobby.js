@@ -16,8 +16,8 @@ export default class Lobby extends React.Component {
             lobbyId: pathname[pathname.length - 1],
             joined: false,
             roundTime: null,
-            minWordsPerMessage: null,
-            maxWordsPerMessage: null,
+            minWordsPerMessage: "",
+            maxWordsPerMessage: "",
             message: "",
             players: [],
             warnedAboutSendButton: false,
@@ -106,6 +106,9 @@ export default class Lobby extends React.Component {
                                 players: responseObj.players,
                                 readingOrder: responseObj.readingOrder
                             });
+                            if(responseObj.lobbyState === "GATHERING_PLAYERS" || responseObj.lobbyState === "READING") {
+                                me.setState({message: ""});
+                            }
                         } else if (responseType === "ERROR") {
                             InputValidator.warnBasedOnErrorType(responseObj.errorType);
                         } else {
@@ -223,7 +226,7 @@ export default class Lobby extends React.Component {
         if(this.state.message && this.state.message !== "") {
             let messageSplit = this.state.message.split("\n");
             let messagePreview = messageSplit.map((item, key) => {
-                return <span key={"message-preview-" + key} class="message-preview">
+                return <span key={"message-preview-" + key} className="message-preview">
                     {" " + item}
                     {key !== messageSplit.length - 1 &&
                         <br />
@@ -306,7 +309,7 @@ export default class Lobby extends React.Component {
                         />
                     </div>
                     <form onSubmit={this.setUsername}>
-                        <input class="button" type="submit" value="Set Username" />
+                        <input className="button" type="submit" value="Set Username" />
                     </form>
                 </div>
             );
@@ -323,44 +326,44 @@ export default class Lobby extends React.Component {
             ));
             return (
                 <div id="lobby-content">
-                    <span class="section-header">Players</span>
+                    <span className="section-header">Players</span>
                     <div>
                         <ul>{players}</ul>
                     </div>
                     {this.state.lobby.creator.username === this.state.username && (
                         <div>
                             <div id="settings">
-                                <span class="section-header">Optional Settings</span>
-                                <div class="setting">
-                                    <span class="bold-text">Minutes per round</span> <br />
+                                <span className="section-header">Optional Settings</span>
+                                <div className="setting">
+                                    <span className="bold-text">Minutes per round</span> <br />
                                     <input
                                         type="text"
                                         name="roundTime"
-                                        class="settings-input"
+                                        className="settings-input"
                                         onChange={e => this.handleSimpleStateChange(e, "roundTime")}
                                         value={this.state.roundTime}
                                     />
                                 </div>
-                                <div class="setting">
-                                    <span class="bold-text">Words per message</span> <br />
+                                <div className="setting">
+                                    <span className="bold-text">Words per message</span> <br />
                                     <input
                                         type="text"
                                         name="minWordsPerMessage"
-                                        class="settings-input"
+                                        className="settings-input"
                                         onChange={e => this.handleSimpleStateChange(e, "minWordsPerMessage")}
                                         value={this.state.minWordsPerMessage}
                                     />
-                                    <span style={{"margin-left": "10px"}}>-</span>
+                                    <span style={{marginLeft: "10px"}}>-</span>
                                     <input
                                         type="text"
                                         name="maxWordsPerMessage"
-                                        class="settings-input"
+                                        className="settings-input"
                                         onChange={e => this.handleSimpleStateChange(e, "maxWordsPerMessage")}
                                         value={this.state.maxWordsPerMessage}
                                     />
                                 </div>
-                                <div class="setting">
-                                    <span class="bold-text">Pass Stories</span> <br />
+                                <div className="setting">
+                                    <span className="bold-text">Pass Stories</span> <br />
                                     <label>
                                         <input
                                             type="radio"
@@ -393,13 +396,13 @@ export default class Lobby extends React.Component {
                                 </div>
                             </div>
                             <form onSubmit={this.startGame}>
-                                <input class="button start-game-button" type="submit" value="Start game" />
+                                <input className="button start-game-button" type="submit" value="Start game" />
                             </form>
                         </div>
                     )}
                     <div>
                         <button
-                            class="button"
+                            className="button"
                             type="button"
                             onClick={() => window.open("../gallery/" + this.state.lobbyId, "_blank")}
                         >
@@ -407,18 +410,17 @@ export default class Lobby extends React.Component {
                         </button>
                     </div>
                     {this.state.previousRoundStories && this.state.previousRoundStories.length > 0 && (
-                        <div class="previous-round-stories">
-                            <span class="section-header">Previous Round Stories</span> <br />
+                        <div className="previous-round-stories">
+                            <span className="section-header">Previous Round Stories</span> <br />
                             <ul>{previousRoundStories}</ul>
                         </div>
                     )}
                 </div>
             );
         } else if (this.state.lobbyState === "PLAYING") {
-            let lobby = this.state.lobby;
             let players = this.state.players.map(player => (
-                <div class="player-name">
-                    <li key={player.username} class={player.username === this.state.username && "bold-text"}>
+                <div key={player.username} className="player-name">
+                    <li className={player.username === this.state.username ? "bold-text" : undefined}>
                         {player.username} <PaperStack count={this.state.stories[player.username] && this.state.stories[player.username].length} />
                     </li>
                 </div>
@@ -462,7 +464,7 @@ export default class Lobby extends React.Component {
                         <ul>{players}</ul>
                     </div>
 
-                    {!currentStory && <div class="waiting-for-story">Waiting to have a story passed to you...</div>}
+                    {!currentStory && <div className="waiting-for-story">Waiting to have a story passed to you...</div>}
                     {currentStory && (
                         <div>
                             <LinedPaper text={currentStory} />
@@ -474,7 +476,7 @@ export default class Lobby extends React.Component {
                                     name="message"
                                     onChange={e => this.handleSimpleStateChange(e, "message")}
                                     value={this.state.message}
-                                    class={!validInput && "warning-text"}
+                                    className={!validInput ? "warning-text" : undefined}
                                     style={{width: "100%"}}
                                     onKeyDown={this.messageAreaKeyDown}
                                     placeholder="Write Shite here..."
@@ -483,20 +485,20 @@ export default class Lobby extends React.Component {
                                 <form id="game-buttons" onSubmit={(event) => this.sendMessage(event, true)}>
                                     <button
                                         id="complete-story-button"
-                                        class="button"
+                                        className="button"
                                         type="button"
                                         onClick={this.completeStory}
                                     >
                                         Complete Story
                                     </button>
-                                    <input class="button" type="submit" value="Send" />
+                                    <input className="button" type="submit" value="Send" />
                                 </form>
                             </div>
                         </div>
                     )}
                     <div>
                         {this.state.lobby.creator.username === this.state.username && (
-                            <button class="button end-round-button" type="button" onClick={this.endRound}>
+                            <button className="button end-round-button" type="button" onClick={this.endRound}>
                                 End Round
                             </button>
                         )}
@@ -509,7 +511,7 @@ export default class Lobby extends React.Component {
             );
             let myReadableStory = myCreatedStory && this.convertMessagesToStory(myCreatedStory.messages);
             if(!myReadableStory) {
-                return <div class="waiting-for-story">Waiting for others to finish reading...</div>;
+                return <div className="waiting-for-story">Waiting for others to finish reading...</div>;
             } else {
                 let readingOrder;
                 if(this.state.readingOrder) {
@@ -520,12 +522,12 @@ export default class Lobby extends React.Component {
                         <LinedPaper text={myReadableStory} />
                         {readingOrder &&
                             <div>
-                                <div class="bold-text">Suggested Reading Order</div>
+                                <div className="bold-text">Suggested Reading Order</div>
                                 <ul>{readingOrder}</ul>
                             </div>
                         }
                         {this.state.lobby.creator.username === this.state.username && (
-                            <button class="button" type="button" onClick={this.startGame}>
+                            <button className="button" type="button" onClick={this.startGame}>
                                 Start New Game
                             </button>
                         )}

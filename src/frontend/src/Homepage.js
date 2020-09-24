@@ -40,10 +40,10 @@ class Homepage extends React.Component {
                     <input type="text" name="lobbyId" placeholder="Lobby Name" onChange={this.handleLobbyIdChange} />
                 </div>
                 <form onSubmit={this.joinGame}>
-                    <input class="button" type="submit" value="Join Lobby" />
+                    <input className="button" type="submit" value="Join Lobby" />
                 </form>
                 <div>
-                    <button class="button" type="button" onClick={this.openGallery}>
+                    <button className="button" type="button" onClick={this.openGallery}>
                         Open Gallery
                     </button>
                 </div>
