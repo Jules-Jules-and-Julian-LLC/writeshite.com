@@ -27,7 +27,7 @@ export default class Lobby extends React.Component {
 
     componentDidMount() {
         try {
-            fetch("../galleries/" + this.state.lobbyId + ".json", {cache: "no-cache"})
+            fetch("https://write-shite-galleries.s3.us-west-002.backblazeb2.com/" + this.state.lobbyId + ".json", {cache: "no-cache"})
                 .then(async res => res.json())
                 .then(
                     result => {

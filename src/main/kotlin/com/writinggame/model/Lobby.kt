@@ -33,7 +33,6 @@ class Lobby(val lobbyId: String, var creator: Player, settings: GameSettings) {
         if(isCreator(sessionId) && players.size > 1) {
             if(lobbyState == LobbyStateType.READING) {
                 previousRoundStories = game.completedStories
-                addStoriesToGallery(game.completedStories)
                 lobbyState = LobbyStateType.GATHERING_PLAYERS
             } else {
                 lobbyState = LobbyStateType.PLAYING
@@ -42,8 +41,8 @@ class Lobby(val lobbyId: String, var creator: Player, settings: GameSettings) {
         }
     }
 
-    private fun addStoriesToGallery(completedStories: MutableList<Story>) {
-        GalleryManager.addStoriesToGallery(lobbyId, completedStories)
+    private fun addCompletedStoriesToGallery() {
+        GalleryManager.addStoriesToGallery(lobbyId, game.completedStories)
     }
 
     fun isCreator(sessionId: String): Boolean {
@@ -85,6 +84,9 @@ class Lobby(val lobbyId: String, var creator: Player, settings: GameSettings) {
         }
 
         lobbyState = game.completeStory(storyId, player)
+        if(lobbyState == LobbyStateType.READING) {
+            addCompletedStoriesToGallery()
+        }
     }
 
     private fun storyNotInPlayerQueue(storyId: String, player: Player): Boolean {
@@ -100,6 +102,7 @@ class Lobby(val lobbyId: String, var creator: Player, settings: GameSettings) {
         if(isCreator(sessionId)) {
             game.completeAllStories(sessionId)
             lobbyState = LobbyStateType.READING
+            addCompletedStoriesToGallery()
         }
     }
 
