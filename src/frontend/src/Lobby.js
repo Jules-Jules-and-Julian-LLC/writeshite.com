@@ -3,6 +3,7 @@ import SockJS from "sockjs-client";
 import Stomp from "stompjs";
 import PaperStack from "./PaperStack";
 import LinedPaper from "./LinedPaper";
+import Toaster from "./Toaster";
 import InputValidator from "./InputValidator";
 
 export default class Lobby extends React.Component {
@@ -18,7 +19,8 @@ export default class Lobby extends React.Component {
             minWordsPerMessage: null,
             maxWordsPerMessage: null,
             message: "",
-            players: []
+            players: [],
+            warnedAboutSendButton: false
         };
 
         this.startGame = this.startGame.bind(this);
@@ -145,19 +147,19 @@ export default class Lobby extends React.Component {
         this.state.stompClient.send("/app/lobby." + this.state.lobbyId + ".endRound", {}, {});
     }
 
-    sendMessage(event) {
+    sendMessage(event, warnAboutSendButton) {
         event && event.preventDefault();
         let currentStory = this.getCurrentStory();
 
-        if (
-            currentStory &&
-            InputValidator.validateMessage(
-                this.state.message,
-                this.state.settings.minWordsPerMessage,
-                this.state.settings.maxWordsPerMessage,
-                true
-            )
-        ) {
+        if (currentStory &&
+            InputValidator.validateMessage(this.state.message, this.state.settings.minWordsPerMessage,
+                this.state.settings.maxWordsPerMessage, true)) {
+
+            if(this.state.warnedAboutSendButton === false && warnAboutSendButton === true) {
+                Toaster.toast("info", "You may also send messages with Ctrl+Enter, Alt+Enter, or ⌘+Enter");
+                this.setState({warnedAboutSendButton: true});
+            }
+
             this.state.stompClient.send(
                 "/app/lobby." + this.state.lobbyId + ".newMessage",
                 {},
@@ -460,7 +462,7 @@ export default class Lobby extends React.Component {
                                     placeholder="Write Shite here..."
                                 />
 
-                                <form id="game-buttons" onSubmit={this.sendMessage}>
+                                <form id="game-buttons" onSubmit={(event) => this.sendMessage(event, true)}>
                                     <button
                                         id="complete-story-button"
                                         class="button"
@@ -502,6 +504,8 @@ export default class Lobby extends React.Component {
                     </div>
                 );
             }
+        } else {
+            return (<div>ERROR unhandled lobby state: {this.state.lobbyState}</div>);
         }
     }
 }
