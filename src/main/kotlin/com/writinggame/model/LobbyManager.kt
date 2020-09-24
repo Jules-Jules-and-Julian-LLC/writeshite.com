@@ -29,7 +29,7 @@ object LobbyManager {
     }
 
     private fun cleanupEmptyLobbies() {
-        lobbies.filter { lobby -> lobby.players.isEmpty() }.forEach{ lobbies.remove(it) }
+        lobbies.filter { lobby -> lobby.players.isEmpty() || lobby.game.stories.isEmpty() }.forEach{ lobbies.remove(it) }
     }
 
     fun getLobby(lobbyId: String): Lobby? {

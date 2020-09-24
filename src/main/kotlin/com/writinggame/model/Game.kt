@@ -38,7 +38,7 @@ class Game(lobby: Lobby, val settings: GameSettings) {
             val player = getPlayer(sessionId)
             val playerQueue = stories[player.username]
             val nextPlayer = getPlayerToPassTo(player)
-            val nextPlayerQueue = stories[nextPlayer.username]
+            val nextPlayerQueue = stories[nextPlayer?.username]
 
             playerQueue?.remove(story)
             nextPlayerQueue?.add(story)
@@ -46,7 +46,7 @@ class Game(lobby: Lobby, val settings: GameSettings) {
             if(playerQueue?.isEmpty() == true) {
                 player.waitingSince = ZonedDateTime.now()
             }
-            nextPlayer.waitingSince = null
+            nextPlayer?.waitingSince = null
         }
     }
 
@@ -81,7 +81,10 @@ class Game(lobby: Lobby, val settings: GameSettings) {
         return players.find { it.username == username }!!
     }
 
-    private fun getPlayerToPassTo(player: Player): Player {
+    private fun getPlayerToPassTo(player: Player): Player? {
+        if(players.size <= 1) {
+            return null
+        }
         return when(settings.passStyle) {
             StoryPassStyleType.ORDERED -> getNextPlayer(player)
             StoryPassStyleType.RANDOM -> getRandomPlayer(player)
@@ -122,7 +125,7 @@ class Game(lobby: Lobby, val settings: GameSettings) {
     fun removePlayer(sessionId: String) {
         val player = getPlayer(sessionId)
         val nextPlayer = getPlayerToPassTo(player)
-        val nextPlayerQueue = stories[nextPlayer.username]
+        val nextPlayerQueue = stories[nextPlayer?.username]
 
         nextPlayerQueue?.addAll(stories[player.username] ?: mutableListOf())
         stories.remove(player.username)
