@@ -21,7 +21,7 @@ object LobbyManager {
     }
 
     fun leaveLobby(sessionId: String): Lobby? {
-        val lobby = lobbies.find { lobby -> lobby.players.any{ it.clientId == sessionId } }
+        val lobby = lobbies.find { lobby -> lobby.getPlayerBySessionId(sessionId) != null }
         lobby?.leave(sessionId)
         cleanupEmptyLobbies()
 
