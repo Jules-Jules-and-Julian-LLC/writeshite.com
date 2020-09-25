@@ -152,6 +152,22 @@ ul {
     color: gray;
 }
 
+.help-about-links {
+    margin-top:25px;
+}
+
+.help-link {
+    padding-right: 25px;
+}
+
+.not-centered-text {
+    text-align: left;
+}
+
+.not-centered-text h2 {
+    text-align: center;
+}
+
 #poop-emoji:hover {
     animation: poop-spin infinite 1s ease;
     display: inline-block;
