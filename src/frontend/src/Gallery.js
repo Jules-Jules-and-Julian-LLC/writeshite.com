@@ -9,7 +9,7 @@ export default class Lobby extends React.Component {
 
         this.state = {
             lobbyId: pathname[pathname.length - 1],
-            entries: [],
+            entries: undefined,
             fromHomepage: new URLSearchParams(window.location.search).get("fromHomepage") === "true"
         };
 
@@ -27,7 +27,7 @@ export default class Lobby extends React.Component {
 
     componentDidMount() {
         try {
-            fetch("https://write-shite-galleries.s3.us-west-002.backblazeb2.com/" + this.state.lobbyId + ".json", {cache: "no-cache"})
+            fetch("https://www.writeshite.com/gallery/" + this.state.lobbyId + "/get", {cache: "no-cache"})
                 .then(async res => res.json())
                 .then(
                     result => {
@@ -42,7 +42,7 @@ export default class Lobby extends React.Component {
 
     render() {
         if (!this.state.entries) {
-            return <div id="connecting-to-lobby">Loading gallery, please wait...</div>;
+            return <div className="please-wait-text">Loading gallery, please wait...</div>;
         } else {
             let body;
             if (this.state.entries.length > 0) {

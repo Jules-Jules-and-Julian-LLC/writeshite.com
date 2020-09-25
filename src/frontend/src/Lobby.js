@@ -295,7 +295,7 @@ export default class Lobby extends React.Component {
 
     render() {
         if (!this.state.stompClient) {
-            return <div id="connecting-to-lobby">Connecting to lobby, please wait...</div>;
+            return <div className="please-wait-text">Connecting to lobby, please wait...</div>;
         } else if (!this.state.joined) {
             return (
                 <div id="set-user-info-content">
@@ -464,7 +464,7 @@ export default class Lobby extends React.Component {
                         <ul>{players}</ul>
                     </div>
 
-                    {!currentStory && <div className="waiting-for-story">Waiting to have a story passed to you...</div>}
+                    {!currentStory && <div className="please-wait-text">Waiting to have a story passed to you...</div>}
                     {currentStory && (
                         <div>
                             <LinedPaper text={currentStory} />
@@ -515,7 +515,7 @@ export default class Lobby extends React.Component {
             );
             let myReadableStory = myCreatedStory && this.convertMessagesToStory(myCreatedStory.messages);
             if(!myReadableStory) {
-                return <div className="waiting-for-story">Waiting for others to finish reading...</div>;
+                return <div className="please-wait-text">Waiting for others to finish reading...</div>;
             } else {
                 let readingOrder;
                 if(this.state.readingOrder) {

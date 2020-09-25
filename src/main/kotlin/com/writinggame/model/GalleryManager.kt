@@ -27,7 +27,7 @@ object GalleryManager {
             .withCredentials(AWSStaticCredentialsProvider(credential)).build()
     }
 
-    private fun loadFromFile(lobbyId: String) : Gallery {
+    fun loadFromFile(lobbyId: String) : Gallery {
         if(s3Client.doesObjectExist("write-shite-galleries", "$lobbyId.json")) {
             val existingFile = s3Client.getObject("write-shite-galleries", "$lobbyId.json")
             return jsonObjectMapper.readValue(existingFile.objectContent)

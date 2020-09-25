@@ -77,8 +77,7 @@ body {
     word-wrap: anywhere;
 }
 
-#connecting-to-lobby,
-.waiting-for-story {
+.please-wait-text {
     font-size: 25px;
     margin-top: 25px;
     text-align: center;
