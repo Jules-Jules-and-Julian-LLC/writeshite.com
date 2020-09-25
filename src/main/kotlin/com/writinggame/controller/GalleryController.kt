@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.RestController
 
 @RestController
-@CrossOrigin(origins = ["http://localhost:3000", "https://www.writeshite.com", "https://writeshite.com"])
+@CrossOrigin(origins = ["http://localhost:3000", "https://localhost", "https://www.writeshite.com", "https://writeshite.com"])
 class GalleryController {
 
     @GetMapping("/gallery/{lobbyId}/get")

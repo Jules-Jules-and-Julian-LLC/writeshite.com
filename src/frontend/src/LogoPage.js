@@ -11,6 +11,7 @@ class LogoPage extends React.Component {
                     </span>
                 </div>
                 <div className="logo-page-content">{this.props.children}</div>
+                <div className="copyright-notice">© 2020-{new Date().getFullYear()} Julian Jocque</div>
             </div>
         );
     }

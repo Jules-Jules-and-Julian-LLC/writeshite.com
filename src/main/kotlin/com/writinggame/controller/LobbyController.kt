@@ -3,7 +3,6 @@ package com.writinggame.controller
 import com.writinggame.controller.viewModels.*
 import com.writinggame.domain.ErrorType
 import com.writinggame.model.GameSettings
-import com.writinggame.model.Lobby
 import com.writinggame.model.LobbyManager
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
@@ -170,7 +169,7 @@ class LobbyController {
     /**
      * Have to redirect react routed paths to index.html so that the react router JS can handle the routing for us.
      */
-    @RequestMapping(value = ["/", "/lobby", "/lobby/*", "/gallery", "/gallery/*"])
+    @RequestMapping(value = ["/", "/lobby", "/lobby/*", "/gallery", "/gallery/*", "/help", "/about"])
     fun redirect(): String {
         return "forward:/index.html"
     }

@@ -10,7 +10,8 @@ export default class Lobby extends React.Component {
         this.state = {
             lobbyId: pathname[pathname.length - 1],
             entries: undefined,
-            fromHomepage: new URLSearchParams(window.location.search).get("fromHomepage") === "true"
+            fromHomepage: new URLSearchParams(window.location.search).get("fromHomepage") === "true",
+            loaded: false
         };
 
         this.handleButtonClick = this.handleButtonClick.bind(this);
@@ -31,9 +32,12 @@ export default class Lobby extends React.Component {
                 .then(async res => res.json())
                 .then(
                     result => {
-                        this.setState({entries: result.entries});
+                        this.setState({entries: result.entries, loaded: true});
                     },
-                    error => console.log(error)
+                    error => {
+                        this.setState({loaded: true});
+                        console.log(error);
+                    }
                 );
         } catch (error) {
             console.log(error);
@@ -41,15 +45,15 @@ export default class Lobby extends React.Component {
     }
 
     render() {
-        if (!this.state.entries) {
+        if (!this.state.entries && !this.state.loaded) {
             return <div className="please-wait-text">Loading gallery, please wait...</div>;
         } else {
             let body;
-            if (this.state.entries.length > 0) {
+            if (this.state.entries && this.state.entries.length > 0) {
                 let entries = this.state.entries
                     .sort((a, b) => b.createDatetime - a.createDatetime)
                     .map(entry => (
-                        <li key={entry.creatorUsername + "" + entry.createDatetime}>
+                        <li key={entry.creatorUsername + entry.createDatetime}>
                             <LinedPaper text={entry.text} title={entry.creatorUsername} shorten={true} />
                         </li>
                     ));
