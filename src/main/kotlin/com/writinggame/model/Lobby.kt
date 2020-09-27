@@ -30,15 +30,13 @@ class Lobby(val lobbyId: String, var creator: Player, settings: GameSettings) {
     }
 
     fun startGame(sessionId: String, settings: GameSettings) {
-        if(isCreator(sessionId) && players.size > 1) {
-            if(lobbyState == LobbyStateType.READING) {
-                previousRoundStories = game.completedStories
-                lobbyState = LobbyStateType.GATHERING_PLAYERS
-            } else {
-                lobbyState = LobbyStateType.PLAYING
-            }
-            game = Game(this, settings)
+        if(lobbyState == LobbyStateType.READING) {
+            previousRoundStories = game.completedStories
+            lobbyState = LobbyStateType.GATHERING_PLAYERS
+        } else {
+            lobbyState = LobbyStateType.PLAYING
         }
+        game = Game(this, settings)
     }
 
     private fun addCompletedStoriesToGallery() {

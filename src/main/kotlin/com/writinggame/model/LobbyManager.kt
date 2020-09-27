@@ -1,5 +1,7 @@
 package com.writinggame.model
 
+import com.writinggame.controller.LobbyController
+
 object LobbyManager {
     private val lobbies: MutableList<Lobby> = mutableListOf()
 
@@ -29,7 +31,11 @@ object LobbyManager {
     }
 
     private fun cleanupEmptyLobbies() {
-        lobbies.filter { lobby -> lobby.players.isEmpty() || lobby.game.stories.isEmpty() }.forEach{ lobbies.remove(it) }
+        val emptyLobbies = lobbies.filter { lobby -> lobby.players.isEmpty() || lobby.game.stories.isEmpty() }
+        emptyLobbies.forEach{ lobby ->
+            LobbyController.cleanupLobby(lobby.lobbyId)
+            lobbies.remove(lobby)
+        }
     }
 
     fun getLobby(lobbyId: String): Lobby? {

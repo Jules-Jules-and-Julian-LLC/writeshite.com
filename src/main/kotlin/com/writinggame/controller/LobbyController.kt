@@ -2,6 +2,7 @@ package com.writinggame.controller
 
 import com.writinggame.controller.viewModels.*
 import com.writinggame.domain.ErrorType
+import com.writinggame.domain.LobbyStateType
 import com.writinggame.model.GameSettings
 import com.writinggame.model.LobbyManager
 import org.slf4j.Logger
@@ -38,11 +39,22 @@ class LobbyController {
     }
 
     companion object {
-        const val TIMEOUT_MINUTES: Long = 1
+        const val TIMEOUT_MINUTES: Long = 2
         private val map = mutableMapOf<String, ExecutorService>()
 
         fun getExecutorServiceForLobby(lobbyId: String): ExecutorService {
-            return map.getOrDefault(lobbyId, Executors.newSingleThreadExecutor())
+            return map.getOrPut(lobbyId, { Executors.newSingleThreadExecutor() })
+        }
+
+        fun cleanupLobby(lobbyId: String) {
+            try {
+                val service = getExecutorServiceForLobby(lobbyId)
+                service.shutdown()
+                service.awaitTermination(TIMEOUT_MINUTES, TimeUnit.MINUTES)
+            } finally {
+                map.remove(lobbyId)
+            }
+            println("Cleaned up $lobbyId, there are now: ${map.size} active lobbies")
         }
     }
 
@@ -90,6 +102,9 @@ class LobbyController {
             }
 
             val lobby = LobbyManager.getLobby(lobbyId) ?: return@submit ErrorResponse(ErrorType.LOBBY_NOT_FOUND, receivedDatetime)
+            if(!lobby.isCreator(sessionId)) return@submit ErrorResponse(ErrorType.NOT_LOBBY_CREATOR, receivedDatetime)
+            if(lobby.players.size < 2 && lobby.lobbyState == LobbyStateType.GATHERING_PLAYERS) return@submit ErrorResponse(ErrorType.TOO_FEW_PLAYERS, receivedDatetime)
+
             lobby.startGame(sessionId, settings)
             println("Starting game for lobby $lobbyId player $sessionId can start: ${lobby.isCreator(sessionId)} round time: ${settings.roundTimeMinutes}")
 

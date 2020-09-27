@@ -125,22 +125,15 @@ export default class Lobby extends React.Component {
 
     startGame(event) {
         event.preventDefault();
-        let minWordsPerMessage = parseInt(this.state.minWordsPerMessage);
-        let maxWordsPerMessage = parseInt(this.state.maxWordsPerMessage);
-        let roundTime = parseInt(this.state.roundTime);
-        if (
-            (isNaN(minWordsPerMessage) ||
-                isNaN(maxWordsPerMessage) ||
-                (minWordsPerMessage > 0 && maxWordsPerMessage > 0 && minWordsPerMessage <= maxWordsPerMessage)) &&
-            (isNaN(roundTime) || roundTime > 0)
-        ) {
+        if(InputValidator.validateStartGame(this.state.minWordsPerMessage, this.state.maxWordsPerMessage,
+            this.state.roundTime, this.state.players.length, this.state.lobbyState)) {
             this.state.stompClient.send(
                 "/app/lobby." + this.state.lobbyId + ".startGame",
                 {},
                 JSON.stringify({
-                    roundTimeMinutes: roundTime,
-                    minWordsPerMessage: minWordsPerMessage,
-                    maxWordsPerMessage: maxWordsPerMessage,
+                    roundTimeMinutes: parseInt(this.state.roundTime),
+                    minWordsPerMessage: parseInt(this.state.minWordsPerMessage),
+                    maxWordsPerMessage: parseInt(this.state.maxWordsPerMessage),
                     passStyle: this.state.settings.passStyle
                 })
             );
@@ -335,7 +328,7 @@ export default class Lobby extends React.Component {
                             <div id="settings">
                                 <span className="section-header">Optional Settings</span>
                                 <div className="setting">
-                                    <span className="bold-text">Minutes per round</span> <br />
+                                    <span className="bold-text">Minutes Per Round</span> <br />
                                     <input
                                         type="text"
                                         name="roundTime"
@@ -345,7 +338,7 @@ export default class Lobby extends React.Component {
                                     />
                                 </div>
                                 <div className="setting">
-                                    <span className="bold-text">Words per message</span> <br />
+                                    <span className="bold-text">Words Per Message</span> <br />
                                     <input
                                         type="text"
                                         name="minWordsPerMessage"
@@ -514,7 +507,7 @@ export default class Lobby extends React.Component {
                 el => el.creatingPlayer.username === this.state.username
             );
             let myReadableStory = myCreatedStory && this.convertMessagesToStory(myCreatedStory.messages);
-            if(!myReadableStory) {
+            if(!myReadableStory && this.state.lobby.creator.username !== this.state.username) {
                 return <div className="please-wait-text">Waiting for others to finish reading...</div>;
             } else {
                 let readingOrder;
@@ -523,7 +516,9 @@ export default class Lobby extends React.Component {
                 }
                 return (
                     <div id="reading-content">
-                        <LinedPaper text={myReadableStory} />
+                        {myReadableStory &&
+                            <LinedPaper text={myReadableStory} />
+                        }
                         {readingOrder &&
                             <div>
                                 <div className="bold-text">Suggested Reading Order</div>

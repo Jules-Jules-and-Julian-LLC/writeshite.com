@@ -25,6 +25,7 @@ bootJar {
 
 bootRun {
     sourceResources sourceSets.main
+    systemProperties System.properties
 }
 
 task appNpmInstall(type: NpmTask) {

@@ -4,7 +4,6 @@ import com.writinggame.domain.LobbyStateType
 import com.writinggame.domain.StoryPassStyleType
 import java.time.Instant
 import java.time.ZonedDateTime
-import kotlin.collections.HashMap
 
 class Game(lobby: Lobby, val settings: GameSettings) {
     //Key is username
@@ -83,7 +82,7 @@ class Game(lobby: Lobby, val settings: GameSettings) {
 
     private fun getPlayerToPassTo(player: Player): Player? {
         if(players.size <= 1) {
-            return null
+            return if (players.size == 1) player else null
         }
         return when(settings.passStyle) {
             StoryPassStyleType.ORDERED -> getNextPlayer(player)
