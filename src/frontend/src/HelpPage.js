@@ -27,6 +27,11 @@ export default class HelpPage extends React.Component {
                     This game errs on the side of freedom, so if one of your players is a troll they will be able to do
                     all sorts of annoying things. This game is really meant to be played with your personal friends on
                     some sort of a voice call.
+
+                    <br /> <br />
+                    <h2>Contact</h2>
+                    You can email me at <a href="mailto:writeshitewebsite@gmail.com">writeshitewebsite@gmail.com</a>.
+                    I'll probably read it and I might even reply!
                 </div>
                 <br />
             </div>
