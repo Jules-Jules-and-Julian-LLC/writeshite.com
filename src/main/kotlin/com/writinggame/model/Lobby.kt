@@ -29,7 +29,7 @@ class Lobby(val lobbyId: String, var creator: Player, settings: GameSettings) {
         return Pair(this, renamedPlayer)
     }
 
-    fun startGame(sessionId: String, settings: GameSettings) {
+    fun startGame(settings: GameSettings) {
         if(lobbyState == LobbyStateType.READING) {
             previousRoundStories = game.completedStories
             lobbyState = LobbyStateType.GATHERING_PLAYERS

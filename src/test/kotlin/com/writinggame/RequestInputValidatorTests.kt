@@ -46,10 +46,10 @@ class RequestInputValidatorTests {
         val tooLongMessage = "a".repeat(30001)
         
         //No min or max, just need to be non-empty, not super long
-        assertNull(RequestInputValidator.validateInput(now, message = "123", settings = GameSettings()))
-        assertNull(RequestInputValidator.validateInput(now, message = longMessage, settings = GameSettings()))
-        assertErrorWithType(ErrorType.INVALID_MESSAGE, RequestInputValidator.validateInput(now, message = tooLongMessage, settings = GameSettings()))
-        assertErrorWithType(ErrorType.INVALID_MESSAGE, RequestInputValidator.validateInput(now, message = "", settings = GameSettings()))
+        assertNull(RequestInputValidator.validateInput(now, message = "123", settings = GameSettings(minWordsPerMessage = null)))
+        assertNull(RequestInputValidator.validateInput(now, message = longMessage, settings = GameSettings(minWordsPerMessage = null)))
+        assertErrorWithType(ErrorType.INVALID_MESSAGE, RequestInputValidator.validateInput(now, message = tooLongMessage, settings = GameSettings(minWordsPerMessage = null)))
+        assertErrorWithType(ErrorType.INVALID_MESSAGE, RequestInputValidator.validateInput(now, message = "", settings = GameSettings(minWordsPerMessage = null)))
         
         //Min, no max
         assertNull(RequestInputValidator.validateInput(now, message = "123 adsf", settings = GameSettings(minWordsPerMessage = 2)))
@@ -58,10 +58,10 @@ class RequestInputValidatorTests {
         assertErrorWithType(ErrorType.INVALID_MESSAGE, RequestInputValidator.validateInput(now, message = "", settings = GameSettings(minWordsPerMessage = 2)))
         
         //Max, no min
-        assertNull(RequestInputValidator.validateInput(now, message = "123", settings = GameSettings(maxWordsPerMessage = 2)))
-        assertNull(RequestInputValidator.validateInput(now, message = " 123 ", settings = GameSettings(maxWordsPerMessage = 2)))
-        assertErrorWithType(ErrorType.INVALID_MESSAGE, RequestInputValidator.validateInput(now, message = "123 123 123 123", settings = GameSettings(maxWordsPerMessage = 2)))
-        assertErrorWithType(ErrorType.INVALID_MESSAGE, RequestInputValidator.validateInput(now, message = "", settings = GameSettings(maxWordsPerMessage = 2)))
+        assertNull(RequestInputValidator.validateInput(now, message = "123", settings = GameSettings(minWordsPerMessage = null, maxWordsPerMessage = 2)))
+        assertNull(RequestInputValidator.validateInput(now, message = " 123 ", settings = GameSettings(minWordsPerMessage = null, maxWordsPerMessage = 2)))
+        assertErrorWithType(ErrorType.INVALID_MESSAGE, RequestInputValidator.validateInput(now, message = "123 123 123 123", settings = GameSettings(minWordsPerMessage = null, maxWordsPerMessage = 2)))
+        assertErrorWithType(ErrorType.INVALID_MESSAGE, RequestInputValidator.validateInput(now, message = "", settings = GameSettings(minWordsPerMessage = null, maxWordsPerMessage = 2)))
 
         //Min and max
         assertNull(RequestInputValidator.validateInput(now, message = "123 123", settings = GameSettings(minWordsPerMessage = 2, maxWordsPerMessage = 5)))

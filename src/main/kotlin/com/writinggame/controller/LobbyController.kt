@@ -105,7 +105,7 @@ class LobbyController {
             if(!lobby.isCreator(sessionId)) return@submit ErrorResponse(ErrorType.NOT_LOBBY_CREATOR, receivedDatetime)
             if(lobby.players.size < 2 && lobby.lobbyState == LobbyStateType.GATHERING_PLAYERS) return@submit ErrorResponse(ErrorType.TOO_FEW_PLAYERS, receivedDatetime)
 
-            lobby.startGame(sessionId, settings)
+            lobby.startGame(settings)
             println("Starting game for lobby $lobbyId player $sessionId can start: ${lobby.isCreator(sessionId)} round time: ${settings.roundTimeMinutes}")
 
             return@submit StartGameResponse(lobby, receivedDatetime)
