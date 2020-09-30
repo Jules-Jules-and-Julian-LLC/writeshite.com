@@ -2,13 +2,7 @@ package com.writinggame
 
 import com.writinggame.controller.viewModels.JoinGameResponse
 import com.writinggame.model.LobbyManager
-import org.apache.catalina.Context
-import org.apache.catalina.connector.Connector
-import org.apache.tomcat.util.descriptor.web.SecurityCollection
-import org.apache.tomcat.util.descriptor.web.SecurityConstraint
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.boot.web.embedded.tomcat.TomcatServletWebServerFactory
-import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.context.event.EventListener
 import org.springframework.messaging.simp.SimpMessageSendingOperations
@@ -51,36 +45,5 @@ class WebSocketConfig : WebSocketMessageBrokerConfigurer {
             }
         }
         println("[Disconnected] " + sha.sessionId)
-    }
-
-    @Bean
-    fun servletContainer(): TomcatServletWebServerFactory {
-        val httpConnector1 = Connector(TomcatServletWebServerFactory.DEFAULT_PROTOCOL)
-        httpConnector1.scheme = "http"
-        httpConnector1.port = 8080
-        httpConnector1.secure = false
-        httpConnector1.redirectPort = 443
-
-        val httpConnector2 = Connector(TomcatServletWebServerFactory.DEFAULT_PROTOCOL)
-        httpConnector2.scheme = "http"
-        httpConnector2.port = 80
-        httpConnector2.secure = false
-        httpConnector2.redirectPort = 443
-
-        val tomcat = object : TomcatServletWebServerFactory() {
-            override fun postProcessContext(context: Context?) {
-                super.postProcessContext(context)
-                val securityConstraint = SecurityConstraint()
-                securityConstraint.userConstraint = "CONFIDENTIAL"
-
-                val collection = SecurityCollection()
-                collection.addPattern("/*")
-                securityConstraint.addCollection(collection)
-                context?.addConstraint(securityConstraint)
-            }
-        }
-        tomcat.addAdditionalTomcatConnectors(httpConnector1, httpConnector2)
-
-        return tomcat;
     }
 }

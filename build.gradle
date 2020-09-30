@@ -28,6 +28,9 @@ jib {
             }
         }
     }
+    to {
+        image = 'writeshite:' + getProperty('appVersion')
+    }
 }
 
 bootJar {

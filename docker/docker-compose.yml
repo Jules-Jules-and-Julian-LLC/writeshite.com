@@ -1,0 +1,18 @@
+version: '3'
+
+services:
+  proxy:
+    image: staticfloat/nginx-certbot
+    restart: unless-stopped
+    environment:
+      CERTBOT_EMAIL: "writeshitewebsite@gmail.com"
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./conf.d:/etc/nginx/user.conf.d:ro
+  writeshite_app:
+    image: writeshite:1.0.0
+    restart: unless-stopped
+    expose:
+      - "1337"
