@@ -72,3 +72,18 @@ To get app on EC2:
 * Run app
   * cd docker
   * docker-compose up
+  
+  
+Update app:
+
+ * docker-compose down
+ * git pull
+ * copy frontend
+   *     scp -r -i C:\Users\Julian\.ssh\aws_ec2.pem C:\Users\Julian\IdeaProjects\writing.game\src\main\resources\ ec2-user@ec2-3-131-78-151.us-east-2.compute.amazonaws.com:/home/ec2-user/writing.game/src/main/
+* Build docker image
+  * cd /home/ec2-user/writing.game
+  * ./gradlew jibDockerBuild
+* Run app
+  * cd docker
+  * docker-compose up
+    
