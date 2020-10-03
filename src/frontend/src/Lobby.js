@@ -35,6 +35,7 @@ export default class Lobby extends React.Component {
         this.convertMessagesToStory = this.convertMessagesToStory.bind(this);
         this.calculateRoundTimeLeft = this.calculateRoundTimeLeft.bind(this);
         this.onPassStyleChange = this.onPassStyleChange.bind(this);
+        this.onSaveStoriesToGalleryChange = this.onSaveStoriesToGalleryChange.bind(this);
         this.messageAreaKeyDown = this.messageAreaKeyDown.bind(this);
     }
 
@@ -59,7 +60,7 @@ export default class Lobby extends React.Component {
                     localStorage.setItem("username", message.body);
                 });
 
-                stompClient.subscribe("/topic/lobby." + me.state.lobbyId, function(response) {
+                stompClient.subscribe("/topic/lobby." + me.state.lobbyId.toUpperCase(), function(response) {
                     let responseObj = JSON.parse(response.body);
                     const responseType = responseObj.responseType;
                     const eventReceivedDatetime = responseObj.eventReceivedDatetime;
@@ -128,13 +129,14 @@ export default class Lobby extends React.Component {
         if(InputValidator.validateStartGame(this.state.minWordsPerMessage, this.state.maxWordsPerMessage,
             this.state.roundTime, this.state.players.length, this.state.lobbyState)) {
             this.state.stompClient.send(
-                "/app/lobby." + this.state.lobbyId + ".startGame",
+                "/app/lobby." + this.state.lobbyId.toUpperCase() + ".startGame",
                 {},
                 JSON.stringify({
                     roundTimeMinutes: parseInt(this.state.roundTime),
                     minWordsPerMessage: parseInt(this.state.minWordsPerMessage),
                     maxWordsPerMessage: parseInt(this.state.maxWordsPerMessage),
-                    passStyle: this.state.settings.passStyle
+                    passStyle: this.state.settings.passStyle,
+                    saveStoriesToGallery: this.state.settings.saveStoriesToGallery
                 })
             );
         }
@@ -142,7 +144,7 @@ export default class Lobby extends React.Component {
 
     endRound(event) {
         event.preventDefault();
-        this.state.stompClient.send("/app/lobby." + this.state.lobbyId + ".endRound", {}, {});
+        this.state.stompClient.send("/app/lobby." + this.state.lobbyId.toUpperCase() + ".endRound", {}, {});
     }
 
     sendMessage(event, warnAboutSendButton) {
@@ -159,7 +161,7 @@ export default class Lobby extends React.Component {
             }
 
             this.state.stompClient.send(
-                "/app/lobby." + this.state.lobbyId + ".newMessage",
+                "/app/lobby." + this.state.lobbyId.toUpperCase() + ".newMessage",
                 {},
                 JSON.stringify({
                     message: this.state.message,
@@ -174,7 +176,7 @@ export default class Lobby extends React.Component {
         let currentStory = this.getCurrentStory();
 
         if (currentStory) {
-            this.state.stompClient.send("/app/lobby." + this.state.lobbyId + ".completeStory", {}, currentStory.id);
+            this.state.stompClient.send("/app/lobby." + this.state.lobbyId.toUpperCase() + ".completeStory", {}, currentStory.id);
         }
     }
 
@@ -188,7 +190,7 @@ export default class Lobby extends React.Component {
         event.preventDefault();
         if (InputValidator.validateUsername(this.state.username)) {
             this.setState({clickedSetUsername: true});
-            this.state.stompClient.send("/app/lobby." + this.state.lobbyId + ".joinGame", {}, this.state.username);
+            this.state.stompClient.send("/app/lobby." + this.state.lobbyId.toUpperCase() + ".joinGame", {}, this.state.username);
         }
     }
 
@@ -253,6 +255,12 @@ export default class Lobby extends React.Component {
         this.setState({settings: newSettings});
     }
 
+    onSaveStoriesToGalleryChange(event) {
+        let newSettings = this.state.settings;
+        newSettings["saveStoriesToGallery"] = !this.state.settings.saveStoriesToGallery;
+        this.setState({settings: newSettings});
+    }
+
     messageAreaKeyDown(event) {
         if ((event.altKey || event.ctrlKey || event.metaKey) && event.keyCode === 13) {
             this.sendMessage();
@@ -307,7 +315,10 @@ export default class Lobby extends React.Component {
                 </div>
             );
         } else if (this.state.lobby && this.state.lobbyState === "GATHERING_PLAYERS") {
-            let players = this.state.players.map(player => <li key={player.username}>{player.username}</li>);
+            let players = this.state.players.map(player =>
+                <li key={player.username} className={player.username === this.state.username ? "bold-text" : undefined}>
+                    {player.username}
+                </li>);
             let previousRoundStories = this.state.previousRoundStories.map(story => (
                 <li key={story.creatingPlayer.username}>
                     <LinedPaper
@@ -385,6 +396,17 @@ export default class Lobby extends React.Component {
                                             onChange={this.onPassStyleChange}
                                         />
                                         Randomly
+                                    </label>
+                                </div>
+                                <div class="setting">
+                                    <label>
+                                        <input
+                                            type="checkbox"
+                                            value="SAVE_STORIES_TO_GALLERY"
+                                            checked={this.state.settings.saveStoriesToGallery === true}
+                                            onChange={this.onSaveStoriesToGalleryChange}
+                                        />
+                                        Save Stories To Gallery
                                     </label>
                                 </div>
                             </div>

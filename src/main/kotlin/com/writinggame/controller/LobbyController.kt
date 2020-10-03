@@ -40,7 +40,7 @@ class LobbyController {
 
     companion object {
         const val TIMEOUT_MINUTES: Long = 2
-        private val map = mutableMapOf<String, ExecutorService>()
+        private val map = mutableMapOf<String, ExecutorService>().toSortedMap(String.CASE_INSENSITIVE_ORDER)
 
         fun getExecutorServiceForLobby(lobbyId: String): ExecutorService {
             return map.getOrPut(lobbyId, { Executors.newSingleThreadExecutor() })

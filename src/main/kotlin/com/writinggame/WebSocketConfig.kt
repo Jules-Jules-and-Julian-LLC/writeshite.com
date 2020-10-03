@@ -39,7 +39,7 @@ class WebSocketConfig : WebSocketMessageBrokerConfigurer {
             val lobby = LobbyManager.leaveLobby(sha.sessionId!!)
             if (lobby != null) {
                 messagingTemplate.convertAndSend(
-                        "/topic/lobby.${lobby.lobbyId}",
+                        "/topic/lobby.${lobby.lobbyId.toUpperCase()}",
                         JoinGameResponse(lobby, receivedDatetime)
                 )
             }

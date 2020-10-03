@@ -28,7 +28,7 @@ export default class Lobby extends React.Component {
 
     componentDidMount() {
         try {
-            fetch("https://www.writeshite.com/gallery/" + this.state.lobbyId + "/get", {cache: "no-cache"})
+            fetch("./" + this.state.lobbyId + "/get", {cache: "no-cache"})
                 .then(async res => res.json())
                 .then(
                     result => {

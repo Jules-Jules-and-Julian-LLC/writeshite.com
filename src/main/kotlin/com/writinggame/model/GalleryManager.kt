@@ -28,8 +28,8 @@ object GalleryManager {
     }
 
     fun loadFromFile(lobbyId: String) : Gallery {
-        if(s3Client.doesObjectExist("write-shite-galleries", "$lobbyId.json")) {
-            val existingFile = s3Client.getObject("write-shite-galleries", "$lobbyId.json")
+        if(s3Client.doesObjectExist("write-shite-galleries", "${lobbyId.toUpperCase()}.json")) {
+            val existingFile = s3Client.getObject("write-shite-galleries", "${lobbyId.toUpperCase()}.json")
             return jsonObjectMapper.readValue(existingFile.objectContent)
         }
 
@@ -42,7 +42,7 @@ object GalleryManager {
                 val galleryToSave = loadFromFile(lobbyId)
                 galleryToSave.addStories(stories)
                 //Warning is not true, because of withContext(Dispatchers.IO). Technically, it blocks but it'll make new threads as needed
-                s3Client.putObject("write-shite-galleries", "$lobbyId.json", jsonObjectMapper.writeValueAsString(galleryToSave))
+                s3Client.putObject("write-shite-galleries", "${lobbyId.toUpperCase()}.json", jsonObjectMapper.writeValueAsString(galleryToSave))
             }
         }
     }

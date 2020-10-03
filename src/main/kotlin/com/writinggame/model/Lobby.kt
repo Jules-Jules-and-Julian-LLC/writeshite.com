@@ -40,7 +40,9 @@ class Lobby(val lobbyId: String, var creator: Player, settings: GameSettings) {
     }
 
     private fun addCompletedStoriesToGallery() {
-        GalleryManager.addStoriesToGallery(lobbyId, game.completedStories)
+        if(game.settings.saveStoriesToGallery) {
+            GalleryManager.addStoriesToGallery(lobbyId, game.completedStories)
+        }
     }
 
     fun isCreator(sessionId: String): Boolean {

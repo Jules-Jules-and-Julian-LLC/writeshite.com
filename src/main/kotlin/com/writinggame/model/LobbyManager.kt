@@ -39,6 +39,6 @@ object LobbyManager {
     }
 
     fun getLobby(lobbyId: String): Lobby? {
-        return lobbies.find { it.lobbyId == lobbyId }
+        return lobbies.find { it.lobbyId.equals(lobbyId, true) }
     }
 }
