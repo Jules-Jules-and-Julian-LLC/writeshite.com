@@ -13,7 +13,7 @@ To get app on EC2:
 
 * Create EC2 instance
   * Don't forget to setup HTTP and HTTPS in security and set Source of SSH to My IP
-  * Don't forget to up disk space to 8 Gigs (could go up to 30, we'll see). Need this to use for swap so we can build docker image.
+  * Don't forget to up disk space to 29 Gigs. Need this to use for swap so we can build docker image.
 * Assign elastic IP
 * Change NameCheap DNS
 * SSH in
