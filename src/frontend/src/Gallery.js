@@ -51,7 +51,7 @@ export default class Lobby extends React.Component {
             let body;
             if (this.state.entries && this.state.entries.length > 0) {
                 let entries = this.state.entries
-                    .sort((a, b) => b.createDatetime - a.createDatetime)
+                    .sort((a, b) => new Date(b.createDatetime) - new Date(a.createDatetime))
                     .map(entry => (
                         <li key={entry.creatorUsername + entry.createDatetime}>
                             <LinedPaper text={entry.text} title={entry.creatorUsername} shorten={true} />
