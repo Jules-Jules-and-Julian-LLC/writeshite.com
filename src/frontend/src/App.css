@@ -122,15 +122,29 @@ ul {
     color: red;
 }
 
-.settings-input {
-    width: 5em;
+.setting {
+    margin: 7px;
+}
+
+.setting-label {
+    font-weight: bold;
+    text-align: right;
+}
+
+.setting-input {
     margin-left: 10px;
     margin-bottom: 5px;
 }
 
+.setting-table {
+    margin-left: auto;
+    margin-right: auto;
+}
+
 .section-header {
-    margin-bottom: 5px;
+    margin-bottom: 10px;
     font-weight: bold;
+    font-size: 32px;
 }
 
 .bold-text {
