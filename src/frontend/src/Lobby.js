@@ -37,6 +37,7 @@ export default class Lobby extends React.Component {
         this.calculateRoundTimeLeft = this.calculateRoundTimeLeft.bind(this);
         this.onPassStyleChange = this.onPassStyleChange.bind(this);
         this.onSaveStoriesToGalleryChange = this.onSaveStoriesToGalleryChange.bind(this);
+        this.onExquisiteCorpseChange = this.onExquisiteCorpseChange.bind(this);
         this.messageAreaKeyDown = this.messageAreaKeyDown.bind(this);
     }
 
@@ -139,6 +140,7 @@ export default class Lobby extends React.Component {
                 this.state.lobbyState
             )
         ) {
+            // TODO why stringify per-setting? Why not stringify the whole object?
             this.state.stompClient.send(
                 "/app/lobby." + this.state.lobbyId.toUpperCase() + ".startGame",
                 {},
@@ -147,7 +149,8 @@ export default class Lobby extends React.Component {
                     minWordsPerMessage: parseInt(this.state.minWordsPerMessage),
                     maxWordsPerMessage: parseInt(this.state.maxWordsPerMessage),
                     passStyle: this.state.settings.passStyle,
-                    saveStoriesToGallery: this.state.settings.saveStoriesToGallery
+                    saveStoriesToGallery: this.state.settings.saveStoriesToGallery,
+                    exquisiteCorpse: this.state.settings.exquisiteCorpse
                 })
             );
         }
@@ -300,6 +303,12 @@ export default class Lobby extends React.Component {
         this.setState({settings: newSettings});
     }
 
+    onExquisiteCorpseChange(event) {
+        let newSettings = this.state.settings;
+        newSettings["exquisiteCorpse"] = !this.state.settings.exquisiteCorpse;
+        this.setState({settings: newSettings});
+    }
+
     messageAreaKeyDown(event) {
         if ((event.altKey || event.ctrlKey || event.metaKey) && event.keyCode === 13) {
             this.sendMessage();
@@ -379,6 +388,7 @@ export default class Lobby extends React.Component {
                             <div id="settings">
                                 <span className="section-header">Optional Settings</span>
                                 <table className="setting-table">
+                                <tbody>
                                     <tr>
                                         <td className="setting-label">Save Stories To Gallery</td>
                                         <td className="setting-input">
@@ -387,6 +397,17 @@ export default class Lobby extends React.Component {
                                                 value="SAVE_STORIES_TO_GALLERY"
                                                 checked={this.state.settings.saveStoriesToGallery === true}
                                                 onChange={this.onSaveStoriesToGalleryChange}
+                                            />
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td className="setting-label">Show Most Recent Message Only</td>
+                                        <td className="setting-input">
+                                            <input
+                                                type="checkbox"
+                                                value="EXQUISITE_CORPOSE"
+                                                checked={this.state.settings.exquisiteCorpse === true}
+                                                onChange={this.onExquisiteCorpseChange}
                                             />
                                         </td>
                                     </tr>
@@ -449,6 +470,7 @@ export default class Lobby extends React.Component {
                                             Randomly
                                         </td>
                                     </tr>
+                                    </tbody>
                                 </table>
                             </div>
                             <form onSubmit={this.startGame}>
@@ -485,7 +507,10 @@ export default class Lobby extends React.Component {
                 </div>
             ));
             let stories = this.state.stories[this.state.username];
-            let currentStory = stories && stories[0] && this.convertMessagesToStory(stories[0].messages);
+            let exquisiteCorpse = this.state.settings.exquisiteCorpse === true;
+            let currentStory = stories && stories[0] &&
+                this.convertMessagesToStory(exquisiteCorpse ? stories[0].messages.slice(stories[0].messages.length - 1)
+                        : stories[0].messages);
             let timeLeft = this.calculateRoundTimeLeft();
             let roundOver = !timeLeft.hasOwnProperty("seconds");
             let wordRangeSentence = this.getWordRangeSentence();
