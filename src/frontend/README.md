@@ -75,7 +75,7 @@ To get app on EC2:
   
   
 Update app:
-
+ * Bump version in gradle.properties and in docker-compose.yml
  * docker-compose down
  * git pull
  * copy frontend

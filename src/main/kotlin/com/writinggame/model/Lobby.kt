@@ -65,25 +65,21 @@ class Lobby(val lobbyId: String, var creator: Player, settings: GameSettings) {
     }
 
     fun addMessageToStory(message: String, storyId: String, sessionId: String) {
-        val story = game.getStory(storyId)
-        story?.addMessage(message, sessionId)
-
-        if(game.endTime != null) {
-            val elapsedTime = Duration.between(Instant.now(), game.endTime)
-            if(elapsedTime.isNegative) {
-                println("Elapsed time was: ${elapsedTime.toSeconds()} seconds, so completing story: $storyId")
-                completeStory(storyId, sessionId)
-            }
+        if(game.endTime != null && Duration.between(Instant.now(), game.endTime).isNegative) {
+            completeStory(storyId, sessionId, message)
+        } else {
+            val story = game.getStory(storyId)
+            story?.addMessage(message, sessionId)
         }
     }
 
-    fun completeStory(storyId: String, sessionId: String) {
+    fun completeStory(storyId: String, sessionId: String, message: String) {
         val player = getPlayer(sessionId)
         if(player == null || storyNotInPlayerQueue(storyId, player)) {
             return
         }
 
-        lobbyState = game.completeStory(storyId, player)
+        lobbyState = game.completeStory(storyId, player, message)
         if(lobbyState == LobbyStateType.READING) {
             addCompletedStoriesToGallery()
         }

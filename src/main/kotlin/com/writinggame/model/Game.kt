@@ -49,8 +49,9 @@ class Game(lobby: Lobby, val settings: GameSettings) {
         }
     }
 
-    private fun completeStory(story: Story?, completingPlayer: Player): LobbyStateType {
+    private fun completeStory(story: Story?, completingPlayer: Player, message: String): LobbyStateType {
         if(story != null) {
+            story.addMessage(message, completingPlayer.clientId)
             completedStories.add(story)
 
             stories.keys.forEach {username ->
@@ -65,9 +66,9 @@ class Game(lobby: Lobby, val settings: GameSettings) {
         return if (stories.values.flatten().isEmpty()) LobbyStateType.READING else LobbyStateType.PLAYING
     }
 
-    fun completeStory(storyId: String, completingPlayer: Player): LobbyStateType {
+    fun completeStory(storyId: String, completingPlayer: Player, message: String): LobbyStateType {
         val story = getStory(storyId)
-        return completeStory(story, completingPlayer)
+        return completeStory(story, completingPlayer, message)
     }
 
     //TODO remove !!
@@ -132,7 +133,7 @@ class Game(lobby: Lobby, val settings: GameSettings) {
 
     fun completeAllStories(sessionId: String) {
         while(stories.values.flatten().isNotEmpty()) {
-            completeStory(stories.values.flatten().elementAt(0), getPlayer(sessionId))
+            completeStory(stories.values.flatten().elementAt(0), getPlayer(sessionId), "")
         }
     }
 }

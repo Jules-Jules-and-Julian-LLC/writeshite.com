@@ -143,7 +143,7 @@ class LobbyController {
     @MessageMapping("/lobby.{lobbyId}.completeStory")
     @SendTo("/topic/lobby.{lobbyId}")
     fun completeStory(@DestinationVariable("lobbyId") lobbyId: String,
-                      @Header("simpSessionId") sessionId: String, storyId: String): Response {
+                      @Header("simpSessionId") sessionId: String, receivedMessage: ReceivedMessage): Response {
         return getExecutorServiceForLobby(lobbyId).submit<Response> {
             val receivedDatetime = ZonedDateTime.now()
 
@@ -153,9 +153,9 @@ class LobbyController {
             }
 
             val lobby = LobbyManager.getLobby(lobbyId) ?: return@submit ErrorResponse(ErrorType.LOBBY_NOT_FOUND, receivedDatetime)
-            println("Completing story: $storyId for lobby: $lobbyId by user: $sessionId")
+            println("Completing story: ${receivedMessage.storyId} for lobby: $lobbyId by user: $sessionId")
 
-            lobby.completeStory(storyId, sessionId)
+            lobby.completeStory(receivedMessage.storyId, sessionId, receivedMessage.message)
 
             return@submit StoryChangeResponse(lobby, receivedDatetime)
         }.get(TIMEOUT_MINUTES, TimeUnit.MINUTES)

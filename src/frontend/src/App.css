@@ -62,7 +62,7 @@ body {
     width: 700px;
     height: 100%;
     border-collapse: collapse;
-    display : table;
+    display: table;
 }
 
 .logo-page-content {
@@ -78,7 +78,10 @@ body {
     margin-top: 25px;
 }
 
-html, body, #root, #content {
+html,
+body,
+#root,
+#content {
     height: 100%;
 }
 
@@ -97,10 +100,10 @@ html, body, #root, #content {
 }
 
 .gallery-header {
-   font-family: "Dancing Script", latin;
-   font-size: 30px;
-   white-space: nowrap;
-   margin-top: 10px;
+    font-family: "Dancing Script", latin;
+    font-size: 30px;
+    white-space: nowrap;
+    margin-top: 10px;
 }
 
 #timer {
@@ -161,12 +164,8 @@ ul {
     color: gray;
 }
 
-.complete-story-hovered {
-    color: gray;
-}
-
 .help-about-links {
-    margin-top:25px;
+    margin-top: 25px;
 }
 
 .help-link {

@@ -48,8 +48,12 @@ class Homepage extends React.Component {
                     </button>
                 </div>
                 <div className="help-about-links">
-                    <a className="help-link" href="./help" target="_self">Help</a>
-                    <a href="./about" target="_self">About</a>
+                    <a className="help-link" href="./help" target="_self">
+                        Help
+                    </a>
+                    <a href="./about" target="_self">
+                        About
+                    </a>
                 </div>
             </div>
         );

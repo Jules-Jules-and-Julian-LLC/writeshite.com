@@ -12,7 +12,9 @@ class PaperStack extends React.Component {
                 zIndex: -1 * i,
                 position: "relative"
             };
-            paperStack.push(<img key={"paper-" + i} className="paper" src="../paper_icon.svg" alt="piece of paper" style={style} />);
+            paperStack.push(
+                <img key={"paper-" + i} className="paper" src="../paper_icon.svg" alt="piece of paper" style={style} />
+            );
         }
 
         return <span className="paper-stack">{paperStack}</span>;
