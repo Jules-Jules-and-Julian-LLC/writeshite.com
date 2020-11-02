@@ -47,6 +47,15 @@ class Homepage extends React.Component {
                         Open Gallery
                     </button>
                 </div>
+                <div>
+                    <br />
+                    Friends already in a lobby? Ask them for the name, put it in above and click "Join Lobby"! <br />{" "}
+                    <br />
+                    Want to make a lobby to play with your friends? Pick a name, put it in above, and click "Join
+                    Lobby". A lobby will be created for you to play in. <br /> <br />
+                    Anyone with the lobby name can join the lobby and can access the gallery of all stories that have
+                    been written in that lobby, so make sure only you and your friends know the lobby name!
+                </div>
                 <div className="help-about-links">
                     <a className="help-link" href="./help" target="_self">
                         Help

@@ -83,6 +83,9 @@ export default class Lobby extends React.Component {
                                 endTime: responseObj.game.endTime && new Date(responseObj.game.endTime),
                                 players: responseObj.players
                             });
+                            if (document.hidden === true) {
+                                new Audio("/fart.wav").play();
+                            }
                             //re-render once a second to update timer
                             window.setInterval(me.forceUpdate.bind(me), 1000);
                         } else if (responseType === "JOIN_GAME") {
@@ -175,7 +178,7 @@ export default class Lobby extends React.Component {
             )
         ) {
             if (this.state.warnedAboutSendButton === false && warnAboutSendButton === true) {
-                Toaster.toast("info", "You may also send messages with Ctrl+Enter, Alt+Enter, or ⌘+Enter");
+                Toaster.toast("info", "You can also send messages with Ctrl+Enter, Alt+Enter, or ⌘+Enter");
                 this.setState({warnedAboutSendButton: true});
             }
 
@@ -342,6 +345,17 @@ export default class Lobby extends React.Component {
         return sentence;
     }
 
+    copyUrlToClipboard() {
+        var tempInput = document.createElement("input");
+        tempInput.style = "position: absolute; left: -1000px; top: -1000px";
+        tempInput.value = window.location.href;
+        document.body.appendChild(tempInput);
+        tempInput.select();
+        document.execCommand("copy");
+        document.body.removeChild(tempInput);
+        Toaster.toast("info", "Lobby URL copied to clipboard");
+    }
+
     render() {
         if (!this.state.stompClient) {
             return <div className="please-wait-text">Connecting to lobby, please wait...</div>;
@@ -383,98 +397,112 @@ export default class Lobby extends React.Component {
                     <div>
                         <ul>{players}</ul>
                     </div>
+                    {this.state.lobby.creator.username !== this.state.username && (
+                        <div className="please-wait-text">Waiting for host to start the next round...</div>
+                    )}
+                    <div id="invite-friends">
+                        Want to invite your friends? <br />
+                        <button className="button" onClick={this.copyUrlToClipboard}>
+                            Copy the lobby URL to your clipboard
+                        </button>
+                        then send the URL to them!
+                    </div>
                     {this.state.lobby.creator.username === this.state.username && (
                         <div>
                             <div id="settings">
                                 <span className="section-header">Optional Settings</span>
                                 <table className="setting-table">
-                                <tbody>
-                                    <tr>
-                                        <td className="setting-label">Save Stories To Gallery</td>
-                                        <td className="setting-input">
-                                            <input
-                                                type="checkbox"
-                                                value="SAVE_STORIES_TO_GALLERY"
-                                                checked={this.state.settings.saveStoriesToGallery === true}
-                                                onChange={this.onSaveStoriesToGalleryChange}
-                                            />
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td className="setting-label">Show Most Recent Message Only</td>
-                                        <td className="setting-input">
-                                            <input
-                                                type="checkbox"
-                                                value="EXQUISITE_CORPOSE"
-                                                checked={this.state.settings.exquisiteCorpse === true}
-                                                onChange={this.onExquisiteCorpseChange}
-                                            />
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td className="setting-label">Minutes Per Round</td>
-                                        <td className="setting-input">
-                                            <input
-                                                type="text"
-                                                name="roundTime"
-                                                onChange={e => this.handleSimpleStateChange(e, "roundTime")}
-                                                value={this.state.roundTime}
-                                            />
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td className="setting-label">Minimum Words Per Message</td>
-                                        <td className="setting-input">
-                                            <input
-                                                type="text"
-                                                name="minWordsPerMessage"
-                                                onChange={e => this.handleSimpleStateChange(e, "minWordsPerMessage")}
-                                                value={this.state.minWordsPerMessage}
-                                            />
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td className="setting-label">Maximum Words Per Message</td>
-                                        <td className="setting-input">
-                                            <input
-                                                type="text"
-                                                name="maxWordsPerMessage"
-                                                onChange={e => this.handleSimpleStateChange(e, "maxWordsPerMessage")}
-                                                value={this.state.maxWordsPerMessage}
-                                            />
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td className="setting-label">Pass Stories</td>
-                                        <td className="setting-input">
-                                            <input
-                                                type="radio"
-                                                value="ORDERED"
-                                                checked={this.state.settings.passStyle === "ORDERED"}
-                                                onChange={this.onPassStyleChange}
-                                            />
-                                            In Order <br />
-                                            <input
-                                                type="radio"
-                                                value="MINIMIZE_WAIT"
-                                                checked={this.state.settings.passStyle === "MINIMIZE_WAIT"}
-                                                onChange={this.onPassStyleChange}
-                                            />
-                                            To Minimize Wait Time <br />
-                                            <input
-                                                type="radio"
-                                                value="RANDOM"
-                                                checked={this.state.settings.passStyle === "RANDOM"}
-                                                onChange={this.onPassStyleChange}
-                                            />
-                                            Randomly
-                                        </td>
-                                    </tr>
+                                    <tbody>
+                                        <tr>
+                                            <td className="setting-label">Save Stories To Gallery</td>
+                                            <td className="setting-input">
+                                                <input
+                                                    type="checkbox"
+                                                    value="SAVE_STORIES_TO_GALLERY"
+                                                    checked={this.state.settings.saveStoriesToGallery === true}
+                                                    onChange={this.onSaveStoriesToGalleryChange}
+                                                />
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td className="setting-label">Show Most Recent Message Only</td>
+                                            <td className="setting-input">
+                                                <input
+                                                    type="checkbox"
+                                                    value="EXQUISITE_CORPOSE"
+                                                    checked={this.state.settings.exquisiteCorpse === true}
+                                                    onChange={this.onExquisiteCorpseChange}
+                                                />
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td className="setting-label">Minutes Per Round</td>
+                                            <td className="setting-input">
+                                                <input
+                                                    type="text"
+                                                    name="roundTime"
+                                                    onChange={e => this.handleSimpleStateChange(e, "roundTime")}
+                                                    value={this.state.roundTime}
+                                                />
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td className="setting-label">Minimum Words Per Message</td>
+                                            <td className="setting-input">
+                                                <input
+                                                    type="text"
+                                                    name="minWordsPerMessage"
+                                                    onChange={e =>
+                                                        this.handleSimpleStateChange(e, "minWordsPerMessage")
+                                                    }
+                                                    value={this.state.minWordsPerMessage}
+                                                />
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td className="setting-label">Maximum Words Per Message</td>
+                                            <td className="setting-input">
+                                                <input
+                                                    type="text"
+                                                    name="maxWordsPerMessage"
+                                                    onChange={e =>
+                                                        this.handleSimpleStateChange(e, "maxWordsPerMessage")
+                                                    }
+                                                    value={this.state.maxWordsPerMessage}
+                                                />
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td className="setting-label">Pass Stories</td>
+                                            <td className="setting-input">
+                                                <input
+                                                    type="radio"
+                                                    value="ORDERED"
+                                                    checked={this.state.settings.passStyle === "ORDERED"}
+                                                    onChange={this.onPassStyleChange}
+                                                />
+                                                In Order <br />
+                                                <input
+                                                    type="radio"
+                                                    value="MINIMIZE_WAIT"
+                                                    checked={this.state.settings.passStyle === "MINIMIZE_WAIT"}
+                                                    onChange={this.onPassStyleChange}
+                                                />
+                                                To Minimize Wait Time <br />
+                                                <input
+                                                    type="radio"
+                                                    value="RANDOM"
+                                                    checked={this.state.settings.passStyle === "RANDOM"}
+                                                    onChange={this.onPassStyleChange}
+                                                />
+                                                Randomly
+                                            </td>
+                                        </tr>
                                     </tbody>
                                 </table>
                             </div>
                             <form onSubmit={this.startGame}>
-                                <input className="button start-game-button" type="submit" value="Start game" />
+                                <input className="button start-game-button" type="submit" value="Start Round" />
                             </form>
                         </div>
                     )}
@@ -508,9 +536,12 @@ export default class Lobby extends React.Component {
             ));
             let stories = this.state.stories[this.state.username];
             let exquisiteCorpse = this.state.settings.exquisiteCorpse === true;
-            let currentStory = stories && stories[0] &&
-                this.convertMessagesToStory(exquisiteCorpse ? stories[0].messages.slice(stories[0].messages.length - 1)
-                        : stories[0].messages);
+            let currentStory =
+                stories &&
+                stories[0] &&
+                this.convertMessagesToStory(
+                    exquisiteCorpse ? stories[0].messages.slice(stories[0].messages.length - 1) : stories[0].messages
+                );
             let timeLeft = this.calculateRoundTimeLeft();
             let roundOver = !timeLeft.hasOwnProperty("seconds");
             let wordRangeSentence = this.getWordRangeSentence();
@@ -557,6 +588,7 @@ export default class Lobby extends React.Component {
 
                             <div>
                                 <textarea
+                                    autoFocus
                                     name="message"
                                     id="message-input"
                                     onChange={e => this.handleSimpleStateChange(e, "message")}
