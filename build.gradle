@@ -85,6 +85,7 @@ dependencies {
     implementation  "javax.xml.bind:jaxb-api:2.2.4"
 
     testCompile "org.springframework.boot:spring-boot-starter-test"
+    implementation "org.jetbrains.kotlin:kotlin-stdlib"
 }
 
 version '1.0-SNAPSHOT'
