@@ -10,7 +10,10 @@ export default class Lobby extends React.Component {
         this.state = {
             lobbyId: pathname[pathname.length - 1],
             entries: undefined,
-            fromHomepage: new URLSearchParams(window.location.search).get("fromHomepage") === "true",
+            fromHomepage:
+                new URLSearchParams(window.location.search).get(
+                    "fromHomepage"
+                ) === "true",
             loaded: false
         };
 
@@ -19,7 +22,10 @@ export default class Lobby extends React.Component {
 
     handleButtonClick(event) {
         event && event.preventDefault();
-        if (this.state.fromHomepage && InputValidator.validateLobbyId(this.state.lobbyId)) {
+        if (
+            this.state.fromHomepage &&
+            InputValidator.validateLobbyId(this.state.lobbyId)
+        ) {
             window.open("../lobby/" + this.state.lobbyId, "_self");
         } else {
             window.close();
@@ -46,21 +52,34 @@ export default class Lobby extends React.Component {
 
     render() {
         if (!this.state.entries && !this.state.loaded) {
-            return <div className="please-wait-text">Loading gallery, please wait...</div>;
+            return (
+                <div className="please-wait-text">
+                    Loading gallery, please wait...
+                </div>
+            );
         } else {
             let body;
             if (this.state.entries && this.state.entries.length > 0) {
                 let entries = this.state.entries
-                    .sort((a, b) => new Date(b.createDatetime) - new Date(a.createDatetime))
+                    .sort(
+                        (a, b) =>
+                            new Date(b.createDatetime) -
+                            new Date(a.createDatetime)
+                    )
                     .map(entry => (
                         <li key={entry.creatorUsername + entry.createDatetime}>
-                            <LinedPaper text={entry.text} title={entry.creatorUsername} shorten={true} />
+                            <LinedPaper
+                                text={entry.text}
+                                title={entry.creatorUsername}
+                                shorten={true}
+                            />
                         </li>
                     ));
                 body = (
                     <div>
                         <div className="gallery-header">
-                            Only The Finest Shite, Courtesy Of The {this.state.lobbyId} Lobby
+                            Only The Finest Shite, Courtesy Of The{" "}
+                            {this.state.lobbyId} Lobby
                         </div>
                         <ul>{entries}</ul>
                     </div>
@@ -77,8 +96,14 @@ export default class Lobby extends React.Component {
             return (
                 <div>
                     <div>
-                        <button className="button" type="button" onClick={this.handleButtonClick}>
-                            {this.state.fromHomepage ? "Go To Lobby" : "Close Gallery"}
+                        <button
+                            className="button"
+                            type="button"
+                            onClick={this.handleButtonClick}
+                        >
+                            {this.state.fromHomepage
+                                ? "Go To Lobby"
+                                : "Close Gallery"}
                         </button>
                     </div>
                     <div>{body}</div>

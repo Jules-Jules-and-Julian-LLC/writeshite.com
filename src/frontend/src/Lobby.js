@@ -36,7 +36,9 @@ export default class Lobby extends React.Component {
         this.convertMessagesToStory = this.convertMessagesToStory.bind(this);
         this.calculateRoundTimeLeft = this.calculateRoundTimeLeft.bind(this);
         this.onPassStyleChange = this.onPassStyleChange.bind(this);
-        this.onSaveStoriesToGalleryChange = this.onSaveStoriesToGalleryChange.bind(this);
+        this.onSaveStoriesToGalleryChange = this.onSaveStoriesToGalleryChange.bind(
+            this
+        );
         this.onExquisiteCorpseChange = this.onExquisiteCorpseChange.bind(this);
         this.messageAreaKeyDown = this.messageAreaKeyDown.bind(this);
     }
@@ -57,74 +59,108 @@ export default class Lobby extends React.Component {
                 let disconnect = e => stompClient.disconnect();
                 window.addEventListener("beforeunload", disconnect.bind(me));
 
-                stompClient.subscribe("/user/queue/overrideUsername", function(message) {
+                stompClient.subscribe("/user/queue/overrideUsername", function(
+                    message
+                ) {
                     me.setState({username: message.body});
                     localStorage.setItem("username", message.body);
                 });
 
-                stompClient.subscribe("/topic/lobby." + me.state.lobbyId.toUpperCase(), function(response) {
-                    let responseObj = JSON.parse(response.body);
-                    const responseType = responseObj.responseType;
-                    const eventReceivedDatetime = responseObj.eventReceivedDatetime;
-                    if (
-                        !me.state.lastEventReceivedDatetime ||
-                        eventReceivedDatetime > me.state.lastEventReceivedDatetime
-                    ) {
-                        me.setState({
-                            lastEventReceivedDatetime: responseObj.eventReceivedDatetime
-                        });
-                        if (responseType === "START_GAME") {
+                stompClient.subscribe(
+                    "/topic/lobby." + me.state.lobbyId.toUpperCase(),
+                    function(response) {
+                        let responseObj = JSON.parse(response.body);
+                        const responseType = responseObj.responseType;
+                        const eventReceivedDatetime =
+                            responseObj.eventReceivedDatetime;
+                        if (
+                            !me.state.lastEventReceivedDatetime ||
+                            eventReceivedDatetime >
+                                me.state.lastEventReceivedDatetime
+                        ) {
                             me.setState({
-                                message: "",
-                                lobbyState: responseObj.lobbyState,
-                                stories: responseObj.game.stories,
-                                previousRoundStories: responseObj.previousRoundStories,
-                                settings: responseObj.game.settings,
-                                endTime: responseObj.game.endTime && new Date(responseObj.game.endTime),
-                                players: responseObj.players
+                                lastEventReceivedDatetime:
+                                    responseObj.eventReceivedDatetime
                             });
-                            if (document.hidden === true) {
-                                new Audio("/fart.wav").play();
+                            if (responseType === "START_GAME") {
+                                me.setState({
+                                    message: "",
+                                    lobbyState: responseObj.lobbyState,
+                                    stories: responseObj.game.stories,
+                                    previousRoundStories:
+                                        responseObj.previousRoundStories,
+                                    settings: responseObj.game.settings,
+                                    endTime:
+                                        responseObj.game.endTime &&
+                                        new Date(responseObj.game.endTime),
+                                    players: responseObj.players
+                                });
+                                if (document.hidden === true) {
+                                    new Audio("/fart.wav").play();
+                                }
+                                //re-render once a second to update timer
+                                window.setInterval(
+                                    me.forceUpdate.bind(me),
+                                    1000
+                                );
+                            } else if (responseType === "JOIN_GAME") {
+                                let stories = responseObj.lobby.game.stories;
+                                me.setState({
+                                    joined: me.state.clickedSetUsername,
+                                    lobbyState: responseObj.lobby.lobbyState,
+                                    lobby: responseObj.lobby,
+                                    stories: stories,
+                                    completedStories:
+                                        responseObj.lobby.game.completedStories,
+                                    previousRoundStories:
+                                        responseObj.lobby.previousRoundStories,
+                                    endTime:
+                                        responseObj.lobby.game.endTime &&
+                                        new Date(
+                                            responseObj.lobby.game.endTime
+                                        ),
+                                    settings:
+                                        me.state.settings ||
+                                        responseObj.lobby.game.settings,
+                                    roundTime:
+                                        responseObj.lobby.game.settings
+                                            .roundTimeMinutes,
+                                    players: responseObj.lobby.players
+                                });
+                                //re-render once a second to update timer
+                                window.setInterval(
+                                    me.forceUpdate.bind(me),
+                                    1000
+                                );
+                            } else if (responseType === "STORY_CHANGE") {
+                                me.setState({
+                                    stories: responseObj.stories,
+                                    completedStories:
+                                        responseObj.completedStories,
+                                    lobbyState: responseObj.lobbyState,
+                                    players: responseObj.players,
+                                    readingOrder: responseObj.readingOrder
+                                });
+                                if (
+                                    responseObj.lobbyState ===
+                                        "GATHERING_PLAYERS" ||
+                                    responseObj.lobbyState === "READING"
+                                ) {
+                                    me.setState({message: ""});
+                                }
+                            } else if (responseType === "ERROR") {
+                                InputValidator.warnBasedOnErrorType(
+                                    responseObj.errorType
+                                );
+                            } else {
+                                console.log(
+                                    "ERROR: Unhandled responseType: " +
+                                        responseType
+                                );
                             }
-                            //re-render once a second to update timer
-                            window.setInterval(me.forceUpdate.bind(me), 1000);
-                        } else if (responseType === "JOIN_GAME") {
-                            let stories = responseObj.lobby.game.stories;
-                            me.setState({
-                                joined: me.state.clickedSetUsername,
-                                lobbyState: responseObj.lobby.lobbyState,
-                                lobby: responseObj.lobby,
-                                stories: stories,
-                                completedStories: responseObj.lobby.game.completedStories,
-                                previousRoundStories: responseObj.lobby.previousRoundStories,
-                                endTime: responseObj.lobby.game.endTime && new Date(responseObj.lobby.game.endTime),
-                                settings: me.state.settings || responseObj.lobby.game.settings,
-                                roundTime: responseObj.lobby.game.settings.roundTimeMinutes,
-                                players: responseObj.lobby.players
-                            });
-                            //re-render once a second to update timer
-                            window.setInterval(me.forceUpdate.bind(me), 1000);
-                        } else if (responseType === "STORY_CHANGE") {
-                            me.setState({
-                                stories: responseObj.stories,
-                                completedStories: responseObj.completedStories,
-                                lobbyState: responseObj.lobbyState,
-                                players: responseObj.players,
-                                readingOrder: responseObj.readingOrder
-                            });
-                            if (
-                                responseObj.lobbyState === "GATHERING_PLAYERS" ||
-                                responseObj.lobbyState === "READING"
-                            ) {
-                                me.setState({message: ""});
-                            }
-                        } else if (responseType === "ERROR") {
-                            InputValidator.warnBasedOnErrorType(responseObj.errorType);
-                        } else {
-                            console.log("ERROR: Unhandled responseType: " + responseType);
                         }
                     }
-                });
+                );
             },
             function(frame) {
                 console.log("error connecting! " + JSON.stringify(frame));
@@ -152,7 +188,8 @@ export default class Lobby extends React.Component {
                     minWordsPerMessage: parseInt(this.state.minWordsPerMessage),
                     maxWordsPerMessage: parseInt(this.state.maxWordsPerMessage),
                     passStyle: this.state.settings.passStyle,
-                    saveStoriesToGallery: this.state.settings.saveStoriesToGallery,
+                    saveStoriesToGallery: this.state.settings
+                        .saveStoriesToGallery,
                     exquisiteCorpse: this.state.settings.exquisiteCorpse
                 })
             );
@@ -161,7 +198,11 @@ export default class Lobby extends React.Component {
 
     endRound(event) {
         event.preventDefault();
-        this.state.stompClient.send("/app/lobby." + this.state.lobbyId.toUpperCase() + ".endRound", {}, {});
+        this.state.stompClient.send(
+            "/app/lobby." + this.state.lobbyId.toUpperCase() + ".endRound",
+            {},
+            {}
+        );
     }
 
     sendMessage(event, warnAboutSendButton) {
@@ -177,13 +218,21 @@ export default class Lobby extends React.Component {
                 true
             )
         ) {
-            if (this.state.warnedAboutSendButton === false && warnAboutSendButton === true) {
-                Toaster.toast("info", "You can also send messages with Ctrl+Enter, Alt+Enter, or ⌘+Enter");
+            if (
+                this.state.warnedAboutSendButton === false &&
+                warnAboutSendButton === true
+            ) {
+                Toaster.toast(
+                    "info",
+                    "You can also send messages with Ctrl+Enter, Alt+Enter, or ⌘+Enter"
+                );
                 this.setState({warnedAboutSendButton: true});
             }
 
             this.state.stompClient.send(
-                "/app/lobby." + this.state.lobbyId.toUpperCase() + ".newMessage",
+                "/app/lobby." +
+                    this.state.lobbyId.toUpperCase() +
+                    ".newMessage",
                 {},
                 JSON.stringify({
                     message: this.state.message,
@@ -209,7 +258,9 @@ export default class Lobby extends React.Component {
                 ))
         ) {
             this.state.stompClient.send(
-                "/app/lobby." + this.state.lobbyId.toUpperCase() + ".completeStory",
+                "/app/lobby." +
+                    this.state.lobbyId.toUpperCase() +
+                    ".completeStory",
                 {},
                 JSON.stringify({
                     message: this.state.message,
@@ -267,7 +318,10 @@ export default class Lobby extends React.Component {
             let messageSplit = this.state.message.split("\n");
             let messagePreview = messageSplit.map((item, key) => {
                 return (
-                    <span key={"message-preview-" + key} className="message-preview">
+                    <span
+                        key={"message-preview-" + key}
+                        className="message-preview"
+                    >
                         {" " + item}
                         {key !== messageSplit.length - 1 && <br />}
                     </span>
@@ -302,7 +356,8 @@ export default class Lobby extends React.Component {
 
     onSaveStoriesToGalleryChange(event) {
         let newSettings = this.state.settings;
-        newSettings["saveStoriesToGallery"] = !this.state.settings.saveStoriesToGallery;
+        newSettings["saveStoriesToGallery"] = !this.state.settings
+            .saveStoriesToGallery;
         this.setState({settings: newSettings});
     }
 
@@ -313,7 +368,10 @@ export default class Lobby extends React.Component {
     }
 
     messageAreaKeyDown(event) {
-        if ((event.altKey || event.ctrlKey || event.metaKey) && event.keyCode === 13) {
+        if (
+            (event.altKey || event.ctrlKey || event.metaKey) &&
+            event.keyCode === 13
+        ) {
             this.sendMessage();
         }
     }
@@ -331,13 +389,21 @@ export default class Lobby extends React.Component {
         if (minWordsPerMessage || maxWordsPerMessage) {
             sentence = "You must use ";
             if (minWordsPerMessage) {
-                sentence += "at least " + minWordsPerMessage + " word" + (minWordsPerMessage > 1 ? "s" : "");
+                sentence +=
+                    "at least " +
+                    minWordsPerMessage +
+                    " word" +
+                    (minWordsPerMessage > 1 ? "s" : "");
                 if (maxWordsPerMessage) {
                     sentence += " and ";
                 }
             }
             if (maxWordsPerMessage) {
-                sentence += "at most " + maxWordsPerMessage + " word" + (maxWordsPerMessage > 1 ? "s" : "");
+                sentence +=
+                    "at most " +
+                    maxWordsPerMessage +
+                    " word" +
+                    (maxWordsPerMessage > 1 ? "s" : "");
             }
             sentence += ".";
         }
@@ -358,7 +424,11 @@ export default class Lobby extends React.Component {
 
     render() {
         if (!this.state.stompClient) {
-            return <div className="please-wait-text">Connecting to lobby, please wait...</div>;
+            return (
+                <div className="please-wait-text">
+                    Connecting to lobby, please wait...
+                </div>
+            );
         } else if (!this.state.joined) {
             return (
                 <div id="set-user-info-content">
@@ -372,128 +442,214 @@ export default class Lobby extends React.Component {
                         />
                     </div>
                     <form onSubmit={this.setUsername}>
-                        <input className="button" type="submit" value="Set Username" />
+                        <input
+                            className="button"
+                            type="submit"
+                            value="Set Username"
+                        />
                     </form>
                 </div>
             );
-        } else if (this.state.lobby && this.state.lobbyState === "GATHERING_PLAYERS") {
+        } else if (
+            this.state.lobby &&
+            this.state.lobbyState === "GATHERING_PLAYERS"
+        ) {
             let players = this.state.players.map(player => (
-                <li key={player.username} className={player.username === this.state.username ? "bold-text" : undefined}>
+                <li
+                    key={player.username}
+                    className={
+                        player.username === this.state.username
+                            ? "bold-text"
+                            : undefined
+                    }
+                >
                     {player.username}
                 </li>
             ));
-            let previousRoundStories = this.state.previousRoundStories.map(story => (
-                <li key={story.creatingPlayer.username}>
-                    <LinedPaper
-                        text={this.convertMessagesToStory(story.messages)}
-                        title={story.creatingPlayer.username}
-                        shorten={true}
-                    />
-                </li>
-            ));
+            let previousRoundStories = this.state.previousRoundStories.map(
+                story => (
+                    <li key={story.creatingPlayer.username}>
+                        <LinedPaper
+                            text={this.convertMessagesToStory(story.messages)}
+                            title={story.creatingPlayer.username}
+                            shorten={true}
+                        />
+                    </li>
+                )
+            );
             return (
                 <div id="lobby-content">
                     <span className="section-header">Players</span>
                     <div>
                         <ul>{players}</ul>
                     </div>
-                    {this.state.lobby.creator.username !== this.state.username && (
-                        <div className="please-wait-text">Waiting for host to start the next round...</div>
+                    {this.state.lobby.creator.username !==
+                        this.state.username && (
+                        <div className="please-wait-text">
+                            Waiting for host to start the next round...
+                        </div>
                     )}
                     <div id="invite-friends">
                         Want to invite your friends? <br />
-                        <button className="button" onClick={this.copyUrlToClipboard}>
+                        <button
+                            className="button"
+                            onClick={this.copyUrlToClipboard}
+                        >
                             Copy the lobby URL to your clipboard
                         </button>
                         then send the URL to them!
                     </div>
-                    {this.state.lobby.creator.username === this.state.username && (
+                    {this.state.lobby.creator.username ===
+                        this.state.username && (
                         <div>
                             <div id="settings">
-                                <span className="section-header">Optional Settings</span>
+                                <span className="section-header">
+                                    Optional Settings
+                                </span>
                                 <table className="setting-table">
                                     <tbody>
                                         <tr>
-                                            <td className="setting-label">Save Stories To Gallery</td>
+                                            <td className="setting-label">
+                                                Save Stories To Gallery
+                                            </td>
                                             <td className="setting-input">
                                                 <input
                                                     type="checkbox"
                                                     value="SAVE_STORIES_TO_GALLERY"
-                                                    checked={this.state.settings.saveStoriesToGallery === true}
-                                                    onChange={this.onSaveStoriesToGalleryChange}
+                                                    checked={
+                                                        this.state.settings
+                                                            .saveStoriesToGallery ===
+                                                        true
+                                                    }
+                                                    onChange={
+                                                        this
+                                                            .onSaveStoriesToGalleryChange
+                                                    }
                                                 />
                                             </td>
                                         </tr>
                                         <tr>
-                                            <td className="setting-label">Show Most Recent Message Only</td>
+                                            <td className="setting-label">
+                                                Show Most Recent Message Only
+                                            </td>
                                             <td className="setting-input">
                                                 <input
                                                     type="checkbox"
                                                     value="EXQUISITE_CORPOSE"
-                                                    checked={this.state.settings.exquisiteCorpse === true}
-                                                    onChange={this.onExquisiteCorpseChange}
+                                                    checked={
+                                                        this.state.settings
+                                                            .exquisiteCorpse ===
+                                                        true
+                                                    }
+                                                    onChange={
+                                                        this
+                                                            .onExquisiteCorpseChange
+                                                    }
                                                 />
                                             </td>
                                         </tr>
                                         <tr>
-                                            <td className="setting-label">Minutes Per Round</td>
+                                            <td className="setting-label">
+                                                Minutes Per Round
+                                            </td>
                                             <td className="setting-input">
                                                 <input
                                                     type="text"
                                                     name="roundTime"
-                                                    onChange={e => this.handleSimpleStateChange(e, "roundTime")}
+                                                    onChange={e =>
+                                                        this.handleSimpleStateChange(
+                                                            e,
+                                                            "roundTime"
+                                                        )
+                                                    }
                                                     value={this.state.roundTime}
                                                 />
                                             </td>
                                         </tr>
                                         <tr>
-                                            <td className="setting-label">Minimum Words Per Message</td>
+                                            <td className="setting-label">
+                                                Minimum Words Per Message
+                                            </td>
                                             <td className="setting-input">
                                                 <input
                                                     type="text"
                                                     name="minWordsPerMessage"
                                                     onChange={e =>
-                                                        this.handleSimpleStateChange(e, "minWordsPerMessage")
+                                                        this.handleSimpleStateChange(
+                                                            e,
+                                                            "minWordsPerMessage"
+                                                        )
                                                     }
-                                                    value={this.state.minWordsPerMessage}
+                                                    value={
+                                                        this.state
+                                                            .minWordsPerMessage
+                                                    }
                                                 />
                                             </td>
                                         </tr>
                                         <tr>
-                                            <td className="setting-label">Maximum Words Per Message</td>
+                                            <td className="setting-label">
+                                                Maximum Words Per Message
+                                            </td>
                                             <td className="setting-input">
                                                 <input
                                                     type="text"
                                                     name="maxWordsPerMessage"
                                                     onChange={e =>
-                                                        this.handleSimpleStateChange(e, "maxWordsPerMessage")
+                                                        this.handleSimpleStateChange(
+                                                            e,
+                                                            "maxWordsPerMessage"
+                                                        )
                                                     }
-                                                    value={this.state.maxWordsPerMessage}
+                                                    value={
+                                                        this.state
+                                                            .maxWordsPerMessage
+                                                    }
                                                 />
                                             </td>
                                         </tr>
                                         <tr>
-                                            <td className="setting-label">Pass Stories</td>
+                                            <td className="setting-label">
+                                                Pass Stories
+                                            </td>
                                             <td className="setting-input">
                                                 <input
                                                     type="radio"
                                                     value="ORDERED"
-                                                    checked={this.state.settings.passStyle === "ORDERED"}
-                                                    onChange={this.onPassStyleChange}
+                                                    checked={
+                                                        this.state.settings
+                                                            .passStyle ===
+                                                        "ORDERED"
+                                                    }
+                                                    onChange={
+                                                        this.onPassStyleChange
+                                                    }
                                                 />
                                                 In Order <br />
                                                 <input
                                                     type="radio"
                                                     value="MINIMIZE_WAIT"
-                                                    checked={this.state.settings.passStyle === "MINIMIZE_WAIT"}
-                                                    onChange={this.onPassStyleChange}
+                                                    checked={
+                                                        this.state.settings
+                                                            .passStyle ===
+                                                        "MINIMIZE_WAIT"
+                                                    }
+                                                    onChange={
+                                                        this.onPassStyleChange
+                                                    }
                                                 />
                                                 To Minimize Wait Time <br />
                                                 <input
                                                     type="radio"
                                                     value="RANDOM"
-                                                    checked={this.state.settings.passStyle === "RANDOM"}
-                                                    onChange={this.onPassStyleChange}
+                                                    checked={
+                                                        this.state.settings
+                                                            .passStyle ===
+                                                        "RANDOM"
+                                                    }
+                                                    onChange={
+                                                        this.onPassStyleChange
+                                                    }
                                                 />
                                                 Randomly
                                             </td>
@@ -502,7 +658,11 @@ export default class Lobby extends React.Component {
                                 </table>
                             </div>
                             <form onSubmit={this.startGame}>
-                                <input className="button start-game-button" type="submit" value="Start Round" />
+                                <input
+                                    className="button start-game-button"
+                                    type="submit"
+                                    value="Start Round"
+                                />
                             </form>
                         </div>
                     )}
@@ -510,26 +670,44 @@ export default class Lobby extends React.Component {
                         <button
                             className="button"
                             type="button"
-                            onClick={() => window.open("../gallery/" + this.state.lobbyId, "_blank")}
+                            onClick={() =>
+                                window.open(
+                                    "../gallery/" + this.state.lobbyId,
+                                    "_blank"
+                                )
+                            }
                         >
                             Open Gallery
                         </button>
                     </div>
-                    {this.state.previousRoundStories && this.state.previousRoundStories.length > 0 && (
-                        <div className="previous-round-stories">
-                            <span className="section-header">Previous Round Stories</span> <br />
-                            <ul>{previousRoundStories}</ul>
-                        </div>
-                    )}
+                    {this.state.previousRoundStories &&
+                        this.state.previousRoundStories.length > 0 && (
+                            <div className="previous-round-stories">
+                                <span className="section-header">
+                                    Previous Round Stories
+                                </span>{" "}
+                                <br />
+                                <ul>{previousRoundStories}</ul>
+                            </div>
+                        )}
                 </div>
             );
         } else if (this.state.lobbyState === "PLAYING") {
             let players = this.state.players.map(player => (
                 <div key={player.username} className="player-name">
-                    <li className={player.username === this.state.username ? "bold-text" : undefined}>
+                    <li
+                        className={
+                            player.username === this.state.username
+                                ? "bold-text"
+                                : undefined
+                        }
+                    >
                         {player.username}{" "}
                         <PaperStack
-                            count={this.state.stories[player.username] && this.state.stories[player.username].length}
+                            count={
+                                this.state.stories[player.username] &&
+                                this.state.stories[player.username].length
+                            }
                         />
                     </li>
                 </div>
@@ -540,7 +718,11 @@ export default class Lobby extends React.Component {
                 stories &&
                 stories[0] &&
                 this.convertMessagesToStory(
-                    exquisiteCorpse ? stories[0].messages.slice(stories[0].messages.length - 1) : stories[0].messages
+                    exquisiteCorpse
+                        ? stories[0].messages.slice(
+                              stories[0].messages.length - 1
+                          )
+                        : stories[0].messages
                 );
             let timeLeft = this.calculateRoundTimeLeft();
             let roundOver = !timeLeft.hasOwnProperty("seconds");
@@ -561,15 +743,23 @@ export default class Lobby extends React.Component {
                         <div id="timer">
                             {roundOver && (
                                 <span>
-                                    Round is over! <br /> You may send one last message.
+                                    Round is over! <br /> You may send one last
+                                    message.
                                 </span>
                             )}
                             {!roundOver && (
                                 <span>
-                                    {timeLeft.days > 0 && <span>{timeLeft.days}:</span>}
-                                    {timeLeft.hours > 0 && <span>{timeLeft.hours}:</span>}
+                                    {timeLeft.days > 0 && (
+                                        <span>{timeLeft.days}:</span>
+                                    )}
+                                    {timeLeft.hours > 0 && (
+                                        <span>{timeLeft.hours}:</span>
+                                    )}
                                     <span>
-                                        {timeLeft.minutes}:{timeLeft.seconds.toString().padStart(2, "0")}
+                                        {timeLeft.minutes}:
+                                        {timeLeft.seconds
+                                            .toString()
+                                            .padStart(2, "0")}
                                     </span>
                                 </span>
                             )}
@@ -579,7 +769,11 @@ export default class Lobby extends React.Component {
                         <ul>{players}</ul>
                     </div>
 
-                    {!currentStory && <div className="please-wait-text">Waiting to have a story passed to you...</div>}
+                    {!currentStory && (
+                        <div className="please-wait-text">
+                            Waiting to have a story passed to you...
+                        </div>
+                    )}
                     {currentStory && (
                         <div>
                             <LinedPaper text={currentStory} />
@@ -591,15 +785,27 @@ export default class Lobby extends React.Component {
                                     autoFocus
                                     name="message"
                                     id="message-input"
-                                    onChange={e => this.handleSimpleStateChange(e, "message")}
+                                    onChange={e =>
+                                        this.handleSimpleStateChange(
+                                            e,
+                                            "message"
+                                        )
+                                    }
                                     value={this.state.message}
-                                    className={!validInput ? "warning-text" : undefined}
+                                    className={
+                                        !validInput ? "warning-text" : undefined
+                                    }
                                     style={{width: "100%"}}
                                     onKeyDown={this.messageAreaKeyDown}
                                     placeholder="Write Shite here..."
                                 />
 
-                                <form id="game-buttons" onSubmit={event => this.sendMessage(event, true)}>
+                                <form
+                                    id="game-buttons"
+                                    onSubmit={event =>
+                                        this.sendMessage(event, true)
+                                    }
+                                >
                                     <button
                                         id="complete-story-button"
                                         className="button"
@@ -608,14 +814,23 @@ export default class Lobby extends React.Component {
                                     >
                                         Complete Story
                                     </button>
-                                    <input className="button" type="submit" value="Send" />
+                                    <input
+                                        className="button"
+                                        type="submit"
+                                        value="Send"
+                                    />
                                 </form>
                             </div>
                         </div>
                     )}
                     <div>
-                        {this.state.lobby.creator.username === this.state.username && (
-                            <button className="button end-round-button" type="button" onClick={this.endRound}>
+                        {this.state.lobby.creator.username ===
+                            this.state.username && (
+                            <button
+                                className="button end-round-button"
+                                type="button"
+                                onClick={this.endRound}
+                            >
                                 End Round
                             </button>
                         )}
@@ -626,9 +841,18 @@ export default class Lobby extends React.Component {
             let myCreatedStory = this.state.completedStories.find(
                 el => el.creatingPlayer.username === this.state.username
             );
-            let myReadableStory = myCreatedStory && this.convertMessagesToStory(myCreatedStory.messages);
-            if (!myReadableStory && this.state.lobby.creator.username !== this.state.username) {
-                return <div className="please-wait-text">Waiting for others to finish reading...</div>;
+            let myReadableStory =
+                myCreatedStory &&
+                this.convertMessagesToStory(myCreatedStory.messages);
+            if (
+                !myReadableStory &&
+                this.state.lobby.creator.username !== this.state.username
+            ) {
+                return (
+                    <div className="please-wait-text">
+                        Waiting for others to finish reading...
+                    </div>
+                );
             } else {
                 let readingOrder;
                 if (this.state.readingOrder) {
@@ -638,15 +862,24 @@ export default class Lobby extends React.Component {
                 }
                 return (
                     <div id="reading-content">
-                        {myReadableStory && <LinedPaper text={myReadableStory} />}
+                        {myReadableStory && (
+                            <LinedPaper text={myReadableStory} />
+                        )}
                         {readingOrder && (
                             <div>
-                                <div className="bold-text">Suggested Reading Order</div>
+                                <div className="bold-text">
+                                    Suggested Reading Order
+                                </div>
                                 <ul>{readingOrder}</ul>
                             </div>
                         )}
-                        {this.state.lobby.creator.username === this.state.username && (
-                            <button className="button" type="button" onClick={this.startGame}>
+                        {this.state.lobby.creator.username ===
+                            this.state.username && (
+                            <button
+                                className="button"
+                                type="button"
+                                onClick={this.startGame}
+                            >
                                 Done Reading
                             </button>
                         )}
@@ -654,7 +887,9 @@ export default class Lobby extends React.Component {
                 );
             }
         } else {
-            return <div>ERROR unhandled lobby state: {this.state.lobbyState}</div>;
+            return (
+                <div>ERROR unhandled lobby state: {this.state.lobbyState}</div>
+            );
         }
     }
 }

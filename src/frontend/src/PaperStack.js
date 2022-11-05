@@ -13,7 +13,13 @@ class PaperStack extends React.Component {
                 position: "relative"
             };
             paperStack.push(
-                <img key={"paper-" + i} className="paper" src="../paper_icon.svg" alt="piece of paper" style={style} />
+                <img
+                    key={"paper-" + i}
+                    className="paper"
+                    src="../paper_icon.svg"
+                    alt="piece of paper"
+                    style={style}
+                />
             );
         }
 

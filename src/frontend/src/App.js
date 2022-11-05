@@ -6,7 +6,7 @@ import Gallery from "./Gallery";
 import AboutPage from "./AboutPage";
 import HelpPage from "./HelpPage";
 import LogoPage from "./LogoPage";
-import {BrowserRouter as Router, Switch, Route} from "react-router-dom";
+import {BrowserRouter as Router, Route, Switch} from "react-router-dom";
 
 export default class App extends React.Component {
     render() {

@@ -7,7 +7,13 @@ class LinedPaper extends React.Component {
                 <header>
                     <span className="card-title">{this.props.title}</span>
                 </header>
-                <p className={this.props.shorten === true ? "card-text shorten-card-text" : "card-text"}>
+                <p
+                    className={
+                        this.props.shorten === true
+                            ? "card-text shorten-card-text"
+                            : "card-text"
+                    }
+                >
                     {this.props.text}
                 </p>
             </div>
