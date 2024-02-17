@@ -1,91 +1,82 @@
 import React from "react";
-import {withRouter} from "react-router";
+import { useNavigate } from "react-router-dom";
 import InputValidator from "./InputValidator";
 
-class Homepage extends React.Component {
-    constructor(props) {
-        super(props);
-        this.state = {
-            lobbyId: null
-        };
+function Homepage() {
+    const navigate = useNavigate(); // Use the hook directly
 
-        this.joinGame = this.joinGame.bind(this);
-        this.openGallery = this.openGallery.bind(this);
-        this.handleLobbyIdChange = this.handleLobbyIdChange.bind(this);
-    }
+    const [lobbyId, setLobbyId] = React.useState(null);
 
-    joinGame(event) {
+    function joinGame(event) {
         event.preventDefault();
-        if (InputValidator.validateLobbyId(this.state.lobbyId)) {
-            this.props.history.push("/lobby/" + this.state.lobbyId);
+        if (InputValidator.validateLobbyId(lobbyId)) {
+            navigate("/lobby/" + lobbyId);
         }
     }
 
-    openGallery(event) {
+    function openGallery(event) {
         event.preventDefault();
-        if (InputValidator.validateLobbyId(this.state.lobbyId)) {
+        if (InputValidator.validateLobbyId(lobbyId)) {
             window.open(
-                "../gallery/" + this.state.lobbyId + "?fromHomepage=true",
+                "../gallery/" + lobbyId + "?fromHomepage=true",
                 "_blank"
             );
         }
     }
 
-    handleLobbyIdChange(event) {
+    function handleLobbyIdChange(event) {
         event.preventDefault();
-        this.setState({lobbyId: event.target.value});
+        setLobbyId(event.target.value);
     }
 
-    render() {
-        return (
-            <div id="homepage-content">
-                <div>
-                    <input
-                        type="text"
-                        name="lobbyId"
-                        placeholder="Lobby Name"
-                        onChange={this.handleLobbyIdChange}
-                    />
-                </div>
-                <form onSubmit={this.joinGame}>
-                    <input
-                        className="button"
-                        type="submit"
-                        value="Join Lobby"
-                    />
-                </form>
-                <div>
-                    <button
-                        className="button"
-                        type="button"
-                        onClick={this.openGallery}
-                    >
-                        Open Gallery
-                    </button>
-                </div>
-                <div>
-                    <br />
-                    Friends already in a lobby? Ask them for the name, put it in
-                    above and click "Join Lobby"! <br /> <br />
-                    Want to make a lobby to play with your friends? Pick a name,
-                    put it in above, and click "Join Lobby". A lobby will be
-                    created for you to play in. <br /> <br />
-                    Anyone with the lobby name can join the lobby and can access
-                    the gallery of all stories that have been written in that
-                    lobby, so make sure only you and your friends know the lobby
-                    name!
-                </div>
-                <div className="help-about-links">
-                    <a className="help-link" href="./help" target="_self">
-                        Help
-                    </a>
-                    <a href="./about" target="_self">
-                        About
-                    </a>
-                </div>
+    return (
+        <div id="homepage-content">
+            <div>
+                <input
+                    type="text"
+                    name="lobbyId"
+                    placeholder="Lobby Name"
+                    onChange={handleLobbyIdChange}
+                />
             </div>
-        );
-    }
+            <form onSubmit={joinGame}>
+                <input
+                    className="button"
+                    type="submit"
+                    value="Join Lobby"
+                />
+            </form>
+            <div>
+                <button
+                    className="button"
+                    type="button"
+                    onClick={openGallery}
+                >
+                    Open Gallery
+                </button>
+            </div>
+            <div>
+                <br />
+                Friends already in a lobby? Ask them for the name, put it in
+                above and click "Join Lobby"! <br /> <br />
+                Want to make a lobby to play with your friends? Pick a name,
+                put it in above, and click "Join Lobby". A lobby will be
+                created for you to play in. <br /> <br />
+                Anyone with the lobby name can join the lobby and can access
+                the gallery of all stories that have been written in that
+                lobby, so make sure only you and your friends know the lobby
+                name!
+            </div>
+            <div className="help-about-links">
+                <a className="help-link" href="./help" target="_self">
+                    Help
+                </a>
+                <a href="./about" target="_self">
+                    About
+                </a>
+            </div>
+        </div>
+    );
 }
 
-export default withRouter(Homepage);
+export default Homepage;

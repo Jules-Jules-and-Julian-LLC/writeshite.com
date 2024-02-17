@@ -4,6 +4,7 @@ import com.writinggame.controller.viewModels.JoinGameResponse
 import com.writinggame.model.LobbyManager
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.context.annotation.Configuration
+import org.springframework.context.annotation.Lazy
 import org.springframework.context.event.EventListener
 import org.springframework.messaging.simp.SimpMessageSendingOperations
 import org.springframework.messaging.simp.config.MessageBrokerRegistry
@@ -13,14 +14,16 @@ import org.springframework.web.socket.config.annotation.StompEndpointRegistry
 import org.springframework.web.socket.config.annotation.WebSocketMessageBrokerConfigurer
 import org.springframework.web.socket.messaging.SessionDisconnectEvent
 import java.time.ZonedDateTime
+import java.util.*
 
 
 @Configuration
 @EnableWebSocketMessageBroker
 class WebSocketConfig : WebSocketMessageBrokerConfigurer {
 
+    @Lazy
     @Autowired
-    lateinit var messagingTemplate: SimpMessageSendingOperations;
+    lateinit var messagingTemplate: SimpMessageSendingOperations
 
     override fun configureMessageBroker(registry: MessageBrokerRegistry) {
         registry.enableSimpleBroker("/topic/", "/user/", "/queue/")
@@ -28,7 +31,7 @@ class WebSocketConfig : WebSocketMessageBrokerConfigurer {
     }
 
     override fun registerStompEndpoints(registry: StompEndpointRegistry) {
-        registry.addEndpoint("/websocket").setAllowedOrigins("*").withSockJS()
+        registry.addEndpoint("/websocket").setAllowedOrigins("http://localhost:3000", "http://localhost", "http://localhost:8080", "https://writeshite.com", "http://writeshite.com").withSockJS()
     }
 
     @EventListener
@@ -39,7 +42,7 @@ class WebSocketConfig : WebSocketMessageBrokerConfigurer {
             val lobby = LobbyManager.leaveLobby(sha.sessionId!!)
             if (lobby != null) {
                 messagingTemplate.convertAndSend(
-                        "/topic/lobby.${lobby.lobbyId.toUpperCase()}",
+                    "/topic/lobby.${lobby.lobbyId.uppercase(Locale.getDefault())}",
                         JoinGameResponse(lobby, receivedDatetime)
                 )
             }

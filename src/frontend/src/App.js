@@ -6,40 +6,22 @@ import Gallery from "./Gallery";
 import AboutPage from "./AboutPage";
 import HelpPage from "./HelpPage";
 import LogoPage from "./LogoPage";
-import {BrowserRouter as Router, Route, Switch} from "react-router-dom";
+import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 
 export default class App extends React.Component {
     render() {
         return (
             <div id="content">
                 <Router>
-                    <Switch>
-                        <Route path="/lobby/:lobbyId">
-                            <LogoPage>
-                                <Lobby />
-                            </LogoPage>
+                    <Routes>
+                        <Route element={<LogoPage/>}>
+                            <Route path="/lobby/:lobbyId" element={<Lobby/>}/>
+                            <Route path="/gallery/:lobbyId" element={<Gallery/>}/>
+                            <Route path="/about" element={<AboutPage/>}/>
+                            <Route path="/help" element={<HelpPage/>}/>
+                            <Route path="/" element={<Homepage/>}/>
                         </Route>
-                        <Route path="/gallery/:lobbyId">
-                            <LogoPage>
-                                <Gallery />
-                            </LogoPage>
-                        </Route>
-                        <Route path="/about">
-                            <LogoPage>
-                                <AboutPage />
-                            </LogoPage>
-                        </Route>
-                        <Route path="/help">
-                            <LogoPage>
-                                <HelpPage />
-                            </LogoPage>
-                        </Route>
-                        <Route path="/">
-                            <LogoPage>
-                                <Homepage />
-                            </LogoPage>
-                        </Route>
-                    </Switch>
+                    </Routes>
                 </Router>
             </div>
         );

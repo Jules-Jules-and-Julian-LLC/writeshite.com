@@ -1,10 +1,10 @@
 package com.writinggame.controller
 
+import jakarta.servlet.http.HttpServletRequest
 import org.springframework.boot.web.servlet.error.ErrorController
 import org.springframework.stereotype.Controller
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.ResponseBody
-import javax.servlet.http.HttpServletRequest
 
 //Crappy name because ErrorController is in use
 @Controller
@@ -19,9 +19,5 @@ class WriteShiteErrorController : ErrorController {
         return "<head>" +
                 "  <meta http-equiv=\"refresh\" content=\"0; URL=/\" />" +
                 "</head>"
-    }
-
-    override fun getErrorPath(): String {
-        return "/error"
     }
 }

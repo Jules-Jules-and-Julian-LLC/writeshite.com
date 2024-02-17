@@ -1,6 +1,5 @@
 import React from "react";
-import SockJS from "sockjs-client";
-import Stomp from "stompjs";
+import { Client } from "@stomp/stompjs";
 import PaperStack from "./PaperStack";
 import LinedPaper from "./LinedPaper";
 import Toaster from "./Toaster";
@@ -48,124 +47,124 @@ export default class Lobby extends React.Component {
     }
 
     connect() {
-        let socket = new SockJS("/websocket");
-        let stompClient = Stomp.over(socket);
+        const client = new Client({
+            brokerURL: 'ws://localhost:3000/websocket',
+        });
+
         let me = this;
 
-        stompClient.connect(
-            {},
-            function(frame) {
-                me.setState({stompClient: stompClient});
-                let disconnect = e => stompClient.disconnect();
-                window.addEventListener("beforeunload", disconnect.bind(me));
+        client.onConnect = (frame) => {
+            me.setState({ stompClient: client });
 
-                stompClient.subscribe("/user/queue/overrideUsername", function(
-                    message
-                ) {
-                    me.setState({username: message.body});
-                    localStorage.setItem("username", message.body);
-                });
+            let disconnect = e => client.deactivate(); // Updated deactivation
+            window.addEventListener("beforeunload", disconnect.bind(me));
 
-                stompClient.subscribe(
-                    "/topic/lobby." + me.state.lobbyId.toUpperCase(),
-                    function(response) {
-                        let responseObj = JSON.parse(response.body);
-                        const responseType = responseObj.responseType;
-                        const eventReceivedDatetime =
-                            responseObj.eventReceivedDatetime;
-                        if (
-                            !me.state.lastEventReceivedDatetime ||
-                            eventReceivedDatetime >
-                                me.state.lastEventReceivedDatetime
-                        ) {
+            client.subscribe("/user/queue/overrideUsername", (message) => {
+                me.setState({username: message.body});
+                localStorage.setItem("username", message.body);
+            });
+
+            client.subscribe(
+                "/topic/lobby." + me.state.lobbyId.toUpperCase(),
+                (response) => {
+                    let responseObj = JSON.parse(response.body);
+                    const responseType = responseObj.responseType;
+                    const eventReceivedDatetime =
+                        responseObj.eventReceivedDatetime;
+                    if (
+                        !me.state.lastEventReceivedDatetime ||
+                        eventReceivedDatetime >
+                            me.state.lastEventReceivedDatetime
+                    ) {
+                        me.setState({
+                            lastEventReceivedDatetime:
+                                responseObj.eventReceivedDatetime
+                        });
+                        if (responseType === "START_GAME") {
                             me.setState({
-                                lastEventReceivedDatetime:
-                                    responseObj.eventReceivedDatetime
+                                message: "",
+                                lobbyState: responseObj.lobbyState,
+                                stories: responseObj.game.stories,
+                                previousRoundStories:
+                                    responseObj.previousRoundStories,
+                                settings: responseObj.game.settings,
+                                endTime:
+                                    responseObj.game.endTime &&
+                                    new Date(responseObj.game.endTime),
+                                players: responseObj.players
                             });
-                            if (responseType === "START_GAME") {
-                                me.setState({
-                                    message: "",
-                                    lobbyState: responseObj.lobbyState,
-                                    stories: responseObj.game.stories,
-                                    previousRoundStories:
-                                        responseObj.previousRoundStories,
-                                    settings: responseObj.game.settings,
-                                    endTime:
-                                        responseObj.game.endTime &&
-                                        new Date(responseObj.game.endTime),
-                                    players: responseObj.players
-                                });
-                                if (document.hidden === true) {
-                                    new Audio("/fart.wav").play();
-                                }
-                                //re-render once a second to update timer
-                                window.setInterval(
-                                    me.forceUpdate.bind(me),
-                                    1000
-                                );
-                            } else if (responseType === "JOIN_GAME") {
-                                let stories = responseObj.lobby.game.stories;
-                                me.setState({
-                                    joined: me.state.clickedSetUsername,
-                                    lobbyState: responseObj.lobby.lobbyState,
-                                    lobby: responseObj.lobby,
-                                    stories: stories,
-                                    completedStories:
-                                        responseObj.lobby.game.completedStories,
-                                    previousRoundStories:
-                                        responseObj.lobby.previousRoundStories,
-                                    endTime:
-                                        responseObj.lobby.game.endTime &&
-                                        new Date(
-                                            responseObj.lobby.game.endTime
-                                        ),
-                                    settings:
-                                        me.state.settings ||
-                                        responseObj.lobby.game.settings,
-                                    roundTime:
-                                        responseObj.lobby.game.settings
-                                            .roundTimeMinutes,
-                                    players: responseObj.lobby.players
-                                });
-                                //re-render once a second to update timer
-                                window.setInterval(
-                                    me.forceUpdate.bind(me),
-                                    1000
-                                );
-                            } else if (responseType === "STORY_CHANGE") {
-                                me.setState({
-                                    stories: responseObj.stories,
-                                    completedStories:
-                                        responseObj.completedStories,
-                                    lobbyState: responseObj.lobbyState,
-                                    players: responseObj.players,
-                                    readingOrder: responseObj.readingOrder
-                                });
-                                if (
-                                    responseObj.lobbyState ===
-                                        "GATHERING_PLAYERS" ||
-                                    responseObj.lobbyState === "READING"
-                                ) {
-                                    me.setState({message: ""});
-                                }
-                            } else if (responseType === "ERROR") {
-                                InputValidator.warnBasedOnErrorType(
-                                    responseObj.errorType
-                                );
-                            } else {
-                                console.log(
-                                    "ERROR: Unhandled responseType: " +
-                                        responseType
+                            if (document.hidden === true) {
+                                new Audio("/fart.wav").play();
+                            }
+                            //re-render once a second to update timer
+                            window.setInterval(
+                                me.forceUpdate.bind(me),
+                                1000
+                            );
+                        } else if (responseType === "JOIN_GAME") {
+                            let stories = responseObj.lobby.game.stories;
+                            me.setState({
+                                joined: me.state.clickedSetUsername,
+                                lobbyState: responseObj.lobby.lobbyState,
+                                lobby: responseObj.lobby,
+                                stories: stories,
+                                completedStories:
+                                    responseObj.lobby.game.completedStories,
+                                previousRoundStories:
+                                    responseObj.lobby.previousRoundStories,
+                                endTime:
+                                    responseObj.lobby.game.endTime &&
+                                    new Date(
+                                        responseObj.lobby.game.endTime
+                                    ),
+                                settings:
+                                    me.state.settings ||
+                                    responseObj.lobby.game.settings,
+                                roundTime:
+                                    responseObj.lobby.game.settings
+                                        .roundTimeMinutes,
+                                players: responseObj.lobby.players
+                            });
+                            //re-render once a second to update timer
+                            window.setInterval(
+                                me.forceUpdate.bind(me),
+                                1000
+                            );
+                        } else if (responseType === "STORY_CHANGE") {
+                            me.setState({
+                                stories: responseObj.stories,
+                                completedStories:
+                                    responseObj.completedStories,
+                                lobbyState: responseObj.lobbyState,
+                                players: responseObj.players,
+                                readingOrder: responseObj.readingOrder
+                            });
+                            if (
+                                responseObj.lobbyState ===
+                                    "GATHERING_PLAYERS" ||
+                                responseObj.lobbyState === "READING"
+                            ) {
+                                me.setState({message: ""});
+                            }
+                        } else if (responseType === "ERROR") {
+                            InputValidator.warnBasedOnErrorType(
+                                responseObj.errorType
+                            );
+                        } else {
+                            console.log(
+                                "ERROR: Unhandled responseType: " +
+                                    responseType
                                 );
                             }
                         }
                     }
                 );
-            },
-            function(frame) {
+            };
+            client.onWebSocketError = (frame) => {
                 console.log("error connecting! " + JSON.stringify(frame));
-            }
-        );
+            };
+
+            client.activate(); // Initiate the connection
     }
 
     startGame(event) {

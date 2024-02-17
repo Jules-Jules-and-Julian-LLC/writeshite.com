@@ -26,18 +26,6 @@ export default class AboutPage extends React.Component {
                     width="50%"
                     height="50%"
                 />
-                <br /> <br />
-                My wife Cara and my bunny Simba looked like this at one point:
-                <br />
-                <img
-                    src="/cara_and_simba.jpg"
-                    alt="My wife Cara and my bunny Simba"
-                    width="50%"
-                    height="50%"
-                />
-                <br /> <br />
-                Cara helped a lot with workshopping ideas, both for the features
-                and graphic design.
             </div>
         );
     }

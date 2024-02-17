@@ -8,6 +8,7 @@ import com.writinggame.model.LobbyManager
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.context.annotation.Lazy
 import org.springframework.messaging.MessageHeaders
 import org.springframework.messaging.handler.annotation.DestinationVariable
 import org.springframework.messaging.handler.annotation.Header
@@ -28,6 +29,7 @@ import java.util.concurrent.TimeUnit
 class LobbyController {
     private val LOGGER: Logger = LoggerFactory.getLogger(javaClass)
 
+    @Lazy
     @Autowired
     lateinit var messagingTemplate: SimpMessageSendingOperations;
 
