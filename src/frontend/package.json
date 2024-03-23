@@ -15,8 +15,7 @@
         "react-scripts": "^5.0.1",
         "sockjs-client": "^1.6.1",
         "stomp-websocket": "^2.3.4-next",
-        "toastr": "^2.1.4",
-        "typescript": "^5.3.3"
+        "toastr": "^2.1.4"
     },
     "proxy": "http://localhost:8080",
     "scripts": {

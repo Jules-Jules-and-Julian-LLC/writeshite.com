@@ -31,7 +31,14 @@ class WebSocketConfig : WebSocketMessageBrokerConfigurer {
     }
 
     override fun registerStompEndpoints(registry: StompEndpointRegistry) {
-        registry.addEndpoint("/websocket").setAllowedOrigins("http://localhost:3000", "http://localhost", "http://localhost:8080", "https://writeshite.com", "http://writeshite.com").withSockJS()
+        registry.addEndpoint("/websocket")
+            .setAllowedOrigins("http://localhost:3000", "http://localhost", "http://localhost:8080", "https://writeshite.com", "http://writeshite.com",
+                "ws://localhost", "ws://localhost/websocket", "ws://localhost:8080/",  "ws://localhost:8080/websocket")
+            .withSockJS()
+        registry.addEndpoint("/ws")
+            .setAllowedOrigins("http://localhost:3000", "http://localhost", "http://localhost:8080", "https://writeshite.com", "http://writeshite.com",
+                "ws://localhost", "ws://localhost/websocket", "ws://localhost:8080/",  "ws://localhost:8080/websocket")
+            .withSockJS()
     }
 
     @EventListener
