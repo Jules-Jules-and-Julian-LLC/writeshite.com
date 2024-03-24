@@ -10,7 +10,7 @@ resource "google_cloud_run_service" "writeshite_backend" {
   template {
     spec {
       containers {
-        image = "gcr.io/${var.project_id}/writeshite-backend:${var.commit_sha}"
+        image = "gcr.io/${var.project_id}/writeshite-backend:${var.app_version}"
         ports {
           container_port = 8080
         }

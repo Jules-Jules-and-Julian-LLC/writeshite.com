@@ -1,2 +1,2 @@
 project_id = "peaceful-app-379819"
-commit_sha = "latest"
+app_version = "1.1.0"

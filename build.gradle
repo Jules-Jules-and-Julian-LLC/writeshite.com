@@ -11,26 +11,15 @@ buildscript {
 plugins {
     id 'java'
     id 'org.jetbrains.kotlin.jvm' version 'latest.release'
-    id 'eclipse'
     id "org.springframework.boot" version 'latest.release'
     id "io.spring.dependency-management" version 'latest.release'
     id "org.jetbrains.kotlin.plugin.spring" version 'latest.release'
-    id "com.moowork.node" version 'latest.release'
     id "com.google.cloud.tools.jib" version 'latest.release'
 }
 
 jib {
-    extraDirectories {
-        paths {
-            path {
-                from = file('secrets')
-                into = '/secrets'
-            }
-        }
-    }
-    to {
-        image = 'writeshite:' + getProperty('appVersion')
-    }
+    from.image = 'gcr.io/distroless/java21-debian12:debug'
+    to.image = 'writeshite-backend:' + getProperty('appVersion')
 }
 
 bootJar {
@@ -42,31 +31,6 @@ bootRun {
     sourceResources sourceSets.main
     systemProperties System.properties
 }
-
-//tasks.register('appNpmInstall', NpmTask) {
-//    description = "Installs all dependencies from package.json"
-//    workingDir = file("${project.projectDir}/src/frontend")
-//    args = ["install"]
-//}
-//
-//tasks.register('appNpmBuild', NpmTask) {
-//    dependsOn appNpmInstall
-//    description = "Builds production version of the webapp"
-//    workingDir = file("${project.projectDir}/src/frontend")
-//    args = ["run", "build"]
-//}
-//
-//tasks.register('buildFrontendForProduction', Copy) {
-//    dependsOn appNpmBuild
-//    from 'src/frontend/build'
-//    into 'src/main/resources/static/'
-//}
-//
-//tasks.register('appNpmAuditFix', NpmTask) {
-//    description = "Fixes security vulnerabilities in project"
-//    workingDir = file("${project.projectDir}/src/frontend")
-//    args = ["audit", "fix"]
-//}
 
 repositories {
     mavenCentral()

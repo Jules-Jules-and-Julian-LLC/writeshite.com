@@ -1,6 +1,6 @@
 steps:
   # Build the backend
-  - name: 'gcr.io/distroless/java17-debian11:debug'
+  - name: 'gcr.io/distroless/java21-debian12:debug'
     entrypoint: '/busybox/sh'
     args:
       - -c
