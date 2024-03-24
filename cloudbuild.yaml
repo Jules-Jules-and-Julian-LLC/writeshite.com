@@ -37,3 +37,6 @@ artifacts:
   objects:
     location: 'gs://writeshite-frontend/'
     paths: ['src/frontend/build/**']
+
+options:
+  logging: CLOUD_LOGGING_ONLY
