@@ -3,5 +3,6 @@
 build
 out
 resources
+src/frontend/node_modules
 secrets
 .classpath

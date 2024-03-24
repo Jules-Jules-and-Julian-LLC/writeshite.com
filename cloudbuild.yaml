@@ -1,0 +1,39 @@
+steps:
+  # Build the backend
+  - name: 'gcr.io/distroless/java17-debian11:debug'
+    entrypoint: '/busybox/sh'
+    args:
+      - -c
+      - |
+        ln -s /busybox/sh /bin/sh
+        ln -s /busybox/env /usr/bin/env
+        /workspace/gradlew --console=plain --no-daemon --gradle-user-home=/home/.gradle :server:jib -Djib.to.image=gcr.io/$PROJECT_ID/writeshite-backend:$COMMIT_SHA
+
+  # Build the frontend
+  - name: 'node:lts'
+    entrypoint: 'npm'
+    args: ['install']
+    dir: 'src/frontend'
+  - name: 'node:lts'
+    entrypoint: 'npm'
+    args: ['run', 'build']
+    dir: 'src/frontend'
+
+  # Deploy infrastructure using Terraform
+  - name: 'hashicorp/terraform:latest'
+    entrypoint: 'terraform'
+    args: ['init']
+    dir: 'terraform'
+  - name: 'hashicorp/terraform:latest'
+    entrypoint: 'terraform'
+    args: ['apply', '-auto-approve']
+    dir: 'terraform'
+    env:
+      - 'TF_VAR_project_id=$PROJECT_ID'
+      - 'TF_VAR_commit_sha=$COMMIT_SHA'
+
+# Push the frontend files to GCS
+artifacts:
+  objects:
+    location: 'gs://writeshite-frontend/'
+    paths: ['src/frontend/build/**']
