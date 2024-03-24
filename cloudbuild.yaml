@@ -22,6 +22,10 @@ steps:
   # Deploy infrastructure using Terraform
   - name: 'hashicorp/terraform:latest'
     entrypoint: 'terraform'
+    args: ['init']
+    dir: 'terraform'
+  - name: 'hashicorp/terraform:latest'
+    entrypoint: 'terraform'
     args: ['apply', '-auto-approve']
     dir: 'terraform'
     env:
