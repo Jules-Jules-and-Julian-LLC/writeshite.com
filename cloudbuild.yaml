@@ -7,7 +7,7 @@ steps:
       - |
         ln -s /busybox/sh /bin/sh
         ln -s /busybox/env /usr/bin/env
-        /workspace/gradlew --console=plain --no-daemon --gradle-user-home=/home/.gradle :server:jib -Djib.to.image=gcr.io/$PROJECT_ID/writeshite-backend:$COMMIT_SHA
+        /workspace/gradlew --console=plain --no-daemon --gradle-user-home=/home/.gradle :jib -Djib.to.image=gcr.io/$PROJECT_ID/writeshite-backend:$COMMIT_SHA
 
   # Build the frontend
   - name: 'node:lts'
