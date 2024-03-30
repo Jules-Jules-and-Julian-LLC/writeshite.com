@@ -40,4 +40,5 @@ artifacts:
 
 options:
   logging: CLOUD_LOGGING_ONLY
-  serviceAccount: projects/${PROJECT_ID}/serviceAccounts/${SERVICE_ACCOUNT_EMAIL}
+
+serviceAccount: 'projects/peaceful-app-379819/serviceAccounts/build-bot@peaceful-app-379819.iam.gserviceaccount.com'

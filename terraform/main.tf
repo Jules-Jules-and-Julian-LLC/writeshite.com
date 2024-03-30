@@ -4,8 +4,9 @@ provider "google" {
 }
 
 resource "google_service_account" "cloudbuild_service_account" {
-  account_id   = "cloudbuild-service-account"
+  account_id   = "build-bot"
   display_name = "Cloud Build Service Account"
+  email = 'build-bot@peaceful-app-379819.iam.gserviceaccount.com'
 }
 
 resource "google_project_iam_member" "cloudbuild_roles" {
