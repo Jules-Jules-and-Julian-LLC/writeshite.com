@@ -18,6 +18,7 @@ resource "google_project_iam_member" "cloudbuild_roles" {
     "roles/run.admin",
     "roles/storage.admin",
     "roles/dns.admin",
+    "roles/logging.admin",
     "roles/storage.objectAdmin",  // Add this role for Terraform state access,
   ])
 }
