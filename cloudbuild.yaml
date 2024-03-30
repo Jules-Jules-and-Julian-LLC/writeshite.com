@@ -40,3 +40,4 @@ artifacts:
 
 options:
   logging: CLOUD_LOGGING_ONLY
+  serviceAccount: projects/${PROJECT_ID}/serviceAccounts/${SERVICE_ACCOUNT_EMAIL}

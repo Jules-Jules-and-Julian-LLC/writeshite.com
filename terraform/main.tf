@@ -3,6 +3,40 @@ provider "google" {
   region  = "us-central1"
 }
 
+resource "google_service_account" "cloudbuild_service_account" {
+  account_id   = "cloudbuild-service-account"
+  display_name = "Cloud Build Service Account"
+}
+
+resource "google_project_iam_member" "cloudbuild_roles" {
+  project = var.project_id
+  role    = each.value
+  member  = "serviceAccount:${google_service_account.cloudbuild_service_account.email}"
+
+  for_each = toset([
+    "roles/cloudbuild.builds.editor",
+    "roles/run.admin",
+    "roles/storage.admin",
+    "roles/dns.admin",
+    "roles/storage.objectAdmin",  // Add this role for Terraform state access,
+  ])
+}
+
+resource "google_storage_bucket" "terraform_state" {
+  name          = "terraform-state"
+  location      = "US"
+  force_destroy = false
+  versioning {
+    enabled = true
+  }
+}
+
+resource "google_storage_bucket_iam_member" "cloudbuild_state_bucket" {
+  bucket = google_storage_bucket.terraform_state.name
+  role   = "roles/storage.objectAdmin"
+  member = "serviceAccount:${google_service_account.cloudbuild_service_account.email}"
+}
+
 resource "google_cloud_run_service" "writeshite_backend" {
   name     = "writeshite-backend"
   location = "us-central1"
