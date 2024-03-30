@@ -19,7 +19,8 @@ resource "google_project_iam_member" "cloudbuild_roles" {
     "roles/storage.admin",
     "roles/dns.admin",
     "roles/logging.admin",
-    "roles/storage.objectAdmin",  // Add this role for Terraform state access,
+    "roles/logging.logWriter",
+    "roles/storage.objectAdmin",
   ])
 }
 
@@ -30,12 +31,6 @@ resource "google_storage_bucket" "terraform_state" {
   versioning {
     enabled = true
   }
-}
-
-resource "google_storage_bucket_iam_member" "cloudbuild_state_bucket" {
-  bucket = google_storage_bucket.terraform_state.name
-  role   = "roles/storage.objectAdmin"
-  member = "serviceAccount:${google_service_account.cloudbuild_service_account.email}"
 }
 
 resource "google_cloud_run_service" "writeshite_backend" {
