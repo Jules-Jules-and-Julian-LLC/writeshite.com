@@ -1,4 +1,10 @@
 steps:
+  - name: 'gcr.io/cloud-builders/gcloud'
+    entrypoint: 'bash'
+    args:
+      - '-c'
+      - |
+        echo "Commit SHA: $COMMIT_SHA"
 
   # Deploy infrastructure using Terraform
   - name: 'hashicorp/terraform:latest'
@@ -21,7 +27,7 @@ steps:
       - |
         ln -s /busybox/sh /bin/sh
         ln -s /busybox/env /usr/bin/env
-        /workspace/gradlew --console=plain --no-daemon --gradle-user-home=/home/.gradle :jib -Djib.to.image=gcr.io/$PROJECT_ID/writeshite-backend:$COMMIT_SHA
+        /workspace/gradlew --console=plain --no-daemon --gradle-user-home=/home/.gradle :jib -Djib.to.image=gcr.io/$PROJECT_ID/writeshite-backend:latest
 
   # Build the frontend
   - name: 'node:lts'
