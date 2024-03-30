@@ -1,4 +1,18 @@
 steps:
+
+  # Deploy infrastructure using Terraform
+  - name: 'hashicorp/terraform:latest'
+    entrypoint: 'terraform'
+    args: ['init']
+    dir: 'terraform'
+  - name: 'hashicorp/terraform:latest'
+    entrypoint: 'terraform'
+    args: ['apply', '-auto-approve']
+    dir: 'terraform'
+    env:
+      - 'TF_VAR_project_id=$PROJECT_ID'
+      - 'TF_VAR_commit_sha=$COMMIT_SHA'
+
   # Build the backend
   - name: 'gcr.io/distroless/java21-debian12:debug'
     entrypoint: '/busybox/sh'
@@ -18,19 +32,6 @@ steps:
     entrypoint: 'npm'
     args: ['run', 'build']
     dir: 'src/frontend'
-
-  # Deploy infrastructure using Terraform
-  - name: 'hashicorp/terraform:latest'
-    entrypoint: 'terraform'
-    args: ['init']
-    dir: 'terraform'
-  - name: 'hashicorp/terraform:latest'
-    entrypoint: 'terraform'
-    args: ['apply', '-auto-approve']
-    dir: 'terraform'
-    env:
-      - 'TF_VAR_project_id=$PROJECT_ID'
-      - 'TF_VAR_commit_sha=$COMMIT_SHA'
 
 # Push the frontend files to GCS
 artifacts:

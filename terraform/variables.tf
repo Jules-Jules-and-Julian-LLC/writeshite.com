@@ -3,7 +3,7 @@ variable "project_id" {
   type        = string
 }
 
-variable "app_version" {
-  description = "Application version"
+variable "commit_sha" {
+  description = "Commit SHA"
   type        = string
 }

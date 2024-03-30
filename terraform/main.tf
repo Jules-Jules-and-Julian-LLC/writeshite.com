@@ -16,16 +16,17 @@ resource "google_project_iam_member" "cloudbuild_roles" {
   for_each = toset([
     "roles/cloudbuild.builds.editor",
     "roles/run.admin",
-    "roles/storage.admin",
     "roles/dns.admin",
     "roles/logging.admin",
     "roles/logging.logWriter",
+    "roles/storage.admin",
     "roles/storage.objectAdmin",
+    "roles/iam.serviceAccountUser",
   ])
 }
 
 resource "google_storage_bucket" "terraform_state" {
-  name          = "terraform-state"
+  name          = "writeshite-terraform-state"
   location      = "US"
   force_destroy = false
   versioning {
@@ -40,7 +41,7 @@ resource "google_cloud_run_service" "writeshite_backend" {
   template {
     spec {
       containers {
-        image = "gcr.io/${var.project_id}/writeshite-backend:${var.app_version}"
+        image = "gcr.io/${var.project_id}/writeshite-backend:${var.commit_sha}"
         ports {
           container_port = 8080
         }
