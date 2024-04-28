@@ -1,7 +1,7 @@
 {
   "version": 4,
   "terraform_version": "1.7.5",
-  "serial": 96,
+  "serial": 83,
   "lineage": "c27bdea2-6f77-6940-11f2-470ddf497507",
   "outputs": {},
   "resources": [
@@ -20,23 +20,19 @@
             "metadata": [
               {
                 "annotations": {
-                  "run.googleapis.com/managed-certificates": ""
+                  "run.googleapis.com/managed-certificates": "writeshite-backend-cert"
                 },
                 "effective_annotations": {
-                  "run.googleapis.com/operation-id": "b6f07a20-24c4-4df4-a643-b0899269fb8d",
-                  "serving.knative.dev/creator": "build-bot@peaceful-app-379819.iam.gserviceaccount.com",
-                  "serving.knative.dev/lastModifier": "build-bot@peaceful-app-379819.iam.gserviceaccount.com"
+                  "run.googleapis.com/managed-certificates": "writeshite-backend-cert"
                 },
-                "effective_labels": {
-                  "cloud.googleapis.com/location": "us-central1"
-                },
-                "generation": 1,
-                "labels": {},
+                "effective_labels": {},
+                "generation": 0,
+                "labels": null,
                 "namespace": "peaceful-app-379819",
-                "resource_version": "AAYXK97sGzo",
-                "self_link": "/apis/domains.cloudrun.com/v1/namespaces/1025152788697/domainmappings/writeshite-backend-cert",
+                "resource_version": "",
+                "self_link": "",
                 "terraform_labels": {},
-                "uid": "9f05508f-c6da-4f67-a47a-f1dda923f11e"
+                "uid": ""
               }
             ],
             "name": "writeshite-backend-cert",
@@ -48,33 +44,7 @@
                 "route_name": "writeshite-backend"
               }
             ],
-            "status": [
-              {
-                "conditions": [
-                  {
-                    "message": "Error checking ownership for domain writeshite-backend-cert: Invalid Link in request: go/nodeserialize   source { domain_name { hostname: \"writeshite-backend-cert\" } } target { gaia_id { id: 985367354369 } } intent: OWNERSHIP",
-                    "reason": "",
-                    "status": "False",
-                    "type": "Ready"
-                  },
-                  {
-                    "message": "Certificate will not be provisioned unless the domain is made routable.",
-                    "reason": "",
-                    "status": "False",
-                    "type": "CertificateProvisioned"
-                  },
-                  {
-                    "message": "Error checking ownership for domain writeshite-backend-cert: Invalid Link in request: go/nodeserialize   source { domain_name { hostname: \"writeshite-backend-cert\" } } target { gaia_id { id: 985367354369 } } intent: OWNERSHIP",
-                    "reason": "",
-                    "status": "False",
-                    "type": "DomainRoutable"
-                  }
-                ],
-                "mapped_route_name": "",
-                "observed_generation": 1,
-                "resource_records": []
-              }
-            ],
+            "status": null,
             "timeouts": null
           },
           "sensitive_attributes": [],
@@ -99,22 +69,16 @@
             "location": "us-central1",
             "metadata": [
               {
-                "annotations": {},
-                "effective_annotations": {
-                  "run.googleapis.com/operation-id": "2ceb014d-fe07-40ba-93fb-046b2c5c8138",
-                  "serving.knative.dev/creator": "build-bot@peaceful-app-379819.iam.gserviceaccount.com",
-                  "serving.knative.dev/lastModifier": "build-bot@peaceful-app-379819.iam.gserviceaccount.com"
-                },
-                "effective_labels": {
-                  "cloud.googleapis.com/location": "us-central1"
-                },
-                "generation": 1,
-                "labels": {},
+                "annotations": null,
+                "effective_annotations": {},
+                "effective_labels": {},
+                "generation": 0,
+                "labels": null,
                 "namespace": "peaceful-app-379819",
-                "resource_version": "AAYXK97oPcA",
-                "self_link": "/apis/domains.cloudrun.com/v1/namespaces/1025152788697/domainmappings/writeshite.com",
+                "resource_version": "",
+                "self_link": "",
                 "terraform_labels": {},
-                "uid": "0ceaa0e8-9ed7-408c-9bf6-cd19304ecba4"
+                "uid": ""
               }
             ],
             "name": "writeshite.com",
@@ -126,33 +90,7 @@
                 "route_name": "writeshite-backend"
               }
             ],
-            "status": [
-              {
-                "conditions": [
-                  {
-                    "message": "Caller is not authorized to administer the domain 'writeshite.com'. If you own 'writeshite.com', you can obtain authorization by verifying ownership of the domain, or any of its parent domains, via the Webmaster Central portal: https://www.google.com/webmasters/verification/verification?domain=writeshite.com. We recommend verifying ownership of the largest scope you wish to use with subdomains (eg. verify 'example.com' if you wish to map 'subdomain.example.com').",
-                    "reason": "PermissionDenied",
-                    "status": "False",
-                    "type": "Ready"
-                  },
-                  {
-                    "message": "Certificate will not be provisioned unless the domain is made routable.",
-                    "reason": "PermissionDenied",
-                    "status": "False",
-                    "type": "CertificateProvisioned"
-                  },
-                  {
-                    "message": "Caller is not authorized to administer the domain 'writeshite.com'. If you own 'writeshite.com', you can obtain authorization by verifying ownership of the domain, or any of its parent domains, via the Webmaster Central portal: https://www.google.com/webmasters/verification/verification?domain=writeshite.com. We recommend verifying ownership of the largest scope you wish to use with subdomains (eg. verify 'example.com' if you wish to map 'subdomain.example.com').",
-                    "reason": "PermissionDenied",
-                    "status": "False",
-                    "type": "DomainRoutable"
-                  }
-                ],
-                "mapped_route_name": "",
-                "observed_generation": 1,
-                "resource_records": []
-              }
-            ],
+            "status": null,
             "timeouts": null
           },
           "sensitive_attributes": [],
@@ -177,22 +115,16 @@
             "location": "us-central1",
             "metadata": [
               {
-                "annotations": {},
-                "effective_annotations": {
-                  "run.googleapis.com/operation-id": "4498f379-208d-4f47-a3d2-646573143d5a",
-                  "serving.knative.dev/creator": "build-bot@peaceful-app-379819.iam.gserviceaccount.com",
-                  "serving.knative.dev/lastModifier": "build-bot@peaceful-app-379819.iam.gserviceaccount.com"
-                },
-                "effective_labels": {
-                  "cloud.googleapis.com/location": "us-central1"
-                },
-                "generation": 1,
-                "labels": {},
+                "annotations": null,
+                "effective_annotations": {},
+                "effective_labels": {},
+                "generation": 0,
+                "labels": null,
                 "namespace": "peaceful-app-379819",
-                "resource_version": "AAYXK97sqT8",
-                "self_link": "/apis/domains.cloudrun.com/v1/namespaces/1025152788697/domainmappings/www.writeshite.com",
+                "resource_version": "",
+                "self_link": "",
                 "terraform_labels": {},
-                "uid": "39f3860b-777b-4f52-93b2-5c2ce01e8dd1"
+                "uid": ""
               }
             ],
             "name": "www.writeshite.com",
@@ -204,33 +136,7 @@
                 "route_name": "writeshite-backend"
               }
             ],
-            "status": [
-              {
-                "conditions": [
-                  {
-                    "message": "Caller is not authorized to administer the domain 'www.writeshite.com'. If you own 'www.writeshite.com', you can obtain authorization by verifying ownership of the domain, or any of its parent domains, via the Webmaster Central portal: https://www.google.com/webmasters/verification/verification?domain=www.writeshite.com. We recommend verifying ownership of the largest scope you wish to use with subdomains (eg. verify 'example.com' if you wish to map 'subdomain.example.com').",
-                    "reason": "PermissionDenied",
-                    "status": "False",
-                    "type": "Ready"
-                  },
-                  {
-                    "message": "Certificate will not be provisioned unless the domain is made routable.",
-                    "reason": "PermissionDenied",
-                    "status": "False",
-                    "type": "CertificateProvisioned"
-                  },
-                  {
-                    "message": "Caller is not authorized to administer the domain 'www.writeshite.com'. If you own 'www.writeshite.com', you can obtain authorization by verifying ownership of the domain, or any of its parent domains, via the Webmaster Central portal: https://www.google.com/webmasters/verification/verification?domain=www.writeshite.com. We recommend verifying ownership of the largest scope you wish to use with subdomains (eg. verify 'example.com' if you wish to map 'subdomain.example.com').",
-                    "reason": "PermissionDenied",
-                    "status": "False",
-                    "type": "DomainRoutable"
-                  }
-                ],
-                "mapped_route_name": "",
-                "observed_generation": 1,
-                "resource_records": []
-              }
-            ],
+            "status": null,
             "timeouts": null
           },
           "sensitive_attributes": [],
@@ -259,7 +165,7 @@
                 "effective_annotations": {
                   "run.googleapis.com/ingress": "all",
                   "run.googleapis.com/ingress-status": "all",
-                  "run.googleapis.com/operation-id": "769f9495-7bc1-4c4e-88a0-d5b50b736cc3",
+                  "run.googleapis.com/operation-id": "2bdb22cd-7d8d-49d6-8819-353c2160e594",
                   "serving.knative.dev/creator": "build-bot@peaceful-app-379819.iam.gserviceaccount.com",
                   "serving.knative.dev/lastModifier": "build-bot@peaceful-app-379819.iam.gserviceaccount.com"
                 },
@@ -269,10 +175,10 @@
                 "generation": 1,
                 "labels": {},
                 "namespace": "peaceful-app-379819",
-                "resource_version": "AAYXK95yyuc",
+                "resource_version": "AAYU5fTI3VM",
                 "self_link": "/apis/serving.knative.dev/v1/namespaces/1025152788697/services/writeshite-backend",
                 "terraform_labels": {},
-                "uid": "2b4a9c56-b4f8-40c6-b55a-063634814454"
+                "uid": "ad267835-05d0-4608-9b7f-b4c138a2cbb1"
               }
             ],
             "name": "writeshite-backend",
@@ -299,14 +205,14 @@
                     "type": "RoutesReady"
                   }
                 ],
-                "latest_created_revision_name": "writeshite-backend-00001-d2j",
-                "latest_ready_revision_name": "writeshite-backend-00001-d2j",
+                "latest_created_revision_name": "writeshite-backend-00001-9pl",
+                "latest_ready_revision_name": "writeshite-backend-00001-9pl",
                 "observed_generation": 1,
                 "traffic": [
                   {
                     "latest_revision": true,
                     "percent": 100,
-                    "revision_name": "writeshite-backend-00001-d2j",
+                    "revision_name": "writeshite-backend-00001-9pl",
                     "tag": "",
                     "url": ""
                   }
@@ -337,8 +243,8 @@
                     "container_concurrency": 80,
                     "containers": [
                       {
-                        "args": [],
-                        "command": [],
+                        "args": null,
+                        "command": null,
                         "env": [],
                         "env_from": [],
                         "image": "gcr.io/peaceful-app-379819/writeshite-backend:latest",
@@ -405,6 +311,32 @@
     },
     {
       "mode": "managed",
+      "type": "google_cloud_run_service_iam_member",
+      "name": "writeshite_backend_public_access",
+      "provider": "provider[\"registry.terraform.io/hashicorp/google\"]",
+      "instances": [
+        {
+          "schema_version": 0,
+          "attributes": {
+            "condition": [],
+            "etag": "BwYU5fUI/3c=",
+            "id": "v1/projects/peaceful-app-379819/locations/us-central1/services/writeshite-backend/roles/run.invoker/allUsers",
+            "location": "us-central1",
+            "member": "allUsers",
+            "project": "peaceful-app-379819",
+            "role": "roles/run.invoker",
+            "service": "v1/projects/peaceful-app-379819/locations/us-central1/services/writeshite-backend"
+          },
+          "sensitive_attributes": [],
+          "private": "bnVsbA==",
+          "dependencies": [
+            "google_cloud_run_service.writeshite_backend"
+          ]
+        }
+      ]
+    },
+    {
+      "mode": "managed",
       "type": "google_dns_managed_zone",
       "name": "writeshite_zone",
       "provider": "provider[\"registry.terraform.io/hashicorp/google\"]",
@@ -457,7 +389,7 @@
           "schema_version": 0,
           "attributes": {
             "condition": [],
-            "etag": "BwYVe6YA1Jo=",
+            "etag": "BwYU5dSDHNA=",
             "id": "peaceful-app-379819/roles/cloudbuild.builds.editor/serviceAccount:build-bot@peaceful-app-379819.iam.gserviceaccount.com",
             "member": "serviceAccount:build-bot@peaceful-app-379819.iam.gserviceaccount.com",
             "project": "peaceful-app-379819",
@@ -474,7 +406,7 @@
           "schema_version": 0,
           "attributes": {
             "condition": [],
-            "etag": "BwYVe6YA1Jo=",
+            "etag": "BwYU5dSDHNA=",
             "id": "peaceful-app-379819/roles/dns.admin/serviceAccount:build-bot@peaceful-app-379819.iam.gserviceaccount.com",
             "member": "serviceAccount:build-bot@peaceful-app-379819.iam.gserviceaccount.com",
             "project": "peaceful-app-379819",
@@ -491,7 +423,7 @@
           "schema_version": 0,
           "attributes": {
             "condition": [],
-            "etag": "BwYVe6YA1Jo=",
+            "etag": "BwYU5dSDHNA=",
             "id": "peaceful-app-379819/roles/iam.serviceAccountUser/serviceAccount:build-bot@peaceful-app-379819.iam.gserviceaccount.com",
             "member": "serviceAccount:build-bot@peaceful-app-379819.iam.gserviceaccount.com",
             "project": "peaceful-app-379819",
@@ -508,7 +440,7 @@
           "schema_version": 0,
           "attributes": {
             "condition": [],
-            "etag": "BwYVe6YA1Jo=",
+            "etag": "BwYU5dSDHNA=",
             "id": "peaceful-app-379819/roles/logging.admin/serviceAccount:build-bot@peaceful-app-379819.iam.gserviceaccount.com",
             "member": "serviceAccount:build-bot@peaceful-app-379819.iam.gserviceaccount.com",
             "project": "peaceful-app-379819",
@@ -525,7 +457,7 @@
           "schema_version": 0,
           "attributes": {
             "condition": [],
-            "etag": "BwYVe6YA1Jo=",
+            "etag": "BwYU5dSDHNA=",
             "id": "peaceful-app-379819/roles/logging.logWriter/serviceAccount:build-bot@peaceful-app-379819.iam.gserviceaccount.com",
             "member": "serviceAccount:build-bot@peaceful-app-379819.iam.gserviceaccount.com",
             "project": "peaceful-app-379819",
@@ -542,7 +474,7 @@
           "schema_version": 0,
           "attributes": {
             "condition": [],
-            "etag": "BwYVe6YA1Jo=",
+            "etag": "BwYU5dSDHNA=",
             "id": "peaceful-app-379819/roles/run.admin/serviceAccount:build-bot@peaceful-app-379819.iam.gserviceaccount.com",
             "member": "serviceAccount:build-bot@peaceful-app-379819.iam.gserviceaccount.com",
             "project": "peaceful-app-379819",
@@ -559,7 +491,7 @@
           "schema_version": 0,
           "attributes": {
             "condition": [],
-            "etag": "BwYVe6YA1Jo=",
+            "etag": "BwYU5dSDHNA=",
             "id": "peaceful-app-379819/roles/storage.admin/serviceAccount:build-bot@peaceful-app-379819.iam.gserviceaccount.com",
             "member": "serviceAccount:build-bot@peaceful-app-379819.iam.gserviceaccount.com",
             "project": "peaceful-app-379819",
@@ -576,7 +508,7 @@
           "schema_version": 0,
           "attributes": {
             "condition": [],
-            "etag": "BwYVe6YA1Jo=",
+            "etag": "BwYU5dSDHNA=",
             "id": "peaceful-app-379819/roles/storage.objectAdmin/serviceAccount:build-bot@peaceful-app-379819.iam.gserviceaccount.com",
             "member": "serviceAccount:build-bot@peaceful-app-379819.iam.gserviceaccount.com",
             "project": "peaceful-app-379819",

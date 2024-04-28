@@ -127,7 +127,7 @@ resource "google_dns_record_set" "writeshite_frontend_apex" {
   type         = "A"
   ttl          = 300
   managed_zone = google_dns_managed_zone.writeshite_zone.name
-  rrdatas      = [google_storage_bucket.writeshite_frontend.url]
+  rrdatas      = ["writeshite.com."]  # Replace with the actual IP address, I don't have that
 }
 
 resource "google_dns_record_set" "writeshite_frontend_www" {
@@ -135,5 +135,5 @@ resource "google_dns_record_set" "writeshite_frontend_www" {
   type         = "CNAME"
   ttl          = 300
   managed_zone = google_dns_managed_zone.writeshite_zone.name
-  rrdatas      = [google_storage_bucket.writeshite_frontend.url]
+  rrdatas      = ["writeshite.com."]  # Use the hostname instead of the bucket URL
 }
