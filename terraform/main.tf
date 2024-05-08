@@ -17,6 +17,15 @@ provider "google" {
   region  = var.region
 }
 
+resource "google_storage_bucket" "terraform_state" {
+  name          = "writeshite-terraform-state"
+  location      = var.region
+  force_destroy = false
+  versioning {
+    enabled = true
+  }
+}
+
 data "google_project" "project" {
   project_id = var.project_id
 }
