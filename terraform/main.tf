@@ -1,6 +1,20 @@
+terraform {
+  required_version = ">= 1.0"
+  required_providers {
+    google = {
+      source  = "hashicorp/google"
+      version = "~> 4.0"
+    }
+  }
+  backend "gcs" {
+    bucket = "writeshite-terraform-state"
+    prefix = "terraform/state"
+  }
+}
+
 provider "google" {
-  project = "peaceful-app-379819"
-  region  = "us-central1"
+  project = var.project_id
+  region  = var.region
 }
 
 resource "google_service_account" "cloudbuild_service_account" {
@@ -9,10 +23,6 @@ resource "google_service_account" "cloudbuild_service_account" {
 }
 
 resource "google_project_iam_member" "cloudbuild_roles" {
-  project = var.project_id
-  role    = each.value
-  member  = "serviceAccount:${google_service_account.cloudbuild_service_account.email}"
-
   for_each = toset([
     "roles/cloudbuild.builds.editor",
     "roles/run.admin",
@@ -23,20 +33,17 @@ resource "google_project_iam_member" "cloudbuild_roles" {
     "roles/storage.objectAdmin",
     "roles/iam.serviceAccountUser",
   ])
-}
 
-resource "google_storage_bucket" "terraform_state" {
-  name          = "writeshite-terraform-state"
-  location      = "US"
-  force_destroy = false
-  versioning {
-    enabled = true
-  }
+  project = var.project_id
+  role    = each.value
+  member  = google_service_account.cloudbuild_service_account.email
+
+  depends_on = [google_service_account.cloudbuild_service_account]
 }
 
 resource "google_cloud_run_service" "writeshite_backend" {
   name     = "writeshite-backend"
-  location = "us-central1"
+  location = var.region
 
   template {
     spec {
@@ -46,6 +53,7 @@ resource "google_cloud_run_service" "writeshite_backend" {
           container_port = 8080
         }
       }
+      service_account_name = google_service_account.cloudbuild_service_account.email
     }
   }
 
@@ -60,60 +68,8 @@ resource "google_cloud_run_service_iam_member" "writeshite_backend_public_access
   location = google_cloud_run_service.writeshite_backend.location
   role     = "roles/run.invoker"
   member   = "allUsers"
-}
 
-resource "google_cloud_run_domain_mapping" "writeshite_backend_domain_mapping" {
-  location = "us-central1"
-  name     = "writeshite.com"
-
-  metadata {
-    namespace = "peaceful-app-379819"
-  }
-
-  spec {
-    route_name = google_cloud_run_service.writeshite_backend.name
-  }
-}
-
-resource "google_cloud_run_domain_mapping" "writeshite_backend_www_domain_mapping" {
-  location = "us-central1"
-  name     = "www.writeshite.com"
-
-  metadata {
-    namespace = "peaceful-app-379819"
-  }
-
-  spec {
-    route_name = google_cloud_run_service.writeshite_backend.name
-  }
-}
-
-resource "google_cloud_run_domain_mapping" "writeshite_backend_cert" {
-  location = "us-central1"
-  name     = "writeshite-backend-cert"
-
-  metadata {
-    namespace = "peaceful-app-379819"
-    annotations = {
-      "run.googleapis.com/managed-certificates" = "writeshite-backend-cert"
-    }
-  }
-
-  spec {
-    route_name = google_cloud_run_service.writeshite_backend.name
-  }
-}
-
-resource "google_storage_bucket" "writeshite_frontend" {
-  name          = "writeshite-frontend"
-  location      = "US"
-  force_destroy = true
-}
-
-resource "google_storage_bucket_object" "writeshite_frontend_files" {
-  name   = "index.html"
-  bucket = google_storage_bucket.writeshite_frontend.name
-  source = "src/frontend/build/index.html"
+  depends_on = [google_cloud_run_service.writeshite_backend]
 }
 
 resource "google_dns_managed_zone" "writeshite_zone" {
@@ -122,12 +78,76 @@ resource "google_dns_managed_zone" "writeshite_zone" {
   description = "DNS zone for writeshite.com"
 }
 
+resource "google_cloud_run_domain_mapping" "writeshite_backend_domain_mapping" {
+  location = var.region
+  name     = "writeshite.com"
+
+  metadata {
+    namespace = var.project_id
+  }
+
+  spec {
+    route_name = google_cloud_run_service.writeshite_backend.name
+  }
+
+  depends_on = [google_dns_managed_zone.writeshite_zone]
+}
+
+resource "google_cloud_run_domain_mapping" "writeshite_backend_www_domain_mapping" {
+  location = var.region
+  name     = "www.writeshite.com"
+
+  metadata {
+    namespace = var.project_id
+  }
+
+  spec {
+    route_name = google_cloud_run_service.writeshite_backend.name
+  }
+
+  depends_on = [google_dns_managed_zone.writeshite_zone]
+}
+
+resource "google_cloud_run_domain_mapping" "writeshite_backend_cert" {
+  location = var.region
+  name     = "writeshite-backend-cert"
+
+  metadata {
+    namespace = var.project_id
+    annotations = {
+      "run.googleapis.com/managed-certificates" = "writeshite-backend-cert"
+    }
+  }
+
+  spec {
+    route_name = google_cloud_run_service.writeshite_backend.name
+  }
+
+  depends_on = [google_dns_managed_zone.writeshite_zone]
+}
+
+resource "google_storage_bucket" "writeshite_frontend" {
+  name          = "writeshite-frontend"
+  location      = var.region
+  force_destroy = true
+}
+
+resource "google_storage_bucket_object" "writeshite_frontend_files" {
+  name   = "index.html"
+  bucket = google_storage_bucket.writeshite_frontend.name
+  source = "src/frontend/build/index.html"
+
+  depends_on = [google_storage_bucket.writeshite_frontend]
+}
+
 resource "google_dns_record_set" "writeshite_frontend_apex" {
   name         = "writeshite.com."
   type         = "A"
   ttl          = 300
   managed_zone = google_dns_managed_zone.writeshite_zone.name
-  rrdatas      = ["writeshite.com."]  # Replace with the actual IP address, I don't have that
+  rrdatas      = [google_cloud_run_domain_mapping.writeshite_backend_domain_mapping.status[0].resource_records[0]]
+
+  depends_on = [google_dns_managed_zone.writeshite_zone, google_cloud_run_domain_mapping.writeshite_backend_domain_mapping]
 }
 
 resource "google_dns_record_set" "writeshite_frontend_www" {
@@ -135,5 +155,7 @@ resource "google_dns_record_set" "writeshite_frontend_www" {
   type         = "CNAME"
   ttl          = 300
   managed_zone = google_dns_managed_zone.writeshite_zone.name
-  rrdatas      = ["writeshite.com."]  # Use the hostname instead of the bucket URL
+  rrdatas      = ["writeshite.com."]
+
+  depends_on = [google_dns_managed_zone.writeshite_zone]
 }
