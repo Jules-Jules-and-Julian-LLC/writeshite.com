@@ -17,9 +17,14 @@ provider "google" {
   region  = var.region
 }
 
+data "google_project" "project" {
+  project_id = var.project_id
+}
+
 resource "google_service_account" "cloudbuild_service_account" {
   account_id   = "build-bot"
   display_name = "Cloud Build Service Account"
+  project      = data.google_project.project.project_id
 }
 
 resource "google_project_iam_member" "cloudbuild_roles" {
@@ -37,8 +42,6 @@ resource "google_project_iam_member" "cloudbuild_roles" {
   project = var.project_id
   role    = each.value
   member  = google_service_account.cloudbuild_service_account.email
-
-  depends_on = [google_service_account.cloudbuild_service_account]
 }
 
 resource "google_cloud_run_service" "writeshite_backend" {
@@ -61,6 +64,8 @@ resource "google_cloud_run_service" "writeshite_backend" {
     percent         = 100
     latest_revision = true
   }
+
+  depends_on = [google_project_iam_member.cloudbuild_roles]
 }
 
 resource "google_cloud_run_service_iam_member" "writeshite_backend_public_access" {
@@ -68,8 +73,6 @@ resource "google_cloud_run_service_iam_member" "writeshite_backend_public_access
   location = google_cloud_run_service.writeshite_backend.location
   role     = "roles/run.invoker"
   member   = "allUsers"
-
-  depends_on = [google_cloud_run_service.writeshite_backend]
 }
 
 resource "google_dns_managed_zone" "writeshite_zone" {
@@ -89,8 +92,6 @@ resource "google_cloud_run_domain_mapping" "writeshite_backend_domain_mapping" {
   spec {
     route_name = google_cloud_run_service.writeshite_backend.name
   }
-
-  depends_on = [google_dns_managed_zone.writeshite_zone]
 }
 
 resource "google_cloud_run_domain_mapping" "writeshite_backend_www_domain_mapping" {
@@ -104,8 +105,6 @@ resource "google_cloud_run_domain_mapping" "writeshite_backend_www_domain_mappin
   spec {
     route_name = google_cloud_run_service.writeshite_backend.name
   }
-
-  depends_on = [google_dns_managed_zone.writeshite_zone]
 }
 
 resource "google_cloud_run_domain_mapping" "writeshite_backend_cert" {
@@ -133,25 +132,24 @@ resource "google_storage_bucket" "writeshite_frontend" {
 }
 
 resource "google_storage_bucket_object" "writeshite_frontend_files" {
-  name   = "index.html"
-  bucket = google_storage_bucket.writeshite_frontend.name
-  source = "src/frontend/build/index.html"
-
-  depends_on = [google_storage_bucket.writeshite_frontend]
+  for_each = fileset("src/frontend/build/", "*")
+  name     = each.value
+  bucket   = google_storage_bucket.writeshite_frontend.name
+  source   = "src/frontend/build/${each.value}"
 }
 
 resource "google_dns_record_set" "writeshite_frontend_apex" {
-  name         = "writeshite.com."
+  name         = google_dns_managed_zone.writeshite_zone.dns_name
   type         = "A"
   ttl          = 300
   managed_zone = google_dns_managed_zone.writeshite_zone.name
-  rrdatas      = [google_cloud_run_domain_mapping.writeshite_backend_domain_mapping.status[0].resource_records[0]]
+  rrdatas      = [google_cloud_run_domain_mapping.writeshite_backend_domain_mapping.status[0].resource_records[0].rrdata]
 
-  depends_on = [google_dns_managed_zone.writeshite_zone, google_cloud_run_domain_mapping.writeshite_backend_domain_mapping]
+  depends_on = [google_cloud_run_domain_mapping.writeshite_backend_domain_mapping]
 }
 
 resource "google_dns_record_set" "writeshite_frontend_www" {
-  name         = "www.writeshite.com."
+  name         = "www.${google_dns_managed_zone.writeshite_zone.dns_name}"
   type         = "CNAME"
   ttl          = 300
   managed_zone = google_dns_managed_zone.writeshite_zone.name
