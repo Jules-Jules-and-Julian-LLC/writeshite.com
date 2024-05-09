@@ -4,48 +4,30 @@ steps:
     args:
       - '-c'
       - |
-        echo "Commit SHA: $COMMIT_SHA"
-
-  # Build the backend
-  - name: 'gcr.io/distroless/java21-debian12:debug'
-    entrypoint: '/busybox/sh'
-    args:
-      - -c
-      - |
-        ln -s /busybox/sh /bin/sh
-        ln -s /busybox/env /usr/bin/env
-        /workspace/gradlew --console=plain --no-daemon --gradle-user-home=/home/.gradle :jib -Djib.to.image=gcr.io/$PROJECT_ID/writeshite-backend:latest
-
-  # Deploy infrastructure using Terraform
-  - name: 'hashicorp/terraform:latest'
-    entrypoint: 'terraform'
+        gcloud secrets versions access latest --secret="terraform-sa-key" > terraform-sa-key.json
+        export GOOGLE_APPLICATION_CREDENTIALS="$PWD/terraform-sa-key.json"
+  - name: 'hashicorp/terraform'
     args: ['init']
-    dir: 'terraform'
-  - name: 'hashicorp/terraform:latest'
-    entrypoint: 'terraform'
+  - name: 'hashicorp/terraform'
     args: ['apply', '-auto-approve']
-    dir: 'terraform'
-    env:
-      - 'TF_VAR_project_id=$PROJECT_ID'
-      - 'TF_VAR_commit_sha=$COMMIT_SHA'
 
-  # Build the frontend
-  - name: 'node:lts'
+  # Frontend build steps
+  - name: 'node'
     entrypoint: 'npm'
     args: ['install']
-    dir: 'src/frontend'
-  - name: 'node:lts'
+    dir: 'frontend'
+  - name: 'node'
     entrypoint: 'npm'
     args: ['run', 'build']
-    dir: 'src/frontend'
+    dir: 'frontend'
+  - name: 'gcr.io/cloud-builders/gsutil'
+    args: ['cp', '-r', 'frontend/build/*', 'gs://writeshite-frontend/']
 
-# Push the frontend files to GCS
-artifacts:
-  objects:
-    location: 'gs://writeshite-frontend/'
-    paths: ['src/frontend/build/**']
-
-options:
-  logging: CLOUD_LOGGING_ONLY
-
-serviceAccount: 'projects/peaceful-app-379819/serviceAccounts/build-bot@peaceful-app-379819.iam.gserviceaccount.com'
+  # Backend build steps
+  - name: 'gcr.io/cloud-builders/mvn'
+    args: ['package']
+    dir: 'backend'
+  - name: 'gcr.io/cloud-builders/docker'
+    args: ['build', '-t', 'gcr.io/your-project-id/backend', './backend']
+  - name: 'gcr.io/cloud-builders/docker'
+    args: ['push', 'gcr.io/your-project-id/writeshite-backend:latest']
