@@ -9,17 +9,18 @@ steps:
 
   - name: 'gcr.io/cloud-builders/npm'
     args: ['install']
-    dir: 'frontend'
+    dir: 'src/frontend'
 
   - name: 'gcr.io/cloud-builders/npm'
     args: ['run', 'build']
-    dir: 'frontend'
+    dir: 'src/frontend'
 
   - name: 'gcr.io/cloud-builders/gsutil'
-    args: ['-m', 'rsync', '-r', '-d', 'frontend/build', 'gs://writeshite-frontend']
+    args: ['-m', 'rsync', '-r', '-d', 'src/frontend/build', 'gs://writeshite-frontend']
 
-  - name: 'gcr.io/cloud-builders/docker'
-    args: ['build', '-t', 'gcr.io/$PROJECT_ID/writeshite-backend', './backend']
+  - name: 'gcr.io/cloud-builders/gradle'
+    args: ['jib']
+    dir: '.'
 
   - name: 'gcr.io/cloud-builders/docker'
     args: ['push', 'gcr.io/$PROJECT_ID/writeshite-backend']
