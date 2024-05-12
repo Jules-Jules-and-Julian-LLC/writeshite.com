@@ -18,6 +18,23 @@ resource "google_service_account" "service_account" {
   display_name = "WriteShite Service Account"
 }
 
+resource "google_storage_bucket" "writeshite-frontend" {
+  name          = "writeshite-frontend"
+  location      = "us-central1"
+
+  website {
+    main_page_suffix = "index.html"
+    not_found_page   = "404.html"
+  }
+  cors {
+    origin          = ["https://writeshite.com", "https://www.writeshite.com",
+      "http://writeshite.com", "http://www.writeshite.com"]
+    method          = ["GET", "HEAD", "PUT", "POST", "DELETE"]
+    response_header = ["*"]
+    max_age_seconds = 3600
+  }
+}
+
 resource "google_project_iam_member" "service_account_roles" {
   project = var.project_id
   role    = each.value
@@ -25,6 +42,7 @@ resource "google_project_iam_member" "service_account_roles" {
 
   for_each = toset([
     "roles/storage.admin",
+    "roles/bucket.admin",
     "roles/dns.admin",
     "roles/run.admin",
     "roles/cloudbuild.builds.editor",
