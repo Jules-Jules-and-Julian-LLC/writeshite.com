@@ -27,3 +27,6 @@ steps:
   - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
     entrypoint: gcloud
     args: ['run', 'deploy', 'writeshite-backend', '--image', 'gcr.io/$PROJECT_ID/writeshite-backend', '--region', 'us-central1', '--platform', 'managed']
+
+options:
+  logging: CLOUD_LOGGING_ONLY
