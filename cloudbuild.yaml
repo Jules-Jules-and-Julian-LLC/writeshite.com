@@ -4,8 +4,8 @@ steps:
     args:
       - '-c'
       - |
-        gcloud auth activate-service-account --key-file=service-account.json
-        gcloud auth configure-docker
+        pwd
+        ls
 
   - name: 'gcr.io/cloud-builders/npm'
     args: ['install']
@@ -28,5 +28,6 @@ steps:
     entrypoint: gcloud
     args: ['run', 'deploy', 'writeshite-backend', '--image', 'gcr.io/$PROJECT_ID/writeshite-backend', '--region', 'us-central1', '--platform', 'managed']
 
+serviceAccount: 'projects/peaceful-app-379819/serviceAccounts/build-bot@peaceful-app-379819.iam.gserviceaccount.com'
 options:
   logging: CLOUD_LOGGING_ONLY
