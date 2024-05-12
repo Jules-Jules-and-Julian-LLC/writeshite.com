@@ -4,30 +4,26 @@ steps:
     args:
       - '-c'
       - |
-        gcloud secrets versions access latest --secret="terraform-sa-key" > terraform-sa-key.json
-        export GOOGLE_APPLICATION_CREDENTIALS="$PWD/terraform-sa-key.json"
-  - name: 'hashicorp/terraform'
-    args: ['init']
-  - name: 'hashicorp/terraform'
-    args: ['apply', '-auto-approve']
+        gcloud auth activate-service-account --key-file=service-account.json
+        gcloud auth configure-docker
 
-  # Frontend build steps
-  - name: 'node'
-    entrypoint: 'npm'
+  - name: 'gcr.io/cloud-builders/npm'
     args: ['install']
     dir: 'frontend'
-  - name: 'node'
-    entrypoint: 'npm'
+
+  - name: 'gcr.io/cloud-builders/npm'
     args: ['run', 'build']
     dir: 'frontend'
-  - name: 'gcr.io/cloud-builders/gsutil'
-    args: ['cp', '-r', 'frontend/build/*', 'gs://writeshite-frontend/']
 
-  # Backend build steps
-  - name: 'gcr.io/cloud-builders/mvn'
-    args: ['package']
-    dir: 'backend'
+  - name: 'gcr.io/cloud-builders/gsutil'
+    args: ['-m', 'rsync', '-r', '-d', 'frontend/build', 'gs://writeshite-frontend']
+
   - name: 'gcr.io/cloud-builders/docker'
-    args: ['build', '-t', 'gcr.io/your-project-id/backend', './backend']
+    args: ['build', '-t', 'gcr.io/$PROJECT_ID/writeshite-backend', './backend']
+
   - name: 'gcr.io/cloud-builders/docker'
-    args: ['push', 'gcr.io/your-project-id/writeshite-backend:latest']
+    args: ['push', 'gcr.io/$PROJECT_ID/writeshite-backend']
+
+  - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+    entrypoint: gcloud
+    args: ['run', 'deploy', 'writeshite-backend', '--image', 'gcr.io/$PROJECT_ID/writeshite-backend', '--region', 'us-central1', '--platform', 'managed']
