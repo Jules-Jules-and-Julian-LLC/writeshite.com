@@ -19,7 +19,7 @@ resource "google_service_account" "service_account" {
 }
 
 resource "google_storage_bucket" "writeshite-frontend" {
-  name          = "writeshite-frontend"
+  name          = "writeshite-frontend-bucket"
   location      = "us-central1"
 
   website {

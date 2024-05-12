@@ -1,12 +1,4 @@
 steps:
-  - name: 'gcr.io/cloud-builders/gcloud'
-    entrypoint: 'bash'
-    args:
-      - '-c'
-      - |
-        pwd
-        ls
-
   - name: 'gcr.io/cloud-builders/npm'
     args: ['install']
     dir: 'src/frontend'
