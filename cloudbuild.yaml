@@ -1,7 +1,7 @@
 steps:
-  - name: 'gcr.io/cloud-builders/terraform'
-    args: ['apply --auto-approve']
-    dir: 'src/frontend'
+#  - name: 'gcr.io/cloud-builders/terraform'
+#    args: ['apply --auto-approve']
+#    dir: 'src/frontend'
 
   - name: 'gcr.io/cloud-builders/npm'
     args: ['install']
