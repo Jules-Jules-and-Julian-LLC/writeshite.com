@@ -1,4 +1,8 @@
 steps:
+  - name: 'gcr.io/cloud-builders/terraform'
+    args: ['apply --auto-approve']
+    dir: 'src/frontend'
+
   - name: 'gcr.io/cloud-builders/npm'
     args: ['install']
     dir: 'src/frontend'
@@ -15,7 +19,7 @@ steps:
     dir: '.'
 
   - name: 'gcr.io/cloud-builders/docker'
-    args: ['push', 'gcr.io/$PROJECT_ID/writeshite-backend']
+    args: ['push', 'gcr.io/$PROJECT_ID/writeshite-backend:latest']
 
   - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
     entrypoint: gcloud
