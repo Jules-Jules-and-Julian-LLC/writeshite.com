@@ -26,7 +26,7 @@ class WebSocketConfig : WebSocketMessageBrokerConfigurer {
     lateinit var messagingTemplate: SimpMessageSendingOperations
 
     override fun configureMessageBroker(registry: MessageBrokerRegistry) {
-        registry.enableSimpleBroker("/topic/", "/user/", "/queue/")
+        registry.enableSimpleBroker("/topic/", "/user/", "/queue/", "/websocket/", "/socket/", "/info/")
         registry.setApplicationDestinationPrefixes("/app")
     }
 
