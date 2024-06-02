@@ -1,8 +1,4 @@
 steps:
-#  - name: 'gcr.io/cloud-builders/terraform'
-#    args: ['apply --auto-approve']
-#    dir: 'src/frontend'
-
   - name: 'gcr.io/cloud-builders/npm'
     args: ['install']
     dir: 'src/frontend'
@@ -16,15 +12,18 @@ steps:
 
   - name: gradle:8.7-jdk21
     entrypoint: gradle
-    args: ['jib', '--stacktrace']
+    args: ['jib', '--image=gcr.io/$PROJECT_ID/writeshite-backend:latest', '--stacktrace']
     dir: '.'
+
+  - name: 'gcr.io/cloud-builders/docker'
+    args: ['pull', 'gcr.io/$PROJECT_ID/writeshite-backend:latest']
 
   - name: 'gcr.io/cloud-builders/docker'
     args: ['push', 'gcr.io/$PROJECT_ID/writeshite-backend:latest']
 
   - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
     entrypoint: gcloud
-    args: ['run', 'deploy', 'writeshite-backend', '--image', 'gcr.io/$PROJECT_ID/writeshite-backend', '--region', 'us-central1', '--platform', 'managed']
+    args: ['run', 'deploy', 'writeshite-backend', '--image', 'gcr.io/$PROJECT_ID/writeshite-backend:latest', '--region', 'us-central1', '--platform', 'managed']
 
 serviceAccount: 'projects/peaceful-app-379819/serviceAccounts/build-bot@peaceful-app-379819.iam.gserviceaccount.com'
 options:
