@@ -53,7 +53,7 @@ export default class Lobby extends React.Component {
                 console.log('STOMP: ' + str)
             },
             webSocketFactory: () => {
-                return new SockJS(`http://${window.location.hostname}:8080/websocket`)
+                return new SockJS(`https://${window.location.hostname}:443/websocket`)
             },
             reconnectDelay: 20000,
             stompVersions: new Versions([Versions.V1_0, Versions.V1_1]),
@@ -62,10 +62,10 @@ export default class Lobby extends React.Component {
         const client = new Client(stompConfig);
 
         let me = this;
-        client.onConnect = (frame) => {
+        client.onConnect = () => {
             me.setState({ stompClient: client });
 
-            let disconnect = e => client.deactivate(); // Updated deactivation
+            let disconnect = () => client.deactivate(); // Updated deactivation
             window.addEventListener("beforeunload", disconnect.bind(me));
 
             client.subscribe("/user/queue/overrideUsername", (message) => {
@@ -365,14 +365,14 @@ export default class Lobby extends React.Component {
         this.setState({settings: newSettings});
     }
 
-    onSaveStoriesToGalleryChange(event) {
+    onSaveStoriesToGalleryChange() {
         let newSettings = this.state.settings;
         newSettings["saveStoriesToGallery"] = !this.state.settings
             .saveStoriesToGallery;
         this.setState({settings: newSettings});
     }
 
-    onExquisiteCorpseChange(event) {
+    onExquisiteCorpseChange() {
         let newSettings = this.state.settings;
         newSettings["exquisiteCorpse"] = !this.state.settings.exquisiteCorpse;
         this.setState({settings: newSettings});
