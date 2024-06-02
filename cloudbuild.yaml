@@ -15,7 +15,7 @@ steps:
     args: ['-m', 'rsync', '-r', '-d', 'src/frontend/build', 'gs://writeshite-frontend']
 
   - name: 'gcr.io/cloud-builders/gradle'
-    args: ['jib']
+    args: ['jib', '--stacktrace']
     dir: '.'
 
   - name: 'gcr.io/cloud-builders/docker'
