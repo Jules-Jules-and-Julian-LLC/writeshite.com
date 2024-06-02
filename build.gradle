@@ -3,7 +3,7 @@ buildscript {
         mavenCentral()
     }
     dependencies {
-        classpath "org.springframework.boot:spring-boot-gradle-plugin:3.0.0"
+        classpath "org.springframework.boot:spring-boot-gradle-plugin:3.3.0"
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:2.0.0"
     }
 }
@@ -18,8 +18,12 @@ plugins {
 }
 
 jib {
-    from.image = 'gcr.io/distroless/java21-debian12:debug'
-    to.image = 'writeshite-backend:latest'
+    from {
+        image = 'gcr.io/distroless/java21-debian12:debug'
+    }
+    to {
+        image = 'gcr.io/peaceful-app-379819/writeshite-backend:latest'
+    }
 }
 
 bootJar {
@@ -37,14 +41,12 @@ repositories {
 }
 
 dependencies {
-    implementation  "org.springframework.boot:spring-boot-starter-websocket:3.3.0"
-    implementation  "org.jetbrains.kotlin:kotlin-reflect:2.0.0"
-    implementation  "com.fasterxml.jackson.module:jackson-module-kotlin:2.17.1"
-    implementation  "org.jetbrains.kotlinx:kotlinx-coroutines-core:1.8.1"
-
-    implementation  "com.amazonaws:aws-java-sdk-s3:1.12.734"
-    implementation  "javax.xml.bind:jaxb-api:2.3.1"
-
+    implementation "org.springframework.boot:spring-boot-starter-websocket:3.3.0"
+    implementation "org.jetbrains.kotlin:kotlin-reflect:2.0.0"
+    implementation "com.fasterxml.jackson.module:jackson-module-kotlin:2.17.1"
+    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:1.8.1"
+    implementation "com.amazonaws:aws-java-sdk-s3:1.12.734"
+    implementation "javax.xml.bind:jaxb-api:2.3.1"
     implementation "org.jetbrains.kotlin:kotlin-stdlib:2.0.0"
 }
 
