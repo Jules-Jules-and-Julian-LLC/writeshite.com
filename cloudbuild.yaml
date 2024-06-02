@@ -14,7 +14,7 @@ steps:
   - name: 'gcr.io/cloud-builders/gsutil'
     args: ['-m', 'rsync', '-r', '-d', 'src/frontend/build', 'gs://writeshite-frontend']
 
-  - name: gradle:8-jdk8
+  - name: gradle:8.7-jdk21
     entrypoint: gradle
     args: ['jib', '--stacktrace']
     dir: '.'
