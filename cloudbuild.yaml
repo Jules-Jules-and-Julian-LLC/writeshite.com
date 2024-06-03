@@ -23,7 +23,27 @@ steps:
 
   - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
     entrypoint: gcloud
-    args: ['run', 'deploy', 'writeshite-backend', '--image', 'gcr.io/$PROJECT_ID/writeshite-backend:latest', '--region', 'us-central1', '--platform', 'managed']
+    args: ['compute', 'instances', 'stop', 'writeshite-instance', '--zone', 'us-central1']
+
+  - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+    entrypoint: gcloud
+    args: ['compute', 'instances', 'set-machine-type', 'writeshite-instance', '--machine-type=e2-micro', '--zone', 'us-central1']
+
+  - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+    entrypoint: gcloud
+    args: ['compute', 'instances', 'start', 'writeshite-instance', '--zone', 'us-central1']
+
+  - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+    entrypoint: gcloud
+    args: ['compute', 'ssh', 'writeshite-instance', '--zone', 'us-central1', '--command', 'sudo docker pull gcr.io/$PROJECT_ID/writeshite-backend:latest']
+
+  - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+    entrypoint: gcloud
+    args: ['compute', 'ssh', 'writeshite-instance', '--zone', 'us-central1', '--command', 'sudo docker stop writeshite-backend || true && sudo docker rm writeshite-backend || true']
+
+  - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+    entrypoint: gcloud
+    args: ['compute', 'ssh', 'writeshite-instance', '--zone', 'us-central1', '--command', 'sudo docker run -d --name writeshite-backend -p 8080:8080 -p 80:80 -p 443:443 gcr.io/$PROJECT_ID/writeshite-backend:latest']
 
 serviceAccount: 'projects/peaceful-app-379819/serviceAccounts/build-bot@peaceful-app-379819.iam.gserviceaccount.com'
 options:
