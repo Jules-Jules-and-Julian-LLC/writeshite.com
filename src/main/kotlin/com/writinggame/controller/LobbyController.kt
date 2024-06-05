@@ -5,10 +5,9 @@ import com.writinggame.domain.ErrorType
 import com.writinggame.domain.LobbyStateType
 import com.writinggame.model.GameSettings
 import com.writinggame.model.LobbyManager
-import org.slf4j.Logger
-import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.context.annotation.Lazy
+import org.springframework.http.HttpStatus
 import org.springframework.messaging.MessageHeaders
 import org.springframework.messaging.handler.annotation.DestinationVariable
 import org.springframework.messaging.handler.annotation.Header
@@ -19,6 +18,8 @@ import org.springframework.messaging.simp.SimpMessageSendingOperations
 import org.springframework.messaging.simp.SimpMessageType
 import org.springframework.stereotype.Controller
 import org.springframework.web.bind.annotation.RequestMapping
+import org.springframework.web.bind.annotation.ResponseBody
+import org.springframework.web.bind.annotation.ResponseStatus
 import java.time.ZonedDateTime
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
@@ -27,11 +28,10 @@ import java.util.concurrent.TimeUnit
 
 @Controller
 class LobbyController {
-    private val LOGGER: Logger = LoggerFactory.getLogger(javaClass)
 
     @Lazy
     @Autowired
-    lateinit var messagingTemplate: SimpMessageSendingOperations;
+    lateinit var messagingTemplate: SimpMessageSendingOperations
 
     private fun createHeaders(sessionId: String): MessageHeaders {
         val headerAccessor = SimpMessageHeaderAccessor.create(SimpMessageType.MESSAGE)
@@ -181,6 +181,13 @@ class LobbyController {
 
             return@submit StoryChangeResponse(lobby, receivedDatetime)
         }.get(TIMEOUT_MINUTES, TimeUnit.MINUTES)
+    }
+
+    @RequestMapping(value = ["/health"])
+    @ResponseStatus(HttpStatus.OK)
+    @ResponseBody
+    fun health(): String {
+        return "OK"
     }
 
     /**

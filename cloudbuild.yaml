@@ -12,7 +12,7 @@ steps:
 
   - name: gradle:8.7-jdk21
     entrypoint: gradle
-    args: ['jib', '--image=gcr.io/$PROJECT_ID/writeshite-backend:latest', '--stacktrace']
+    args: ['jib', '--no-daemon', '--image=gcr.io/$PROJECT_ID/writeshite-backend:latest']
     dir: '.'
 
   - name: 'gcr.io/cloud-builders/docker'
@@ -22,30 +22,16 @@ steps:
     args: ['push', 'gcr.io/$PROJECT_ID/writeshite-backend:latest']
 
   - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
-    entrypoint: /bin/bash
-    args:
-      - -c
-      - |
-        if gcloud compute instances describe writeshite-instance --zone us-central1-a; then
-          gcloud compute instances stop writeshite-instance --zone us-central1-a
-        else
-          echo "Instance writeshite-instance does not exist, skipping stop."
-        fi
+    entrypoint: gcloud
+    args: ['compute', 'instances', 'stop', 'writeshite-instance', '--zone', 'us-central1-a']
 
   - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
     entrypoint: gcloud
     args: ['compute', 'instances', 'set-machine-type', 'writeshite-instance', '--machine-type=e2-micro', '--zone', 'us-central1-a']
 
   - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
-    entrypoint: /bin/bash
-    args:
-      - -c
-      - |
-        if gcloud compute instances describe writeshite-instance --zone us-central1-a; then
-          gcloud compute instances start writeshite-instance --zone us-central1-a
-        else
-          echo "Instance writeshite-instance does not exist, skipping start."
-        fi
+    entrypoint: gcloud
+    args: ['compute', 'instances', 'start', 'writeshite-instance', '--zone', 'us-central1-a']
 
   - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
     entrypoint: gcloud
@@ -57,7 +43,7 @@ steps:
 
   - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
     entrypoint: gcloud
-    args: ['compute', 'ssh', 'writeshite-instance', '--zone', 'us-central1-a', '--command', 'sudo docker run -d --name writeshite-backend -p 8080:8080 gcr.io/$PROJECT_ID/writeshite-backend:latest']
+    args: ['compute', 'ssh', 'writeshite-instance', '--zone', 'us-central1-a', '--command', 'sudo docker run -d --name writeshite-backend -p 8080:8080 -p 80:80 -p 443:443 gcr.io/$PROJECT_ID/writeshite-backend:latest']
 
 serviceAccount: 'projects/peaceful-app-379819/serviceAccounts/build-bot@peaceful-app-379819.iam.gserviceaccount.com'
 options:
