@@ -3,7 +3,7 @@ terraform {
   required_providers {
     google = {
       source  = "hashicorp/google"
-      version = "4.9.0"
+      version = "5.32.0"
     }
   }
 }
@@ -64,17 +64,64 @@ resource "google_project_iam_member" "service_account_roles" {
   ])
 }
 
-resource "google_cloud_run_service" "backend" {
-  name     = "writeshite-backend"
-  location = var.region
+resource "google_compute_instance_template" "writeshite_backend_template" {
+  name        = "writeshite-backend-template"
+  machine_type = "e2-micro"
 
-  template {
-    spec {
-      containers {
-        image = "gcr.io/${var.project_id}/writeshite-backend:latest"
-      }
-    }
+  tags = ["http-server"]
+
+  disk {
+    auto_delete  = true
+    boot         = true
+    source_image = "projects/debian-cloud/global/images/family/debian-10"
   }
+
+  network_interface {
+    network = google_compute_network.default.name
+    access_config {}
+  }
+
+  metadata = {
+    gce-container-declaration = <<-EOF
+    spec:
+      containers:
+        - name: writeshite-backend
+          image: gcr.io/${var.project_id}/writeshite-backend:latest
+          ports:
+            - name: http
+              containerPort: 8080
+      restartPolicy: Always
+    EOF
+  }
+}
+
+resource "google_compute_instance_group_manager" "writeshite_backend_instance_group" {
+  name               = "writeshite-backend-group"
+  base_instance_name = "writeshite-backend"
+  zone               = "us-central1-a"
+  target_size        = 1
+
+  version {
+    instance_template = google_compute_instance_template.writeshite_backend_template.self_link
+  }
+}
+
+resource "google_compute_backend_service" "backend_service" {
+  name        = "writeshite-backend-service"
+  protocol    = "HTTP"
+  port_name   = "http"
+  timeout_sec = 10
+
+  backend {
+    group = google_compute_instance_group_manager.writeshite_backend_instance_group.instance_group
+  }
+
+  health_checks = [google_compute_http_health_check.writeshite-health-check.self_link]
+}
+
+resource "google_compute_backend_bucket" "frontend_bucket" {
+  name        = "writeshite-frontend-backend-bucket"
+  bucket_name = google_storage_bucket.frontend_bucket.name
 }
 
 resource "google_compute_url_map" "writeshite-url-map" {
@@ -97,7 +144,7 @@ resource "google_compute_url_map" "writeshite-url-map" {
 
     path_rule {
       paths   = ["/*"]
-      service = google_storage_bucket.frontend_bucket.url
+      service = google_compute_backend_bucket.frontend_bucket.self_link
     }
   }
 }
@@ -111,51 +158,33 @@ resource "google_compute_http_health_check" "writeshite-health-check" {
   unhealthy_threshold = 2
 }
 
-resource "google_compute_backend_service" "backend_service" {
-  name        = "writeshite-backend-service"
-  protocol    = "HTTP"
-  port_name   = "http"
-  timeout_sec = 10
-
-  backend {
-    group = google_compute_instance_group.backend_instance_group.self_link
-  }
-
-  health_checks = [google_compute_http_health_check.writeshite-health-check.self_link]
-}
-
-resource "google_compute_instance_group" "backend_instance_group" {
-  name        = "writeshite-backend-group"
-  zone        = "us-central1-a"
-  instances   = [google_compute_instance.backend_instance.self_link]
-}
-
-resource "google_compute_instance" "backend_instance" {
-  name         = "writeshite-instance"
-  machine_type = "e2-micro"
-  zone         = "us-central1-a"
-
-  boot_disk {
-    initialize_params {
-      image = "projects/peaceful-app-379819/global/writeshite-backend:latest"
-    }
-  }
-
-  network_interface {
-    network = "default"
-
-    access_config {
-      nat_ip = google_compute_address.writeshite-com.address
-    }
-  }
-}
-
 resource "google_compute_address" "writeshite-com" {
   name       = "writeshite-com"
   region     = var.region
   address_type = "EXTERNAL"
 }
 
-resource "google_compute_image" "writeshite-backend" {
-  name = "writeshite-backend"
+resource "google_compute_network" "default" {
+  auto_create_subnetworks                   = true
+  delete_default_routes_on_create           = false
+  description                               = "Default network for the project"
+  enable_ula_internal_ipv6                  = false
+  mtu                                       = 0
+  name                                      = "default"
+  network_firewall_policy_enforcement_order = "AFTER_CLASSIC_FIREWALL"
+  project                                   = var.project_id
+  routing_mode                              = "REGIONAL"
+}
+
+resource "google_compute_subnetwork" "default" {
+  ip_cidr_range              = "10.128.0.0/20"
+  name                       = "default"
+  network                    = "default"
+  private_ip_google_access   = false
+  private_ipv6_google_access = "DISABLE_GOOGLE_ACCESS"
+  project                    = var.project_id
+  purpose                    = "PRIVATE"
+  region                     = var.region
+  secondary_ip_range         = []
+  stack_type                 = "IPV4_ONLY"
 }
