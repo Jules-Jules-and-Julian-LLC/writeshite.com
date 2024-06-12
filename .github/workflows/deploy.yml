@@ -29,11 +29,8 @@ jobs:
           username: ${{ secrets.DOCKER_HUB_USERNAME }}
           password: ${{ secrets.DOCKER_HUB_PASSWORD }}
 
-      - name: Build and push Docker image
-        run: |
-          pwd
-          docker build -t ${{ secrets.DOCKER_HUB_USERNAME }}/writeshite-backend:latest ./docker/Dockerfile
-          docker push ${{ secrets.DOCKER_HUB_USERNAME }}/writeshite-backend:latest
+      - name: Build and push Docker image with Jib
+        run: ./gradlew jib
 
   deploy:
     runs-on: ubuntu-latest
