@@ -1,5 +1,5 @@
 name: CI/CD Pipeline
-run-name: Deploy to ${{ inputs.deploy_target }} by @${{ github.actor }}
+run-name: Deploy to Unraid Local by @${{ github.actor }}
 
 on:
   push:
@@ -31,7 +31,8 @@ jobs:
 
       - name: Build and push Docker image
         run: |
-          docker build -t ${{ secrets.DOCKER_HUB_USERNAME }}/writeshite-backend:latest .
+          pwd
+          docker build -t ${{ secrets.DOCKER_HUB_USERNAME }}/writeshite-backend:latest ./docker/Dockerfile
           docker push ${{ secrets.DOCKER_HUB_USERNAME }}/writeshite-backend:latest
 
   deploy:
