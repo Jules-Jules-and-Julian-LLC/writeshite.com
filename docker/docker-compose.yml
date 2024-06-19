@@ -11,6 +11,23 @@ services:
       - "443:443"
     volumes:
       - ./conf.d:/etc/nginx/user.conf.d:ro
-  writeshite:
-    image: writeshite:1.1.0
+    networks:
+      - writeshite-net
+
+  writeshite-backend:
+    image: julesjulesandjulian/writeshite-backend:latest
     restart: unless-stopped
+    networks:
+      - writeshite-net
+
+  writeshite-frontend:
+    image: julesjulesandjulian/writeshite-frontend:latest
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    networks:
+      - writeshite-net
+
+networks:
+  writeshite-net:
+    driver: bridge
