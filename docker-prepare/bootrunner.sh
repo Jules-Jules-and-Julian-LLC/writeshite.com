@@ -12,9 +12,9 @@ if [ -d "${HOME}/app/WEB-INF" ]; then
   exec java ${JAVA_OPTS} -Djava.security.egd=file:/dev/./urandom -cp "${HOME}/app" org.springframework.boot.loader.WarLauncher "$@"
 elif [ -d "${HOME}/app" ]; then
   #execute springboot expanded jar, which may have been constructed from several image layers
-  date_echo "exec java ${JAVA_OPTS} -Djava.security.egd=file:/dev/./urandom -cp ${HOME}/app org.springframework.boot.loader.JarLauncher $*"
+  date_echo "exec java ${JAVA_OPTS} -Djava.security.egd=file:/dev/./urandom -cp ${HOME}/app org.springframework.boot.loader.launch.JarLauncher $*"
   # shellcheck disable=SC2086
-  exec java ${JAVA_OPTS} -Djava.security.egd=file:/dev/./urandom -cp "${HOME}/app" org.springframework.boot.loader.JarLauncher "$@"
+  exec java ${JAVA_OPTS} -Djava.security.egd=file:/dev/./urandom -cp "${HOME}/app" org.springframework.boot.loader.launch.JarLauncher "$@"
 elif [ -f "${HOME}/app.jar" ]; then
   # execute springboot jar
   date_echo "exec java ${JAVA_OPTS} -Djava.security.egd=file:/dev/./urandom -jar ${HOME}/app.jar $*"
