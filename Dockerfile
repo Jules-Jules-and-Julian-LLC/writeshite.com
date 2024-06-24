@@ -46,12 +46,16 @@ COPY nginx.conf /etc/nginx/nginx.conf
 # Copy static files
 COPY src/frontend/build /usr/share/nginx/html
 
+# Copy SSL certificates
+COPY secrets /etc/letsencrypt/live/writeshite.com
+COPY secrets/archive /etc/letsencrypt/archive/writeshite.com
+
 # Add the start script
 COPY start.sh /app/start.sh
 RUN chmod +x /app/start.sh
 
 # Expose ports for Nginx and the Spring Boot application
-EXPOSE 80 8080 443 3000
+EXPOSE 80 8080 443
 
 # Start Nginx and the Spring Boot application
 CMD ["/app/start.sh"]

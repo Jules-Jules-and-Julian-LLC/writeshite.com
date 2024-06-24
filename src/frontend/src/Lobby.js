@@ -53,7 +53,7 @@ export default class Lobby extends React.Component {
                 console.log('STOMP: ' + str)
             },
             webSocketFactory: () => {
-                return new SockJS(`https://${window.location.hostname}:443/websocket`)
+                return new SockJS(`https://${window.location.hostname}/websocket`)
             },
             reconnectDelay: 20000,
             stompVersions: new Versions([Versions.V1_0, Versions.V1_1]),
