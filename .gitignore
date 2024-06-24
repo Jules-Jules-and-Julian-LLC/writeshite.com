@@ -8,3 +8,4 @@ src/frontend/node_modules
 terraform/.terraform
 secrets
 .classpath
+/build/
