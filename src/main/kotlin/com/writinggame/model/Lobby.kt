@@ -45,6 +45,7 @@ class Lobby(val lobbyId: String, var creator: Player, settings: GameSettings) {
         }
     }
 
+
     fun isCreator(sessionId: String): Boolean {
         return sessionId == creator.clientId
     }
