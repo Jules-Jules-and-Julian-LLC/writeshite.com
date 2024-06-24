@@ -1,6 +1,7 @@
 .gradle
 .idea
 build
+build/kotlin
 out
 resources
 src/frontend/node_modules
