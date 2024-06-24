@@ -39,10 +39,6 @@ class Lobby(val lobbyId: String, var creator: Player, settings: GameSettings) {
         game = Game(this, settings)
     }
 
-    private fun unused() {
-        println();
-    }
-
     private fun addCompletedStoriesToGallery() {
         if(game.settings.saveStoriesToGallery) {
             GalleryManager.addStoriesToGallery(lobbyId, game.completedStories)
