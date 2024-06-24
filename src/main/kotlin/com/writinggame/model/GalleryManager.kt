@@ -45,9 +45,13 @@ object GalleryManager {
         scope.launch {
             withContext(Dispatchers.IO) {
                 val galleryToSave = loadFromFile(lobbyId)
+                println("Loaded gallery for ${lobbyId} successfully")
                 galleryToSave.addStories(stories)
-                s3Client.putObject("write-shite-galleries",
+                println("Added stories to ${lobbyId} successfully")
+                s3Client.putObject(
+                    BUCKET_NAME,
                     "${lobbyId.uppercase(Locale.getDefault())}.json", jsonObjectMapper.writeValueAsString(galleryToSave))
+                println("Put to ${lobbyId} bucket successful")
             }
         }
     }
