@@ -13,6 +13,7 @@ class GalleryController {
 
     @GetMapping("/gallery/{lobbyId}/get")
     fun getGalleryJson(@PathVariable("lobbyId") lobbyId: String) : Gallery {
+        println("GET gallery/${lobbyId}/get, raw JSON call")
         return GalleryManager.loadFromFile(lobbyId)
     }
 }
