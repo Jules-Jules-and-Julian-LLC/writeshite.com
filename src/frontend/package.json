@@ -42,9 +42,9 @@
     },
     "proxy": "http://localhost:8080",
     "scripts": {
-        "start": "react-app-rewired start",
-        "build": "react-app-rewired build",
-        "test": "react-app-rewired test",
+        "start": "react-scripts start",
+        "build": "react-scripts build",
+        "test": "react-scripts test",
         "eject": "react-scripts eject",
         "lint": "eslint .",
         "format": "prettier --print-width 120 --write \"src/*.+(js|jsx|json|css|md)\""
