@@ -1,5 +1,5 @@
 import React from "react";
-import {Outlet} from "react-router-dom";
+import { Outlet } from "react-router-dom";
 
 class LogoPage extends React.Component {
     render() {
@@ -12,7 +12,9 @@ class LogoPage extends React.Component {
                         💩
                         </span>
                     </div>
-                    <div className="logo-page-content"><Outlet /></div>
+                    <div className="logo-page-content">
+                        <Outlet />
+                    </div>
                 </div>
             </>
         );
