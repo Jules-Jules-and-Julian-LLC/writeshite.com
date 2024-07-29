@@ -14,11 +14,13 @@ export default class App extends React.Component {
             <div id="content">
                 <Router>
                     <Routes>
-                        <Route path="/" element={<Homepage/>} />
-                        <Route path="/lobby/:lobbyId" element={<Lobby/>} />
-                        <Route path="/gallery/:lobbyId" element={<Gallery/>} />
-                        <Route path="/about" element={<AboutPage/>} />
-                        <Route path="/help" element={<HelpPage/>} />
+                        <Route element={<LogoPage/>}>
+                            <Route path="/lobby/:lobbyId" element={<Lobby/>}/>
+                            <Route path="/gallery/:lobbyId" element={<Gallery/>}/>
+                            <Route path="/about" element={<AboutPage/>}/>
+                            <Route path="/help" element={<HelpPage/>}/>
+                            <Route path="/" element={<Homepage/>}/>
+                        </Route>
                     </Routes>
                 </Router>
             </div>
