@@ -195,7 +195,7 @@ class LobbyController {
     /**
      * Have to redirect react routed paths to index.html so that the react router JS can handle the routing for us.
      */
-    @RequestMapping(value = ["/", "/lobby", "/lobby/*", "/help", "/about"])
+    @RequestMapping(value = ["/", "/lobby", "/lobby/*", "/gallery", "/gallery/*", "/help", "/about"])
     fun redirect(): String {
         val path = (RequestContextHolder.currentRequestAttributes() as ServletRequestAttributes).request.requestURI
         println("Redirecting $path to index.html")
