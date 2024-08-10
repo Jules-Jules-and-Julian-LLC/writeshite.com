@@ -12,14 +12,6 @@ import org.springframework.web.context.request.ServletRequestAttributes
 @RestController
 @CrossOrigin(origins = ["http://localhost:3000", "https://localhost", "https://www.writeshite.com", "https://writeshite.com"])
 class GalleryController {
-    @GetMapping("/gallery/{lobbyId}/")
-    fun getGallery(@PathVariable("lobbyId") lobbyId: String) : String {
-        val path = (RequestContextHolder.currentRequestAttributes() as ServletRequestAttributes).request.requestURI
-        println("GET gallery/${lobbyId}/, page call")
-        println("Redirecting gallery $path to index.html")
-        return "forward:/index.html"
-    }
-
     @GetMapping("/gallery/{lobbyId}/get")
     fun getGalleryJson(@PathVariable("lobbyId") lobbyId: String) : Gallery {
         println("GET gallery/${lobbyId}/get, raw JSON call")
