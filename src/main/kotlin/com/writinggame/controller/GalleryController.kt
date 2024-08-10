@@ -12,9 +12,9 @@ import org.springframework.web.context.request.ServletRequestAttributes
 @RestController
 @CrossOrigin(origins = ["http://localhost:3000", "https://localhost", "https://www.writeshite.com", "https://writeshite.com"])
 class GalleryController {
-    @GetMapping("/gallery/{lobbyId}/get")
+    @GetMapping("/galleryJson/{lobbyId}/get")
     fun getGalleryJson(@PathVariable("lobbyId") lobbyId: String) : Gallery {
-        println("GET gallery/${lobbyId}/get, raw JSON call")
+        println("GET galleryJson/${lobbyId}/get, raw JSON call")
         return GalleryManager.loadFromFile(lobbyId)
     }
 }
