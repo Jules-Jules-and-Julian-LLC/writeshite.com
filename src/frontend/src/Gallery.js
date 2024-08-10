@@ -34,7 +34,7 @@ export default class Lobby extends React.Component {
 
     componentDidMount() {
         try {
-            fetch(`${window.location.origin}/rawJson/${this.state.lobbyId}/get`, {cache: "no-cache"})
+            fetch(`${window.location.origin}/rawJson/${this.state.lobbyId}`, {cache: "no-cache"})
                 .then(async res => res.json())
                 .then(
                     result => {
