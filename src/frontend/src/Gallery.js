@@ -5,7 +5,7 @@ import InputValidator from "./InputValidator";
 export default class Lobby extends React.Component {
     constructor(props) {
         super(props);
-        const pathname = window.location.pathname.split("/");
+        const pathname = window.location.pathname.split("/").filter(segment => segment !== "");
 
         this.state = {
             lobbyId: pathname[pathname.length - 1],
@@ -34,7 +34,7 @@ export default class Lobby extends React.Component {
 
     componentDidMount() {
         try {
-            fetch("/gallery/" + this.state.lobbyId + "/get", {cache: "no-cache"})
+            fetch(`${window.location.origin}/gallery/${this.state.lobbyId}/get`, {cache: "no-cache"})
                 .then(async res => res.json())
                 .then(
                     result => {
