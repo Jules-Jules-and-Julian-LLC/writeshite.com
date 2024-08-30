@@ -3,6 +3,8 @@ package com.writinggame.controller
 import com.writinggame.controller.viewModels.*
 import com.writinggame.domain.ErrorType
 import com.writinggame.domain.LobbyStateType
+import com.writinggame.model.Gallery
+import com.writinggame.model.GalleryManager
 import com.writinggame.model.GameSettings
 import com.writinggame.model.LobbyManager
 import org.springframework.beans.factory.annotation.Autowired
@@ -17,6 +19,7 @@ import org.springframework.messaging.simp.SimpMessageHeaderAccessor
 import org.springframework.messaging.simp.SimpMessageSendingOperations
 import org.springframework.messaging.simp.SimpMessageType
 import org.springframework.stereotype.Controller
+import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.ResponseBody
 import org.springframework.web.bind.annotation.ResponseStatus
@@ -190,6 +193,22 @@ class LobbyController {
     @ResponseBody
     fun health(): String {
         return "OK"
+    }
+    
+    @RequestMapping(value = ["/rawJson/"])
+    @ResponseStatus(HttpStatus.OK)
+    @ResponseBody
+    fun getRawJson() : Gallery {
+        println("GET rawJson/, raw JSON call")
+        return Gallery("test", mutableListOf())
+    }
+
+    @RequestMapping(value = ["/rawJson/{lobbyId}"])
+    @ResponseStatus(HttpStatus.OK)
+    @ResponseBody
+    fun getGalleryJson(@PathVariable("lobbyId") lobbyId: String) : Gallery {
+        println("GET rawJson/${lobbyId}, raw JSON call")
+        return GalleryManager.loadFromFile(lobbyId)
     }
 
     /**
