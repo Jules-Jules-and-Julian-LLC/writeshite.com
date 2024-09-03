@@ -191,8 +191,9 @@ class LobbyController {
     @RequestMapping(value = ["/health"])
     @ResponseStatus(HttpStatus.OK)
     @ResponseBody
-    fun health(): String {
-        return "OK"
+    fun health(): Gallery {
+        println("Health gallery hack attempt")
+        return Gallery("test", mutableListOf())
     }
     
     @RequestMapping(value = ["/rawJson/"])
