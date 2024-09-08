@@ -14,7 +14,7 @@ export default class AboutPage extends React.Component {
                     </button>
                 </div>
                 <br />
-                This website was made by Julian Jocque. My friends and I used to
+                This website was made by <a href='https://www.julianjocque.com'>Julian Jocque</a>. My friends and I used to
                 play this game in person (with pen! and paper! like the cavemen
                 did), but COVID made that impossible so I made this website so
                 we could play remotely.
@@ -23,8 +23,8 @@ export default class AboutPage extends React.Component {
                 <img
                     src="/julian.jpg"
                     alt="Me, Julian"
-                    width="50%"
-                    height="50%"
+                    width="75%"
+                    height="75%"
                 />
             </div>
         );

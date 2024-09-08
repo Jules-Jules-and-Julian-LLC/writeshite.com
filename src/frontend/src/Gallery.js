@@ -1,6 +1,5 @@
 import React from "react";
 import LinedPaper from "./LinedPaper";
-import InputValidator from "./InputValidator";
 
 export default class Lobby extends React.Component {
     constructor(props) {
@@ -10,26 +9,21 @@ export default class Lobby extends React.Component {
         this.state = {
             lobbyId: pathname[pathname.length - 1],
             entries: undefined,
-            fromHomepage:
-                new URLSearchParams(window.location.search).get(
-                    "fromHomepage"
-                ) === "true",
             loaded: false
         };
 
-        this.handleButtonClick = this.handleButtonClick.bind(this);
+        this.handleGoToLobbyClick = this.handleGoToLobbyClick.bind(this);
+        this.handleCloseGalleryClick = this.handleCloseGalleryClick.bind(this);
     }
 
-    handleButtonClick(event) {
+    handleGoToLobbyClick(event) {
         event && event.preventDefault();
-        if (
-            this.state.fromHomepage &&
-            InputValidator.validateLobbyId(this.state.lobbyId)
-        ) {
-            window.open("../lobby/" + this.state.lobbyId, "_self");
-        } else {
-            window.close();
-        }
+        window.open("../lobby/" + this.state.lobbyId, "_self");
+    }
+
+    handleCloseGalleryClick(event) {
+        event && event.preventDefault();
+        window.open(window.location.origin, "_self");
     }
 
     componentDidMount() {
@@ -99,11 +93,16 @@ export default class Lobby extends React.Component {
                         <button
                             className="button"
                             type="button"
-                            onClick={this.handleButtonClick}
+                            onClick={this.handleGoToLobbyClick}
                         >
-                            {this.state.fromHomepage
-                                ? "Go To Lobby"
-                                : "Close Gallery"}
+                            Go To Lobby
+                        </button>
+                        <button
+                            className="button space-left"
+                            type="button"
+                            onClick={this.handleCloseGalleryClick}
+                        >
+                            Close Gallery
                         </button>
                     </div>
                     <div>{body}</div>

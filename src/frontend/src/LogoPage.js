@@ -12,7 +12,7 @@ class LogoPage extends React.Component {
                         💩
                         </span>
                     </div>
-                    <div className="logo-page-content">
+                <div className="logo-page-content">
                         <Outlet />
                     </div>
                 </div>
