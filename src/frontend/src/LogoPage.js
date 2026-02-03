@@ -16,6 +16,14 @@ class LogoPage extends React.Component {
                         <Outlet />
                     </div>
                 </div>
+                <div className="other-creations">
+                    <a href="https://ptatotp.clickclickclickclickclickclickclickclickclickclickclick.click/" target="_blank" rel="noopener noreferrer" className="ptatotp-link" title="PTATOTP">
+                        <span className="ptatotp-mini"><span>P</span><span>T</span><span>A</span><span>T</span><span>O</span><span>T</span><span>P</span></span>
+                    </a>
+                    <a href="https://julianjocque.com/" target="_blank" rel="noopener noreferrer" className="jj-link" title="Julian Jocque's Personal Site">
+                        <img src="https://julianjocque.com/assets/305529360_191387453261470_7049477229401748293_n.jpg" alt="Julian Jocque" className="jj-avatar" />
+                    </a>
+                </div>
             </>
         );
     }
