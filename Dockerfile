@@ -34,8 +34,8 @@ RUN echo "Directory structure after build:" && find /app
 # Stage 2: Set up Nginx and copy the Spring Boot application
 FROM openjdk:17-jdk-slim
 
-# Install Nginx
-RUN apt-get update && apt-get install -y nginx && rm -rf /var/lib/apt/lists/*
+# Install Nginx and Node.js (for Nostr relay)
+RUN apt-get update && apt-get install -y nginx nodejs && rm -rf /var/lib/apt/lists/*
 
 # Copy the Spring Boot application from the builder stage
 COPY --from=builder /app/build/libs/*.jar /app/app.jar
@@ -49,6 +49,9 @@ COPY src/frontend/build /usr/share/nginx/html
 # Copy SSL certificates
 COPY secrets /etc/letsencrypt/live/writeshite.com
 COPY secrets/archive /etc/letsencrypt/archive/writeshite.com
+
+# Copy Nostr relay
+COPY nostr-relay.js /app/nostr-relay.js
 
 # Add the start script
 COPY start.sh /app/start.sh
